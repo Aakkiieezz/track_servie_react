@@ -1,0 +1,6 @@
+.dropdown-menu,
+.dropdown-button,
+.dropdown-content {
+ display: block !important;
+ visibility: visible !important;
+}

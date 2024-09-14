@@ -1,0 +1,103 @@
+.profilePageContainer {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ width: 100%;
+ padding: 20px;
+}
+
+.profileHeader {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ margin-bottom: 30px;
+ position: relative; /* Needed for dropdown positioning */
+}
+
+.profilePicWrapper {
+ position: relative;
+ cursor: pointer;
+}
+
+.profilePic {
+ width: 120px;
+ height: 120px;
+ border-radius: 10px;
+ object-fit: cover;
+ cursor: pointer;
+}
+
+.placeholderPic {
+ width: 120px;
+ height: 120px;
+ border-radius: 10px;
+ background-color: grey;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ color: white;
+ font-size: 0.9rem;
+ cursor: pointer;
+}
+
+.dropdownMenu {
+ position: absolute;
+ top: 130px;
+ right: 0;
+ background-color: white;
+ border: 1px solid #ccc;
+ padding: 10px;
+ box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+ z-index: 999;
+}
+
+.dropdownItem {
+ display: block;
+ width: 100%;
+ padding: 8px 12px;
+ text-align: left;
+ background-color: transparent;
+ border: none;
+ cursor: pointer;
+ font-size: 1rem;
+}
+
+.dropdownItem:hover {
+ background-color: #f0f0f0;
+}
+
+.fileInput {
+ display: none;
+}
+
+.tabNavigation {
+ display: flex;
+ justify-content: center;
+ gap: 20px;
+ margin-bottom: 20px;
+}
+
+.tabButton {
+ padding: 10px 20px;
+ font-size: 1rem;
+ cursor: pointer;
+ background-color: transparent;
+ border: none;
+ border-bottom: 2px solid transparent;
+ transition: border-color 0.3s ease;
+}
+
+.tabButton:hover {
+ border-bottom: 2px solid #ddd;
+}
+
+.tabButton.active {
+ border-bottom: 2px solid #000;
+}
+
+.tabContent {
+ width: 80%;
+ max-width: 800px;
+ margin-top: 20px;
+ text-align: center;
+}

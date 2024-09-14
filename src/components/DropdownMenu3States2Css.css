@@ -1,0 +1,18 @@
+/* Remove any tick styling as it's already handled by the checkbox checked state */
+.form-check-input:checked::before {
+ content: ""; /* No need to explicitly show tick, checkbox handles this */
+}
+
+/* Style for the cross state (add this class to the label when the cross state is active) */
+.form-check-label.cross {
+ color: red; /* Optional: to visually indicate the cross state */
+ position: relative;
+}
+
+/* Add the cross symbol next to the label text */
+.form-check-label.cross::after {
+ content: "✘"; /* Cross symbol */
+ position: absolute;
+ left: -20px; /* Adjust position based on your layout */
+ top: 0;
+}
