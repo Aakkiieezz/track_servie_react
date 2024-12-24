@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* [aakkiieezz@JARVIS track_servie_react]$ npx shadcn@latest init
+✔ Preflight checks.
+✔ Verifying framework. Found Vite.
+✔ Validating Tailwind CSS.
+✔ Validating import alias.
+✔ Which style would you like to use? › Default
+✔ Which color would you like to use as the base color? › Gray
+✔ Would you like to use CSS variables for theming? -> yes
+✔ Writing components.json.
+✔ Checking registry.
+✔ Updating tailwind.config.js
+✔ Updating src/App.css
+✔ Installing dependencies.
+✔ Created 1 file:
+  - src/lib/utils.ts
+Success! Project initialization completed.
+You may now add components */

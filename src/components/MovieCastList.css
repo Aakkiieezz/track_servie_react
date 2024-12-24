@@ -1,0 +1,94 @@
+/* Scroll container with horizontal scrolling enabled */
+.scroll-container {
+ display: flex; /* Ensures items are aligned horizontally */
+ overflow-x: auto; /* Enables horizontal scrolling */
+ /* white-space: nowrap; Prevents items from wrapping to the next line */
+ padding: 10px; /* Optional padding */
+ /* position: relative; Ensure relative positioning for children */
+}
+
+.profile-item {
+ display: flex; /* Ensures items stay inline */
+ flex-direction: column;
+ align-items: center;
+ width: 100px;
+ margin-right: 10px; /* Adds space between items */
+ text-align: center; /* Centers content */
+ position: relative;
+}
+
+.profile-item img {
+ width: 100px; /* Adjust width to fit your design */
+ height: 150px; /* Adjust height */
+ border-radius: 50%; /* Makes images circular */
+ object-fit: cover; /* Ensures image fits properly */
+ transition: filter 0.3s ease; /* Smooth transition for blur effect */
+}
+
+/* Style for name and character with ellipsis and centered text */
+.profile-item p {
+ margin: 5px 0;
+ width: 100%; /* Take the full width of the container */
+ white-space: nowrap; /* Prevent text from wrapping */
+ overflow: hidden; /* Hide overflowing content */
+ text-overflow: ellipsis; /* Show the ellipsis (...) for overflow */
+ text-align: center;
+}
+
+/* .profile-item p:first-child {
+ font-weight: bold;
+} */
+
+/* .profile-item p:hover {
+ overflow: visible;
+ white-space: normal;
+ background-color: rgba(255, 255, 255, 0.9);
+ border-radius: 4px;
+ padding: 2px;
+} */
+
+.profile-item p.expanded {
+ white-space: normal; /* Allow text to wrap when expanded */
+ overflow: visible; /* Show full text */
+ transition: height 0.3s ease; /* Smooth transition for height change */
+}
+
+.cast-slider-container {
+ position: relative;
+ display: flex;
+ align-items: center;
+ width: 100%;
+ overflow: hidden;
+}
+
+.cast-slider {
+ display: flex; /* Align children in a row */
+ overflow-x: auto; /* Enable horizontal scrolling */
+ white-space: nowrap; /* Prevent wrapping of child elements */
+ /* padding: 50px; Optional: add padding if needed */
+ /* border: 1px solid #686666; Optional: for visual debugging */
+ scroll-behavior: smooth; /* Enable smooth scrolling */
+}
+
+.cast-item {
+ display: inline-block; /* Make each item inline and block level */
+ flex-direction: column; /* Arrange children vertically */
+ align-items: center; /* Center items horizontally */
+ justify-content: center; /* Center items vertically */
+ margin-right: 100px; /* Space between items */
+ /* border: 1px solid #f70101; Optional: for visual debugging */
+ text-align: center; /* Center text */
+}
+
+.cast-image img {
+ display: block; /* Remove bottom space */
+ width: 100px; /* Fixed width for images */
+ height: 150px; /* Fixed height for images */
+ /* border: 1px solid #0af302; Optional: for visual debugging */
+ margin: 0 auto; /* Center the image horizontally */
+}
+
+.blur {
+ filter: blur(2px) brightness(40%);
+ transition: 0.6s ease; /* Smooth transition for height change */
+}

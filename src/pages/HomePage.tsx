@@ -1,53 +1,140 @@
-import React, { useState } from "react";
-import Header from "../components/HomePageHeader";
-import ServieGrid from "../components/ServieGrid";
+import React, { useState, useEffect } from "react";
+import HomePageHeader from "../components/HomePage/HomePageHeader";
+import ServieGrid from "../components/HomePage/ServieGrid";
+import PaginationBar from "../components/PaginationBar";
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import axios from "axios";
+
+interface Servie {
+    tmdbId: number;
+    childtype: "movie" | "tv";
+    posterPath: string;
+    title: string;
+    releaseDate?: string;
+    firstAirDate?: string;
+    lastAirDate?: string;
+    completed: boolean;
+    episodesWatched?: number;
+    totalEpisodes?: number;
+}
 
 interface Filters {
- type: string;
- sortBy: string;
- sortDir: "asc" | "desc";
- tickedGenres: string[];
- crossedGenres: string[];
- tickedGenres2: string[];
- crossedGenres2: string[];
- languages: string[];
- statuses: string[];
- startYear: string;
- endYear: string;
- watched: string;
+    type: string;
+    sortBy: string;
+    sortDir: "asc" | "desc";
+    tickedGenres2: string[];
+    crossedGenres2: string[];
+    languages: string[];
+    statuses: string[];
+    startYear: string;
+    endYear: string;
+    watched: string;
+}
+
+interface Pagination {
+    pageNumber: number;
+    totalPages: number;
 }
 
 const HomePage: React.FC = () => {
- const [filters, setFilters] = useState<Filters>({
-  type: "",
-  sortBy: "title",
-  sortDir: "asc",
-  tickedGenres: [],
-  crossedGenres: [],
-  tickedGenres2: [],
-  crossedGenres2: [],
-  languages: [],
-  statuses: [],
-  startYear: "",
-  endYear: "",
-  watched: "",
- });
 
- const handleFilterChange = (newFilters: Filters) => {
-  // Use the filters to fetch movies from an API or filter locally
-  setFilters(newFilters);
-  console.log("Filters changed:", newFilters);
- };
+    const [servies, setServies] = useState<Servie[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
- return (
-  <div>
-   <Header handleFilterChange={handleFilterChange} />
+    const defaultFilters = {
+        type: "",
+        sortBy: "title",
+        sortDir: "asc",
+        tickedGenres2: [],
+        crossedGenres2: [],
+        languages: [],
+        statuses: [],
+        startYear: "",
+        endYear: "",
+        watched: "",
+    };
 
-   {/* Movie Grid */}
-   {/* <ServieGrid movies={movies} toggleWatch={() => {}} removeMovie={() => {}} /> */}
-   <ServieGrid data={filters} />
-  </div>
- );
+    const savedFilters = JSON.parse(localStorage.getItem('filters') || JSON.stringify(defaultFilters));
+
+    const [filters, setFilters] = useState<Filters>(savedFilters);
+
+    const [, setPageNumber] = useState<number | null>(null);
+
+    const [pagination, setPagination] = useState<Pagination>({
+        pageNumber: 0,
+        totalPages: 0,
+    });
+
+    const fetchServies = async (filters: Filters, pageNumber: number | null = null) => {
+        try {
+            setLoading(true);
+
+            console.log("HomePage -> API Call -> request:", filters, pageNumber);
+
+            const response = await axios.post(
+                "http://localhost:8080/track-servie/react/servies",
+                {
+                    type: filters.type,
+                    languages: filters.languages,
+                    statuses: filters.statuses,
+                    selectedGenres: filters.tickedGenres2,
+                    rejectedGenres: filters.crossedGenres2,
+                    sortBy: filters.sortBy,
+                    sortDir: filters.sortDir,
+                },
+                {
+                    params: {
+                        ...(pageNumber !== null && { pageNumber }),
+                    },
+                }
+            );
+
+            console.log("HomePage -> API Call -> response:", response.data);
+
+            setServies(response.data.servies);
+
+            setPagination({
+                pageNumber: response.data.pageNumber,
+                totalPages: response.data.totalPages,
+            });
+
+        } catch (error) {
+            console.error("Error fetching servies", error);
+        } finally {
+            setLoading(false); // End loading state
+        }
+    };
+
+    useEffect(() => {
+        console.log("HomePage -> useEffect -> default filters :", filters);
+        fetchServies(filters, null);
+    }, []);
+
+    const handleFilterChange = (newFilters: Filters) => {
+        console.log("HomePage -> handleFilterChange -> filter :", newFilters);
+        setFilters(newFilters);
+        fetchServies(newFilters, null);
+    };
+
+    const handlePageChange = (newPgNumber: number) => {
+        console.log("HomePage -> handlePageChange -> pgNumber : ", newPgNumber);
+        setPageNumber(newPgNumber);
+        fetchServies(filters, newPgNumber);
+    };
+
+    return (
+        <div>
+            <HomePageHeader handleFilterChange={handleFilterChange} />
+
+            {loading ? <p>Loading...</p> : <ServieGrid servies={servies} />}
+
+            <PaginationBar
+                pageNumber={pagination.pageNumber}
+                totalPages={pagination.totalPages}
+                onPageChange={handlePageChange}
+            />
+        </div>
+    );
 };
 
 export default HomePage;

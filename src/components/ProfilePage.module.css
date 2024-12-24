@@ -4,6 +4,7 @@
  align-items: center;
  width: 100%;
  padding: 20px;
+ /* margin-top: 60px; Adjust based on the height of the alert to avoid content overlap */
 }
 
 .profileHeader {
@@ -20,8 +21,8 @@
 }
 
 .profilePic {
- width: 120px;
- height: 120px;
+ width: 200px;
+ height: 200px;
  border-radius: 10px;
  object-fit: cover;
  cursor: pointer;
@@ -100,4 +101,12 @@
  max-width: 800px;
  margin-top: 20px;
  text-align: center;
+}
+
+.alert-top {
+ position: fixed;
+ top: 0;
+ left: 0;
+ width: 100%;
+ z-index: 1050;
 }
