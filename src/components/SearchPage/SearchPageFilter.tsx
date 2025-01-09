@@ -28,17 +28,32 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({ handleFilterChange 
     };
 
     return (
-        <div style={styles.searchContainer}>
+        <div style={
+            {
+                ...styles.searchContainer,
+                width: isExpanded ? '300px' : '40px', // Adjust width dynamically
+            }
+        }>
+
             {/* Search Icon */}
             <i
                 className="bi bi-search"
-                style={styles.searchIcon}
+                style={{
+                    ...styles.searchIcon,
+                    marginRight: isExpanded ? '10px' : '0', // Adjust spacing dynamically
+                }}
                 onClick={toggleSearchForm}
             ></i>
 
             {/* Search Form */}
             {isExpanded && (
-                <form onSubmit={handleSearchSubmit} style={styles.form}>
+                <form onSubmit={handleSearchSubmit} style={
+                    {
+                        ...styles.form,
+                        opacity: isExpanded ? 1 : 0, // Hide when collapsed
+                        pointerEvents: isExpanded ? 'auto' : 'none', // Prevent interaction when collapsed
+                    }
+                }>
                     {/* Search Input */}
                     <input
                         type="text"
@@ -74,27 +89,33 @@ const styles: { [key: string]: React.CSSProperties } = {
     searchContainer: {
         display: 'flex',
         alignItems: 'center',
-        gap: '0.5rem',
+        position: 'relative',
+        transition: 'width 0.3s ease-in-out', // Smooth transition
     },
     searchIcon: {
         cursor: 'pointer',
         fontSize: '1.5rem',
         color: '#666',
+        transition: 'margin-right 0.3s ease-in-out', // Smooth transition
+
     },
     form: {
         display: 'flex',
         alignItems: 'center',
-        width: '250px',
+        flexGrow: 1,
+        transition: 'opacity 0.3s ease-in-out', // Smooth fade-in effect
     },
     input: {
         flexGrow: 1,
-        border: 'none',
+        border: '1px solid #ddd',
+        borderRadius: '4px',
         outline: 'none',
         padding: '0.5rem',
         fontSize: '1rem',
     },
     select: {
         border: 'none',
+        borderRadius: '4px',
         padding: '0.5rem',
         fontSize: '1rem',
     },
