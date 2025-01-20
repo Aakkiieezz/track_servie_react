@@ -3,6 +3,7 @@ import axios from "axios";
 import styles from "./ProfilePage.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Alert from "./Alert";
+import { Link } from "react-router-dom";
 
 const ProfilePage: React.FC = () => {
   const username = localStorage.getItem("username");
@@ -99,6 +100,15 @@ const ProfilePage: React.FC = () => {
           onClose={() => setAlert(null)}
         />
       )}
+
+      <nav className="bg-gray-800 p-4">
+        <Link to="/" className="text-white mr-4 hover:underline">Home</Link>
+        <br></br>
+        <Link to="/stats" className="text-white hover:underline">Stats</Link>
+        <br></br>
+        <Link to="/statslangbarlog" className="text-white hover:underline">StatsLangBarLog</Link>
+      </nav>
+
       <div className={styles.profileHeader}>
         <div className={styles.profilePicWrapper}>
 

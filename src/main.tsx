@@ -15,6 +15,8 @@ import ServiePage from "./pages/ServiePage.tsx";
 import SearchPage from "./pages/SearchPage.tsx";
 import SeasonPage from "./pages/SeasonPage.tsx";
 import PersonPage from "./pages/PersonPage.tsx";
+import Stats from "./pages/Stats.tsx";
+import StatsLangBarLog from "./pages/StatsLangBarLog.tsx";
 
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
     return isAuthenticated() ? element : <Navigate to="/login" />;
@@ -30,6 +32,8 @@ const router = createBrowserRouter([
     { path: "/profile", element: <PrivateRoute element={<ProfilePage />} /> },
     { path: "/servie", element: <ServiePage /> },
     { path: "/search", element: <PrivateRoute element={<SearchPage />} /> },
+    { path: "/stats", element: <PrivateRoute element={<Stats />} /> },
+    { path: "/statslangbarlog", element: <PrivateRoute element={<StatsLangBarLog />} /> },
     {
         path: "/track-servie/servies/:tmdbId/Season/:seasonNo",
         element: <PrivateRoute element={<SeasonPage />} />,
