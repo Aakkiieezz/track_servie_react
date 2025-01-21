@@ -19,21 +19,12 @@ interface Season {
 interface SeasonsListProps {
   seasons?: Season[];
   tmdbId: string;
-  // totalEpWatched: number;
   onEpWatchCountChange: (data: { totalWatchedEp: number; totalWatchedRuntime: number }) => void;
 }
 
-const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, /*totalEpWatched,*/ onEpWatchCountChange: onEpWatchCountChange }) => {
+const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWatchCountChange: onEpWatchCountChange }) => {
 
   const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
-
-  // const [seasonWatchRuntime, setSeasonWatchRuntime] = useState<number>(0);
-  // const [seasonWatchRuntime, setSeasonWatchRuntime] = useState<{ [key: string]: number }>(
-  //   seasons.reduce((acc, season) => {
-  //     acc[`${tmdbId}-${season.seasonNo}`] = season.totalWatchedRuntime;
-  //     return acc;
-  //   }, {} as { [key: string]: number })
-  // );
 
   const [seasonWatchRuntime, setSeasonWatchRuntime] = useState<{ [key: number]: number }>(
     seasons.reduce((acc, season) => {
@@ -42,11 +33,6 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, /*total
     }, {} as { [key: number]: number })
   );
 
-  // const seasonRuntime = seasons.reduce((acc: { [key: string]: number }, season) => {
-  //   acc[`${tmdbId}-${season.seasonNo}`] = season.totalRuntime;
-  //   return acc;
-  // }, {} as { [key: string]: number });
-
   const seasonRuntime = seasons.reduce((acc: { [key: number]: number }, season) => {
     acc[season.seasonNo] = season.totalRuntime;
     return acc;
@@ -54,28 +40,12 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, /*total
 
   console.log(`SeasonsList -> seasons: ${seasons}, tmdbId: ${tmdbId}`);
 
-  // State to track the 'completed' status for each season
-  // const [seasonWatchState, setSeasonWatchState] = useState<{ [key: string]: boolean }>(
-  //   seasons.reduce((acc, season) => {
-  //     acc[`${tmdbId}-${season.seasonNo}`] = season.watched;
-  //     return acc;
-  //   }, {} as { [key: string]: boolean })
-  // );
-
   const [seasonWatchState, setSeasonWatchState] = useState<{ [key: number]: boolean }>(
     seasons.reduce((acc, season) => {
       acc[season.seasonNo] = season.watched;
       return acc;
     }, {} as { [key: number]: boolean })
   );
-
-  // State to track the 'watched ep count' of each season
-  // const [epWatchCount, setEpWatchCount] = useState<{ [key: string]: number }>(
-  //   seasons.reduce((acc, season) => {
-  //     acc[`${tmdbId}-${season.seasonNo}`] = season.episodesWatched;
-  //     return acc;
-  //   }, {} as { [key: string]: number })
-  // );
 
   const [epWatchCount, setEpWatchCount] = useState<{ [key: number]: number }>(
     seasons.reduce((acc, season) => {
@@ -93,9 +63,7 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, /*total
 
   const toggleWatch = async (tmdbId: string, seasonNo: number) => {
 
-    // const key = `${tmdbId}-${seasonNo}`;
     const key = seasonNo;
-    console
 
     const currentWatchState = seasonWatchState[key];
     const newWatchState = !currentWatchState;
@@ -251,11 +219,7 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, /*total
                   toggleWatch(tmdbId, season.seasonNo);
                 }}
               >
-                {watchStateRender ? (
-                  <i className="bi bi-eye-slash-fill"></i>
-                ) : (
-                  <i className="bi bi-eye-fill"></i>
-                )}
+                {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
               </a>
 
               {/* Link to poster page if posterPath exists */}

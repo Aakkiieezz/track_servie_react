@@ -45,7 +45,6 @@ interface Episode {
 }
 
 const SeasonPage = () => {
-
     console.log(`SeasonsPage`);
 
     const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
@@ -92,11 +91,15 @@ const SeasonPage = () => {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     useEffect(() => {
         if (tmdbId) {
-            console.log("SeasonPage -> useEffect(tmdbId, seasonNo) -> data :", tmdbId, seasonNo);
+            console.log(
+                "SeasonPage -> useEffect(tmdbId, seasonNo) -> data :",
+                tmdbId,
+                seasonNo
+            );
             fetchSeasonData(tmdbId, seasonNo);
         }
     }, [tmdbId, seasonNo]);
@@ -131,23 +134,20 @@ const SeasonPage = () => {
             setSeasonRuntime(totalRuntime);
 
             // Calculate the sum of runtimes where the corresponding watch state is true
-            const totalWatchRuntime = Object.entries(epWatchStates).reduce((sum, [episodeNo, watched]) => {
-                if (watched)
-                    // const runtime = epRuntimes[episodeNo];
-                    // return sum + (runtime || 0);
-                    return sum + epRuntimes[episodeNo];
-                return sum;
-            }, 0);
+            const totalWatchRuntime = Object.entries(epWatchStates).reduce(
+                (sum, [episodeNo, watched]) => {
+                    if (watched)
+                        return sum + epRuntimes[episodeNo];
+                    return sum;
+                },
+                0
+            );
             setSeasonWatchRuntime(totalWatchRuntime);
-
         } catch (err) {
             if (axios.isAxiosError(err))
-                setError(err.response?.data?.message || 'Something went wrong');
-            else if (err instanceof Error)
-                setError(err.message);
-            else
-                setError('An unknown error occurred');
-
+                setError(err.response?.data?.message || "Something went wrong");
+            else if (err instanceof Error) setError(err.message);
+            else setError("An unknown error occurred");
         } finally {
             setLoading(false);
         }
@@ -163,43 +163,40 @@ const SeasonPage = () => {
         const currentSeasonWatchState = seasonWatchState;
         const newSeasonWatchState = !currentSeasonWatchState;
 
-        // managing season watch state
         setSeasonWatchState(newSeasonWatchState);
 
-        // managing season's total ep watched count
         const currentEpWatchCount = epWatchCount;
         setEpWatchedCount(newSeasonWatchState ? totalEpisodes : 0);
 
-        // managing season watched runtime
         const currentSeasonWatchRuntime = seasonWatchRuntime;
         setSeasonWatchRuntime(newSeasonWatchState ? seasonRuntime : 0);
 
-        // managing every ep watch state
         const currentEpWatchCountState = epWatchState;
-        setEpWatchState(Object.fromEntries(Object.keys(epWatchState).map(key => [key, newSeasonWatchState])));
+        setEpWatchState(
+            Object.fromEntries(
+                Object.keys(epWatchState).map((key) => [key, newSeasonWatchState])
+            )
+        );
 
         try {
-            const response = await axios.put(`http://localhost:8080/track-servie/react/servies/${tmdbId}/Season/${seasonNo}/toggle`);
+            const response = await axios.put(
+                `http://localhost:8080/track-servie/react/servies/${tmdbId}/Season/${seasonNo}/toggle`
+            );
             if (response.status === 200)
-                setAlert({ type: "success", message: `Updated watch status of S${seasonNo} successfully !!` });
+                setAlert({
+                    type: "success",
+                    message: `Updated watch status of S${seasonNo} successfully !!`,
+                });
         } catch (error) {
-
-            // failure-managing season watch state
             setSeasonWatchState(currentSeasonWatchState);
-
-            // failure-managing season's total ep watched count
             setEpWatchedCount(currentEpWatchCount);
-
-            // failure-managing ep watched runtime
             setSeasonWatchRuntime(currentSeasonWatchRuntime);
-
-            // failure-managing every ep watch state
             setEpWatchState(currentEpWatchCountState);
 
-            console.error('Failed to update watch status', error);
+            console.error("Failed to update watch status", error);
             setAlert({ type: "danger", message: "Failed to update watch status !!" });
         }
-    }
+    };
 
     const toggleEpisodeWatch = async (episodeNo: number) => {
         console.log(`SeasonPage -> toggleEpisodeWatch -> episodeNo: ${episodeNo}`);
@@ -214,18 +211,18 @@ const SeasonPage = () => {
         });
 
         const currentEpWatchedCount = epWatchCount;
-        const newEpWatchedCount = newWatchState
-            ? epWatchCount + 1
-            : epWatchCount - 1;
+        const newEpWatchedCount = newWatchState ? epWatchCount + 1 : epWatchCount - 1;
         setEpWatchedCount(newEpWatchedCount);
 
-        if (newWatchState && (newEpWatchedCount === season.episodeCount)) {
+        if (newWatchState && newEpWatchedCount === season.episodeCount) {
             console.log("seems last episode was watched, toggling season watch to true");
             setSeasonWatchState(true);
         }
 
         if (!newWatchState && seasonWatchState) {
-            console.log("seems an episode was un-watched and seasonWatch status was still true, toggling season watch to false");
+            console.log(
+                "seems an episode was un-watched and seasonWatch status was still true, toggling season watch to false"
+            );
             setSeasonWatchState(false);
         }
 
@@ -236,11 +233,15 @@ const SeasonPage = () => {
         setSeasonWatchRuntime(newSeasonWatchRuntime);
 
         try {
-            const response = await axios.put(`http://localhost:8080/track-servie/react/servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/toggle`);
+            const response = await axios.put(
+                `http://localhost:8080/track-servie/react/servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/toggle`
+            );
             if (response.status === 200)
-                setAlert({ type: "success", message: `Updated watch status of Ep${episodeNo} successfully !!` });
+                setAlert({
+                    type: "success",
+                    message: `Updated watch status of Ep${episodeNo} successfully !!`,
+                });
         } catch (error) {
-
             setEpWatchState({
                 ...epWatchState,
                 [key]: currentWatchState,
@@ -250,11 +251,11 @@ const SeasonPage = () => {
 
             setSeasonWatchRuntime(currentSeasonWatchRuntime);
 
-            console.error('Failed to update watch status', error);
+            console.error("Failed to update watch status", error);
 
             setAlert({ type: "danger", message: "Failed to update watch status !!" });
         }
-    }
+    };
 
     function formatRuntime(totalMinutes: number): string {
         const days = Math.floor(totalMinutes / 1440);
@@ -263,21 +264,22 @@ const SeasonPage = () => {
 
         const parts: string[] = [];
 
-        if (days > 0)
-            parts.push(`${days}d`);
-        if (hours > 0)
-            parts.push(`${hours}hr`);
-        if (minutes > 0)
-            parts.push(`${minutes}min`);
+        if (days > 0) parts.push(`${days}d`);
+        if (hours > 0) parts.push(`${hours}hr`);
+        if (minutes > 0) parts.push(`${minutes}min`);
 
-        return parts.length > 0 ? parts.join(' ') : '0min';
+        return parts.length > 0 ? parts.join(" ") : "0min";
     }
 
     return (
         <div className="container">
-
             {/* Render the NavigationBar and pass props */}
-            <NavigationBar tmdbId={tmdbId!} currentSeasonNo={currentSeasonNo} totalSeasons={totalSeasons} hasSpecials={hasSpecials} />
+            <NavigationBar
+                tmdbId={tmdbId!}
+                currentSeasonNo={currentSeasonNo}
+                totalSeasons={totalSeasons}
+                hasSpecials={hasSpecials}
+            />
 
             <div className="row">
                 <div className="col-4 image-container still">
@@ -296,15 +298,8 @@ const SeasonPage = () => {
                     )}
 
                     {/* {toggle season completed} */}
-                    <a
-                        href="#"
-                        onClick={() => toggleSeasonWatch()}
-                    >
-                        {seasonWatchState ? (
-                            <i className="bi bi-eye-slash-fill"></i>
-                        ) : (
-                            <i className="bi bi-eye-fill"></i>
-                        )}
+                    <a href="#" onClick={() => toggleSeasonWatch()}>
+                        {seasonWatchState ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
                     </a>
 
                     {season.episodeCount !== 0 && (
@@ -313,41 +308,22 @@ const SeasonPage = () => {
                                 Total Episodes Watched : {epWatchCount} / {season.episodeCount}
                             </p>
 
-                            {season.lastModified &&
-                                <p>Last Modified : {new Date(season.lastModified).toLocaleString("en-US", { month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" })}</p>
-                            }
-
-                            {/* Watch/unwatch multiple episodes form */}
-                            {/* <form
-                                action={`/track-servie/servies/${tmdbId}/Season/${season.seasonNo}/toggleepisodes`}
-                                style={{ display: "inline-block" }}
-                            >
-                                <i className="bi bi-arrow-down-up"></i>
-                                <select name="watch">
-                                    <option value="true">Mark as Watched</option>
-                                    <option value="false">Mark as Unwatched</option>
-                                </select>
-                                <select name="fromEpisodeNumber">
-                                    {Array.from({ length: season.episodeCount }, (_, i) => i + 1).map((num) => (
-                                        <option key={num} value={num}>
-                                            {num}
-                                        </option>
-                                    ))}
-                                </select>
-                                <select name="toEpisodeNumber">
-                                    {Array.from({ length: season.episodeCount }, (_, i) => i + 1).map((num) => (
-                                        <option key={num} value={num}>
-                                            {num}
-                                        </option>
-                                    ))}
-                                </select>
-                                <button className="btn btn-light" type="submit">
-                                    <i className="bi bi-search"></i>
-                                </button>
-                            </form> */}
+                            {season.lastModified && (
+                                <p>
+                                    Last Modified :{" "}
+                                    {new Date(season.lastModified).toLocaleString("en-US", {
+                                        month: "long",
+                                        day: "numeric",
+                                        year: "numeric",
+                                        hour: "numeric",
+                                        minute: "numeric",
+                                    })}
+                                </p>
+                            )}
 
                             <p>
-                                Total Watched Runtime : {formatRuntime(seasonWatchRuntime)} / {formatRuntime(season.totalRuntime)}
+                                Total Watched Runtime : {formatRuntime(seasonWatchRuntime)} /{" "}
+                                {formatRuntime(season.totalRuntime)}{" "}
                             </p>
                         </>
                     )}
@@ -376,7 +352,6 @@ const SeasonPage = () => {
                     return (
                         <>
                             <div key={key} className="col-4 image-container still">
-
                                 {/* Alert Component */}
                                 {alert && (
                                     <Alert
@@ -386,7 +361,9 @@ const SeasonPage = () => {
                                     />
                                 )}
 
-                                <a href={`/track-servie/servies/${tmdbId}/Season/${season.seasonNo}/Episode/${episode.episodeNo}`}>
+                                <a
+                                    href={`/track-servie/servies/${tmdbId}/Season/${season.seasonNo}/Episode/${episode.episodeNo}`}
+                                >
                                     <img
                                         src={
                                             episode.stillPath
@@ -396,7 +373,6 @@ const SeasonPage = () => {
                                         alt={`Episode ${episode.episodeNo}`}
                                     />
                                 </a>
-
                             </div>
                             <div className="col-8">
                                 <a
@@ -404,22 +380,39 @@ const SeasonPage = () => {
                                     style={{ textDecoration: "none", color: "inherit" }}
                                 >
                                     <span style={{ fontWeight: "bold", fontSize: "20px" }}>
-                                        <span style={{ color: "red" }}>Episode {episode.episodeNo}</span> {episode.name}
+                                        <span style={{ color: "red" }}>Episode {episode.episodeNo}</span>{" "}
+                                        {episode.name}
                                     </span>
                                 </a>
                                 <br />
-                                {episode.airDate &&
-                                    <span>Aired Date : {new Date(episode.airDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
-                                }
+                                {episode.airDate && (
+                                    <span>
+                                        Aired Date :{" "}
+                                        {new Date(episode.airDate).toLocaleDateString("en-US", {
+                                            month: "long",
+                                            day: "numeric",
+                                            year: "numeric",
+                                        })}
+                                    </span>
+                                )}
                                 <br />
 
                                 {episode.overview && <p>{episode.overview}</p>}
 
                                 <p>Runtime : {formatRuntime(episode.runtime)}</p>
 
-                                {episode.lastModified &&
-                                    <p>Last Modified : {new Date(episode.lastModified).toLocaleString("en-US", { month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" })}</p>
-                                }
+                                {episode.lastModified && (
+                                    <p>
+                                        Last Modified :{" "}
+                                        {new Date(episode.lastModified).toLocaleString("en-US", {
+                                            month: "long",
+                                            day: "numeric",
+                                            year: "numeric",
+                                            hour: "numeric",
+                                            minute: "numeric",
+                                        })}
+                                    </p>
+                                )}
 
                                 {/* {toggle completed} */}
                                 <a
@@ -429,11 +422,7 @@ const SeasonPage = () => {
                                         toggleEpisodeWatch(episode.episodeNo);
                                     }}
                                 >
-                                    {watchStateRender ? (
-                                        <i className="bi bi-eye-slash-fill"></i>
-                                    ) : (
-                                        <i className="bi bi-eye-fill"></i>
-                                    )}
+                                    {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
                                 </a>
                             </div>
                         </>

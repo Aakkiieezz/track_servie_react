@@ -6,16 +6,24 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import axios from "axios";
 
 interface Servie {
+    // Servie fields
     tmdbId: number;
     childtype: "movie" | "tv";
-    posterPath: string;
     title: string;
+    posterPath: string;
+
+    // Movie fields
     releaseDate?: string;
+
+    // Series fields
+    totalEpisodes?: number;
     firstAirDate?: string;
     lastAirDate?: string;
-    completed: boolean;
+
+    // UserServieData fields
     episodesWatched?: number;
-    totalEpisodes?: number;
+    completed: boolean;
+    liked: boolean;
 }
 
 interface Filters {
