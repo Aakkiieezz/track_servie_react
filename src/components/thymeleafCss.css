@@ -1,4 +1,10 @@
+/* General Styling */
+html,
 body {
+ margin: 0; /* Removes any default margins */
+ padding: 0; /* Removes any default padding */
+ width: 100%; /* Ensures the page takes up the full viewport width */
+ overflow-x: hidden; /* Disables horizontal scrolling */
 }
 
 .container,
@@ -7,8 +13,33 @@ body {
 }
 
 .container-fluid.backdrop {
- max-width: 100%;
- height: auto;
+ position: relative; /* To position child elements */
+ width: 100vw; /* Full viewport width */
+ min-height: 100vh; /* Use min-height instead of height for scrolling */
+ margin: 0; /* Remove default margins */
+ padding: 0; /* Remove default padding */
+ overflow-x: hidden; /* Only hide horizontal overflow, allow vertical scrolling */
+}
+
+.background-image {
+ position: fixed; /* Fixes the background image */
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ object-fit: cover; /* Ensures the image fully covers the container */
+ z-index: -1; /* Ensures the image stays behind content */
+ filter: blur(3px) brightness(40%); /* Optional: Adds styling effects */
+}
+
+.content-overlay {
+ position: relative; /* Stays above the background image */
+ z-index: 1;
+ width: 100%;
+ min-height: 100%; /* Ensure content stretches if shorter */
+ padding: 20px;
+ color: white;
+ overflow-y: auto; /* Enables scrolling if content overflows */
 }
 
 .container,
@@ -34,12 +65,12 @@ body {
  justify-content: left;
 }
 
+/* Image Container Styling */
 .image-container {
  display: inline-block;
  position: relative;
  overflow: hidden;
  padding: 0.2%;
-
  transition: filter 0.3s ease;
 }
 
@@ -85,6 +116,7 @@ body {
  color: white;
 }
 
+/* Progress Bar Styling */
 .progress-bar {
  width: 100%;
  background-color: #f2f2f2;
@@ -95,103 +127,64 @@ body {
  background-color: #4caf50;
 }
 
-/* .backdrop img {
- width: 100%;
- align-content: center;
-} */
-
-.backdrop {
- /* position: fixed; /* Fix the container to the top of the page */
- position: relative; /* Ensures other content can be positioned inside */
- background-size: cover; /* Ensure the image covers the entire container */
- background-position: center center; /* Center the image */
- background-repeat: no-repeat; /* Avoid tiling of the image */
- background-attachment: fixed; /* Make the background stay fixed during scrolling */
- width: 100%; /* Full width */
- height: 100vh; /* Full height */
-
- /* top: 0;
- left: 0;
- width: 100%;
- height: auto; */
- overflow: hidden; /* Ensure anything outside the div is hidden */
- /* z-index: -1; Ensure the backdrop stays behind other content */
-}
-
-.background-image {
- width: 100%;
- height: 100%;
- object-fit: cover; /* Ensures the image covers the container */
- /* position: absolute; */
- /* top: 0;
- left: 0; */
- /* z-index: -1; Send the image behind other content */
- filter: blur(3px) brightness(40%); /* Apply blur to just the image */
-}
-
-.content-overlay {
- position: absolute; /* Ensures content is overlaid on top of the background */
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
- z-index: 1; /* Keeps the overlay content above the background */
- display: flex;
- align-items: center; /* Vertically center content if needed */
- justify-content: center; /* Horizontally center content if needed */
- padding: 20px; /* Adjust the padding as needed */
- color: white; /* Optional: adjust text color to contrast the background */
-}
-
-/* .cropped-image {
- width: 100%;
- top: -25%;
- height: auto;
- object-fit: cover; */
-/* clip-path: inset(25% 0 25% 0); /* Show only the middle 50% vertically */
-/* } */
-
+/* Navigation Styling */
 nav {
  align-content: center;
  align-self: center;
 }
 
-.image-container.still {
- position: relative;
- overflow: hidden;
-}
-
+/* Image Effects */
 .image-container.still img {
  width: 100%;
  height: 100%;
  object-fit: cover;
 }
 
-.bi-eye-slash-fill {
- color: blue;
+/* Icon Transitions */
+.bi-eye-slash-fill,
+.bi-eye-fill {
+ transition: all 0.5s ease; /* Smooth transition for both color and icon */
 }
 
-.bi-eye-slash-fill:hover {
- color: red;
+.bi-eye-slash-fill {
+ color: red; /* Color when state is false & not hovering */
 }
 
 .bi-eye-fill {
- color: blue;
-}
-
-.bi-eye-fill:hover {
- color: green;
+ color: green; /* Color when state is true & not hovering */
 }
 
 .bi-x-circle-fill {
  color: red;
 }
 
+.bi-suit-heart-fill {
+ transition: color 0.3s ease;
+}
+
+.liked {
+ color: rgb(255, 102, 0); /* Set color for liked state */
+}
+
+.not-liked {
+ color: white; /* Set default color for not liked state */
+}
+
+.bi-suit-heart-fill:not(.liked):hover {
+ color: red; /* Show red only if not liked */
+}
+
+.bi-suit-heart-fill.liked:hover {
+ color: white; /* Keep white color for liked state on hover */
+}
+
+/* Genre Buttons */
 .genre {
  border: 1px solid blue;
  padding: 2px;
 }
 
+/* Cast Slider Styling */
 .cast-slider-container {
  position: relative;
  display: flex;
@@ -204,29 +197,22 @@ nav {
  display: flex; /* Align children in a row */
  overflow-x: auto; /* Enable horizontal scrolling */
  white-space: nowrap; /* Prevent wrapping of child elements */
- /* padding: 50px; Optional: add padding if needed */
- /* border: 1px solid #686666; Optional: for visual debugging */
  scroll-behavior: smooth; /* Enable smooth scrolling */
 }
 
 .cast-item {
  display: inline-block; /* Make each item inline and block level */
- flex-direction: column; /* Arrange children vertically */
- align-items: center; /* Center items horizontally */
- justify-content: center; /* Center items vertically */
  margin-right: 100px; /* Space between items */
- /* border: 1px solid #f70101; Optional: for visual debugging */
  text-align: center; /* Center text */
 }
 
 .cast-image img {
- display: block; /* Remove bottom space */
  width: 100px; /* Fixed width for images */
  height: 150px; /* Fixed height for images */
- /* border: 1px solid #0af302; Optional: for visual debugging */
  margin: 0 auto; /* Center the image horizontally */
 }
 
+/* Slider Arrows */
 .arrow {
  background-color: #fff;
  border: 1px solid #ccc;
@@ -248,6 +234,7 @@ nav {
  right: 0;
 }
 
+/* Custom Scrollbar */
 .custom-scrollbar {
  width: 100%;
  height: 10px;
@@ -265,6 +252,7 @@ nav {
  transition: transform 0.1s;
 }
 
+/* Image Poster Styling */
 .image-border {
  border: 1px solid rgb(217, 217, 217);
  border-radius: 4px; /* If you want to keep the rounded corners */
@@ -275,7 +263,7 @@ nav {
  width: 100%; /* Adjust this to control the width */
  padding-top: 158.33%; /* 276/437 * 100% = 63.16% for 276x437 aspect ratio */
  overflow: hidden;
- border-radius: 5px; /* Add this if you want rounded corners */
+ border-radius: 5px;
 }
 
 .image-season-poster img {
@@ -284,15 +272,17 @@ nav {
  left: 0;
  width: 100%;
  height: 100%;
- object-fit: cover; /* This ensures the image covers the entire container */
- border-radius: 5px; /* Ensure this matches the .image-wrapper for consistent rounded corners */
+ object-fit: cover;
+ border-radius: 5px;
 }
 
+/* Custom Column */
 .custom-col-10 {
  flex: 0 0 10%; /* 12.5% width for each item to make 8 items per row */
  max-width: 10%; /* Set max-width also to 12.5% */
 }
 
+/* Blur Effect */
 .blurred {
  filter: brightness(25%);
  transition: filter 0.3s ease-in-out;
