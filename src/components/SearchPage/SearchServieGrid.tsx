@@ -125,11 +125,7 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
                       href="#"
                       onClick={() => toggleWatch(servie.tmdbId, servie.childtype)}
                     >
-                      {isCompleted ? (
-                        <i className="bi bi-eye-slash-fill"></i>
-                      ) : (
-                        <i className="bi bi-eye-fill"></i>
-                      )}
+                      {isCompleted ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
                     </a>
 
                     <a
