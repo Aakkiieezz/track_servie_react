@@ -7,6 +7,7 @@ import SeasonsList from '../components/ServiePage/SeasonsList';
 import { format } from 'date-fns';
 import Alert from '../components/Alert';
 import "../components/thymeleafCss.css";
+import HalfStarRating from '@/components/HalfStarRatingProps';
 
 interface GenreDtoServiePage {
     id: number;
@@ -56,6 +57,7 @@ interface ServieDto {
     seasons: SeasonDtoServiePage[];
     episodesWatched: number;
     completed: boolean;
+    rated: number;
     cast: MovieCast[];
 }
 
@@ -68,6 +70,8 @@ const ServiePage = () => {
     const [isImageError, setIsImageError] = useState(false);
 
     const [data, setData] = useState<ServieDto | null>(null); // Proper typing
+
+    const [rating, setRating] = useState<number>(0); // State to hold the rating
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null); // Proper typing for error
@@ -108,6 +112,7 @@ const ServiePage = () => {
                 setTotalEpWatched(response.data.episodesWatched);
                 setServieWatchRuntime(response.data.totalWatchedRuntime);
                 setServieWatchState(response.data.completed);
+                setRating(response.data.rated);
 
             } catch (err) {
                 if (axios.isAxiosError(err))
@@ -164,6 +169,7 @@ const ServiePage = () => {
         }
     };
 
+
     const handleEpWatchCountChange = (data: { totalWatchedEp: number; totalWatchedRuntime: number }) => {
         setTotalEpWatched(data.totalWatchedEp);
         setServieWatchRuntime(data.totalWatchedRuntime);
@@ -186,6 +192,27 @@ const ServiePage = () => {
 
         return parts.length > 0 ? parts.join(' ') : '0min';
     }
+
+    const handleRatingChange = async (newRating: number) => {
+        const ratingCurrent = rating;
+        setRating(newRating);
+        try {
+            await axios.put(
+                `http://localhost:8080/track-servie/react/servies/${tmdbId}`,
+                null,
+                {
+                    params: {
+                        type: childType,
+                        rating: newRating,
+                    },
+                }
+            );
+        } catch (error) {
+            setRating(ratingCurrent);
+            console.error('Failed to update watch status', error);
+            setAlert({ type: "danger", message: "Failed to update watch status !!" });
+        }
+    };
 
     return (
         <>
@@ -219,10 +246,12 @@ const ServiePage = () => {
                                 className="rounded"
                                 src={`https://www.themoviedb.org/t/p/original${data.logoPath}`}
                                 alt={data?.title}
-                                style={{ maxHeight: '400px', maxWidth: '400px' }}
+                                style={{ maxHeight: '300px', maxWidth: '300px' }}
                                 onError={() => setIsImageError(true)}
                             />
                         ) : (<h1>{data?.title}</h1>)}
+
+                        <br />
 
                         {/* Genres Section */}
                         <h4>Genres</h4>
@@ -253,6 +282,11 @@ const ServiePage = () => {
                                 <p>{data.overview}</p>
                             </>
                         )}
+
+                        {/* Rating Section */}
+                        <div>
+                            <HalfStarRating maxStars={5} initialRating={rating} onRatingChange={handleRatingChange} />
+                        </div>
 
                         {/* Cast Section */}
                         {childType === "movie" && (
