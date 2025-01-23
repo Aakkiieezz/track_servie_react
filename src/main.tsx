@@ -8,8 +8,8 @@ import "bootstrap/dist/css/bootstrap.css";
 
 import HomePage from "./pages/HomePage.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
-import LoginPage from "./pages/AuthPage.tsx";
-import ProfilePage from "./components/ProfilePage.tsx";
+import AuthPage from "./pages/AuthPage.tsx";
+import ProfilePage from "./pages/ProfilePage.tsx";
 import { isAuthenticated } from "./utils/auth";
 import ServiePage from "./pages/ServiePage.tsx";
 import SearchPage from "./pages/SearchPage.tsx";
@@ -23,22 +23,23 @@ const PrivateRoute = ({ element }: { element: JSX.Element }) => {
 };
 
 const router = createBrowserRouter([
+
+    { path: "/login", element: <AuthPage /> },
     {
         path: "/",
         element: <PrivateRoute element={<HomePage />} />,
         errorElement: <NotFoundPage />,
     },
-    { path: "/login", element: <LoginPage /> },
+    { path: "/person/:personId", element: <PersonPage /> },
     { path: "/profile", element: <PrivateRoute element={<ProfilePage />} /> },
-    { path: "/servie", element: <ServiePage /> },
     { path: "/search", element: <PrivateRoute element={<SearchPage />} /> },
-    { path: "/stats", element: <PrivateRoute element={<Stats />} /> },
-    { path: "/statslangbarlog", element: <PrivateRoute element={<StatsLangBarLog />} /> },
     {
         path: "/track-servie/servies/:tmdbId/Season/:seasonNo",
         element: <PrivateRoute element={<SeasonPage />} />,
     },
-    { path: "/person/:personId", element: <PersonPage /> },
+    { path: "/servie", element: <ServiePage /> },
+    { path: "/stats", element: <PrivateRoute element={<Stats />} /> },
+    { path: "/statslangbarlog", element: <PrivateRoute element={<StatsLangBarLog />} /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(

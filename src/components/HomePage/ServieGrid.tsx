@@ -110,7 +110,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
       const response = await axios.put(`http://localhost:8080/track-servie/react/servies/${childtype}/${tmdbId}/toggle`);
 
       if (response.status === 200)
-        setAlert({ type: "success", message: `Updated watch status of S${tmdbId} successfully !!` });
+        setAlert({ type: "success", message: `Updated watch status of ${childtype} ${tmdbId} successfully !!` });
 
     } catch (error) {
 
@@ -158,6 +158,8 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                   <img
                     className="rounded image-border"
                     src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
+                    // src={`http://localhost:8080/posterImgs${servie.posterPath}`}
+                    // src={`http://localhost:8080/staticPosterImgs${servie.posterPath}`}
                     alt={servie.title}
                   />
                   <div className="buttons-container rounded">
@@ -207,6 +209,8 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                   <img
                     className="rounded image-border"
                     src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
+                    // src={`http://localhost:8080/posterImgs${servie.posterPath}`}
+                    // src={`http://localhost:8080/staticPosterImgs${servie.posterPath}`}
                     alt={servie.title}
                   />
                   <div className="buttons-container rounded">

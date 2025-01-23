@@ -5,6 +5,7 @@ import ProgressBar from '../components/ProgressBar';
 import MovieCastList from '../components/MovieCastList';
 import SeasonsList from '../components/ServiePage/SeasonsList';
 import { format } from 'date-fns';
+import Alert from '../components/Alert';
 import "../components/thymeleafCss.css";
 
 interface GenreDtoServiePage {
@@ -59,6 +60,7 @@ interface ServieDto {
 }
 
 const ServiePage = () => {
+    const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
 
     const location = useLocation();
     const { childType, tmdbId } = location.state || {};
@@ -70,9 +72,14 @@ const ServiePage = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null); // Proper typing for error
 
+    const [servieWatchState, setServieWatchState] = useState<boolean>(false);
+
     const [totalEpWatched, setTotalEpWatched] = useState<number>(0);
     // Initialize the states for season watch runtime and season runtime
-    const [seasonWatchRuntime, setSeasonWatchRuntime] = useState<number>(0);
+    const [servieWatchRuntime, setServieWatchRuntime] = useState<number>(0);
+
+    const [servieRuntime, setServieRuntime] = useState<number>(0);
+
     // const [seasonRuntime, setSeasonRuntime] = useState<{ [key: string]: number }>({});
     const totalEpisodes = data?.totalEpisodes || 1;
 
@@ -93,8 +100,14 @@ const ServiePage = () => {
 
                 setData(response.data);
 
+                if (response.data.childType == 'movie')
+                    setServieRuntime(response.data.runtime);
+                else
+                    setServieRuntime(response.data.totalRuntime);
+
                 setTotalEpWatched(response.data.episodesWatched);
-                setSeasonWatchRuntime(response.data.totalWatchedRuntime);
+                setServieWatchRuntime(response.data.totalWatchedRuntime);
+                setServieWatchState(response.data.completed);
 
             } catch (err) {
                 if (axios.isAxiosError(err))
@@ -121,9 +134,40 @@ const ServiePage = () => {
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
 
+    const toggleWatch = async (childtype: string) => {
+
+        const servieWatchStateCurrent = servieWatchState;
+        const servieWatchStateNew = !servieWatchStateCurrent;
+
+        setServieWatchState(servieWatchStateNew);
+
+        const servieWatchRuntimeCurrent = servieWatchRuntime;
+        setServieWatchRuntime(servieWatchStateNew ? servieRuntime : 0);
+
+        const EpWatchCountCurrent = totalEpWatched;
+        setTotalEpWatched(servieWatchStateNew ? totalEpisodes : 0);
+
+        try {
+            const response = await axios.put(`http://localhost:8080/track-servie/react/servies/${childtype}/${tmdbId}/toggle`);
+
+            if (response.status === 200)
+                setAlert({ type: "success", message: `Updated watch status of ${childtype} ${tmdbId} successfully !!` });
+
+        } catch (error) {
+
+            setServieWatchState(servieWatchStateCurrent);
+            setServieWatchRuntime(servieWatchRuntimeCurrent);
+            setTotalEpWatched(EpWatchCountCurrent);
+
+            console.error('Failed to update watch status', error);
+            setAlert({ type: "danger", message: "Failed to update watch status !!" });
+        }
+    };
+
     const handleEpWatchCountChange = (data: { totalWatchedEp: number; totalWatchedRuntime: number }) => {
         setTotalEpWatched(data.totalWatchedEp);
-        setSeasonWatchRuntime(data.totalWatchedRuntime);
+        setServieWatchRuntime(data.totalWatchedRuntime);
+        setServieWatchState((data.totalWatchedEp === totalEpisodes) ? true : false);
     };
 
     function formatRuntime(totalMinutes: number): string {
@@ -145,6 +189,15 @@ const ServiePage = () => {
 
     return (
         <>
+            {/* Alert Component */}
+            {alert && (
+                <Alert
+                    type={alert.type}
+                    message={alert.message}
+                    onClose={() => setAlert(null)}
+                />
+            )}
+
             <div className="container-fluid backdrop">
                 <img
                     className="background-image"
@@ -160,13 +213,7 @@ const ServiePage = () => {
                     {/* Main Content */}
                     <div className="container">
 
-                        {/* <img className="rounded"
-                            src={`https://www.themoviedb.org/t/p/original${data?.logoPath}`}
-                            alt={data?.title}
-                            style={{ maxHeight: '400px', maxWidth: '400px' }}
-                        ></img>
-                        <h1>{data?.title}</h1> */}
-
+                        {/* Title/Logo Section */}
                         {!isImageError && data?.logoPath ? (
                             <img
                                 className="rounded"
@@ -175,9 +222,7 @@ const ServiePage = () => {
                                 style={{ maxHeight: '400px', maxWidth: '400px' }}
                                 onError={() => setIsImageError(true)}
                             />
-                        ) : (
-                            <h1>{data?.title}</h1>
-                        )}
+                        ) : (<h1>{data?.title}</h1>)}
 
                         {/* Genres Section */}
                         <h4>Genres</h4>
@@ -188,6 +233,17 @@ const ServiePage = () => {
                                 </div>
                             ))}
                         </div>
+
+                        {/* {toggle completed} */}
+                        <a
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                toggleWatch(childType);
+                            }}
+                        >
+                            {servieWatchState ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
+                        </a>
 
                         {/* Overview Section */}
                         {data?.overview && (
@@ -227,7 +283,7 @@ const ServiePage = () => {
 
                         {data?.totalRuntime && (
                             <>
-                                <span>Total Watched Runtime : {formatRuntime(seasonWatchRuntime)}  / {formatRuntime(data.totalRuntime)}</span>
+                                <span>Total Watched Runtime : {formatRuntime(servieWatchRuntime)}  / {formatRuntime(servieRuntime)}</span>
                                 <br />
                             </>
                         )}
@@ -245,15 +301,12 @@ const ServiePage = () => {
                                 <SeasonsList
                                     seasons={data?.seasons}
                                     tmdbId={tmdbId}
-                                    // totalEpWatched={totalEpWatched}
                                     onEpWatchCountChange={handleEpWatchCountChange} />
                             </>
                         )}
                     </div>
                 </div>
             </div>
-
-
         </>
     );
 };

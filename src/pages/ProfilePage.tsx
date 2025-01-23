@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import styles from "./ProfilePage.module.css";
+import styles from "../components/ProfilePage/ProfilePage.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Alert from "./Alert";
+import Alert from "../components/Alert";
 import { Link } from "react-router-dom";
 
 const ProfilePage: React.FC = () => {

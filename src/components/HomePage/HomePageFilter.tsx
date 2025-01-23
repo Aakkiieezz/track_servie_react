@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import DropdownMenu from "../DropdownMenu";
-import DropdownMenu3States2 from "../DropdownMenu3States2";
+import DropdownMenu from "./HomePageFilter/DropdownMenu";
+import DropdownMenu3States2 from "./HomePageFilter/DropdownMenu3States2";
 import YearRangePicker from "../YearRangePickerProps";
 
 interface HomePageFilterProps {

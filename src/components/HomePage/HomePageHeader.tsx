@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import HomePageFilter from "./HomePageFilter";
-import ProfilePic from "../ProfilePic";
+import ProfilePic from "../ProfilePage/ProfilePic";
 import SearchPageFilter from '../SearchPage/SearchPageFilter';
 
 type SearchType = 'movie' | 'tv' | 'multi' | 'person' | 'collection';

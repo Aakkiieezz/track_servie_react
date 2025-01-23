@@ -1,6 +1,6 @@
 import React from 'react';
 import SearchPageFilter from './SearchPageFilter';
-import ProfilePic from "../ProfilePic";
+import ProfilePic from "../ProfilePage/ProfilePic";
 import { Link } from 'react-router-dom';
 
 type SearchType = 'movie' | 'tv' | 'multi' | 'person' | 'collection';

@@ -211,6 +211,7 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWat
                 <strong>{season.name}</strong>
               </a>
               <br />
+
               {/* {toggle completed} */}
               <a
                 href="#"

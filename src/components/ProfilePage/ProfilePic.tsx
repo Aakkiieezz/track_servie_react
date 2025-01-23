@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./ProfilePic.module.css";
-import { handleLogout } from "../utils/auth";
+import { handleLogout } from "../../utils/auth";
 
 const ProfilePic: React.FC = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
