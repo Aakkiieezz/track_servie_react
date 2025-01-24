@@ -30,12 +30,10 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
     return typeof option !== "string";
   };
 
-
   return (
     <div className="dropdown">
-      {/* Dropdown toggle button */}
       <button
-        className="btn btn-secondary dropdown-toggle"
+        className="btn btn-outline-primary dropdown-toggle"
         type="button"
         id="dropdownMenuButton"
         data-bs-toggle="dropdown"
@@ -43,19 +41,16 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       >
         {label}
       </button>
-
-      {/* Dropdown menu */}
-      <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-
+      <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownMenuButton">
         {options.map((option) => {
-          const id = isOptionObject(option) ? option.id : option; // Use id if it's an object, otherwise the string itself
-          const displayLabel = isOptionObject(option) ? option.label : option; // Use label if it's an object, otherwise the string itself
+          const id = isOptionObject(option) ? option.id : option;
+          const displayLabel = isOptionObject(option) ? option.label : option;
 
           return (
             <li key={id} className="dropdown-item">
-              <div className="form-check">
+              <div className="form-check d-flex align-items-center">
                 <input
-                  className="form-check-input"
+                  className="form-check-input me-2"
                   type="checkbox"
                   id={`checkbox-${id}`}
                   checked={selected.includes(id)}

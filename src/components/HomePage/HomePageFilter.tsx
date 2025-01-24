@@ -144,23 +144,95 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange }) =
         <form onSubmit={handleSubmit} className="d-flex flex-row align-items-center">
 
             {/* Type Dropdown */}
-            <select value={type} onChange={(e) => setType(e.target.value)}>
-                <option value="">Servies</option>
-                <option value="movie">Movies</option>
-                <option value="tv">Series</option>
-            </select>
+            <div className="dropdown position-relative">
+                {/* Label */}
+                <span
+                    className="position-absolute bg-white px-1 text-secondary"
+                    style={{
+                        top: "-10px",
+                        left: "5px",
+                        fontSize: "0.8rem",
+                    }}
+                >Type
+                </span>
+                <button
+                    className="btn btn-outline-primary dropdown-toggle w-100"
+                    type="button"
+                    id="typeDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    style={{ paddingTop: "0.5rem" }} // Adjust padding for extra space below label
+                >
+                    {type === "" ? "Servies" : type === "movie" ? "Movies" : "Series"}
+                </button>
+                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="typeDropdown">
+                    <li>
+                        <button className="dropdown-item" onClick={() => setType("")}>
+                            Servies
+                        </button>
+                    </li>
+                    <li>
+                        <button className="dropdown-item" onClick={() => setType("movie")}>
+                            Movies
+                        </button>
+                    </li>
+                    <li>
+                        <button className="dropdown-item" onClick={() => setType("tv")}>
+                            Series
+                        </button>
+                    </li>
+                </ul>
+            </div>
 
             {/* Sorting Options */}
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                <option value="title">Title</option>
-                <option value="date">Release Date</option>
-            </select>
+            <div className="dropdown">
+                <button
+                    className="btn btn-outline-primary dropdown-toggle"
+                    type="button"
+                    id="sortByDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    {sortBy === "title" ? "Title" : "Release Date"}
+                </button>
+                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="sortByDropdown">
+                    <li>
+                        <button className="dropdown-item" onClick={() => setSortBy("title")}>
+                            Title
+                        </button>
+                    </li>
+                    <li>
+                        <button className="dropdown-item" onClick={() => setSortBy("date")}>
+                            Release Date
+                        </button>
+                    </li>
+                </ul>
+            </div>
 
             {/* Sorting Direction */}
-            <select value={sortDir} onChange={(e) => setSortDir(e.target.value)}>
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-            </select>
+            <div className="dropdown">
+                <button
+                    className="btn btn-outline-primary dropdown-toggle"
+                    type="button"
+                    id="sortDirDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    {sortDir === "asc" ? "Ascending" : "Descending"}
+                </button>
+                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="sortDirDropdown">
+                    <li>
+                        <button className="dropdown-item" onClick={() => setSortDir("asc")}>
+                            Ascending
+                        </button>
+                    </li>
+                    <li>
+                        <button className="dropdown-item" onClick={() => setSortDir("desc")}>
+                            Descending
+                        </button>
+                    </li>
+                </ul>
+            </div>
 
             {/* 3 states */}
             <DropdownMenu3States2
@@ -176,6 +248,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange }) =
                 selected={languages}
                 setSelected={setLanguages}
             />
+
             <DropdownMenu
                 label="Statuses"
                 options={statusOptions}

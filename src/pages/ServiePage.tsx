@@ -7,7 +7,7 @@ import SeasonsList from '../components/ServiePage/SeasonsList';
 import { format } from 'date-fns';
 import Alert from '../components/Alert';
 import "../components/thymeleafCss.css";
-import HalfStarRating from '@/components/HalfStarRatingProps';
+import HalfStarRating from '@/components/HalfStarRating';
 
 interface GenreDtoServiePage {
     id: number;

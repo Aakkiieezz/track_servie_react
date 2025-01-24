@@ -31,24 +31,11 @@ const DropdownMenu3States2: React.FC<DropdownMenu3States2Props> = ({
       });
    };
 
-   //  const getSelectedLists = () => {
-   //   const ticked: string[] = [];
-   //   const crossed: string[] = [];
-   //   Object.keys(selected).forEach((key) => {
-   //    if (selected[key] === "tick") {
-   //     ticked.push(key);
-   //    } else if (selected[key] === "cross") {
-   //     crossed.push(key);
-   //    }
-   //   });
-   //   return { ticked, crossed };
-   //  };
-
    return (
       <div className="dropdown">
          {/* Dropdown toggle button */}
          <button
-            className="btn btn-secondary dropdown-toggle"
+            className="btn btn-outline-primary dropdown-toggle"
             type="button"
             id="dropdownMenuButton"
             data-bs-toggle="dropdown"
@@ -58,12 +45,12 @@ const DropdownMenu3States2: React.FC<DropdownMenu3States2Props> = ({
          </button>
 
          {/* Dropdown menu */}
-         <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+         <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownMenuButton">
             {options.map((option) => (
                <li key={option} className="dropdown-item">
-                  <div className="form-check">
+                  <div className="form-check d-flex align-items-center">
                      <input
-                        className="form-check-input"
+                        className="form-check-input me-2"
                         type="checkbox"
                         id={`checkbox-${option}`}
                         checked={selected[option] === "tick"}
