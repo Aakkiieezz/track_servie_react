@@ -50,7 +50,7 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
     });
 
     try {
-      const response = await axios.put(`http://localhost:8080/track-servie/react/servies/${childtype}/${tmdbId}/toggle`);
+      const response = await axios.put(`http://localhost:8080/track-servie/servies/${childtype}/${tmdbId}/toggle`);
 
       console.log(response);
 

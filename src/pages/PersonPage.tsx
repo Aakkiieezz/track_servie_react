@@ -83,7 +83,7 @@ const PersonPage: React.FC = () => {
         });
 
         try {
-            const response = await axios.put(`http://localhost:8080/track-servie/react/servies/${childtype}/${tmdbId}/toggle`);
+            const response = await axios.put(`http://localhost:8080/track-servie/servies/${childtype}/${tmdbId}/toggle`);
             const message = newCompletedState ?
                 `Marked ${childtype} as watched successfully !!` :
                 `Marked ${childtype} as un-watched successfully !!`

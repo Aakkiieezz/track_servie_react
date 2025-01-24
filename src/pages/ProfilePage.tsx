@@ -63,7 +63,7 @@ const ProfilePage: React.FC = () => {
         );
 
         if (response.status === 200) {
-          const uploadedImageUrl = `http://localhost:8080/${response.data.profileImgUrl}`;
+          const uploadedImageUrl = `http://localhost:8080/track-servie/${response.data.profileImgUrl}`;
           localStorage.setItem("profileImgUrl", uploadedImageUrl);
           setProfilePicUrl(uploadedImageUrl);
           setAlert({ type: "success", message: "Profile image uploaded successfully." });

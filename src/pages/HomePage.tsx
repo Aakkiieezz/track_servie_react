@@ -80,7 +80,7 @@ const HomePage: React.FC = () => {
             console.log("HomePage -> API Call -> request:", filters, pageNumber);
 
             const response = await axios.post(
-                "http://localhost:8080/track-servie/react/servies",
+                "http://localhost:8080/track-servie/servies",
                 {
                     type: filters.type,
                     languages: filters.languages,

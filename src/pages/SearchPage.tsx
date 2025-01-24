@@ -64,7 +64,7 @@ const SearchPage: React.FC = () => {
             console.log("SearchPage -> API Call -> request:", filters, pageNumber);
 
             const response = await axios.get(
-                "http://localhost:8080/track-servie/react/servies/search",
+                "http://localhost:8080/track-servie/servies/search",
                 {
                     params: {
                         type: filters.type,

@@ -93,7 +93,7 @@ const ServiePage = () => {
             console.log("ServiePage -> useEffect() -> ApiCall -> request : ", childType, tmdbId);
             try {
                 setLoading(true);
-                const response = await axios.get<ServieDto>(`http://localhost:8080/track-servie/react/servies/${tmdbId}`,
+                const response = await axios.get<ServieDto>(`http://localhost:8080/track-servie/servies/${tmdbId}`,
                     {
                         params: {
                             type: childType,
@@ -153,7 +153,7 @@ const ServiePage = () => {
         setTotalEpWatched(servieWatchStateNew ? totalEpisodes : 0);
 
         try {
-            const response = await axios.put(`http://localhost:8080/track-servie/react/servies/${childtype}/${tmdbId}/toggle`);
+            const response = await axios.put(`http://localhost:8080/track-servie/servies/${childtype}/${tmdbId}/toggle`);
 
             if (response.status === 200)
                 setAlert({ type: "success", message: `Updated watch status of ${childtype} ${tmdbId} successfully !!` });
@@ -198,7 +198,7 @@ const ServiePage = () => {
         setRating(newRating);
         try {
             await axios.put(
-                `http://localhost:8080/track-servie/react/servies/${tmdbId}`,
+                `http://localhost:8080/track-servie/servies/${tmdbId}`,
                 null,
                 {
                     params: {

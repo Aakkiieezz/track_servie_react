@@ -54,7 +54,9 @@ const AuthPage: React.FC = () => {
                 if (response.status === 200) {
                     localStorage.setItem("token", response.data.token);
                     localStorage.setItem("username", response.data.username);
-                    localStorage.setItem("profileImgUrl", "http://localhost:8080/" + response.data.profileImgUrl);
+
+                    console.log("Fetching profile img from : ", "http://localhost:8080/track-servie/" + response.data.profileImgUrl)
+                    localStorage.setItem("profileImgUrl", "http://localhost:8080/track-servie/" + response.data.profileImgUrl);
                     setAlert({ type: "success", message: "Logged in Successfully !!" });
                     navigate("/");
                 } else {

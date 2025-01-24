@@ -81,7 +81,7 @@ const SeasonPage = () => {
         try {
             setLoading(true);
             console.log("SeasonPage -> API Call -> request:", tmdbId, seasonNo);
-            const response = await axios.get(`http://localhost:8080/track-servie/react/servies/${tmdbId}/Season/${seasonNo}`);
+            const response = await axios.get(`http://localhost:8080/track-servie/servies/${tmdbId}/Season/${seasonNo}`);
             console.log("SeasonPage -> API Call -> response:", response.data);
             setSeason(response.data);
             setTotalSeasons(response.data.totalSeasons);
@@ -180,7 +180,7 @@ const SeasonPage = () => {
 
         try {
             const response = await axios.put(
-                `http://localhost:8080/track-servie/react/servies/${tmdbId}/Season/${seasonNo}/toggle`
+                `http://localhost:8080/track-servie/servies/${tmdbId}/Season/${seasonNo}/toggle`
             );
             if (response.status === 200)
                 setAlert({
@@ -234,7 +234,7 @@ const SeasonPage = () => {
 
         try {
             const response = await axios.put(
-                `http://localhost:8080/track-servie/react/servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/toggle`
+                `http://localhost:8080/track-servie/servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/toggle`
             );
             if (response.status === 200)
                 setAlert({
