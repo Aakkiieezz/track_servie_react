@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from '../utils/axiosInstance';
 import "../components/thymeleafCss.css";
 import Alert from "../components/Alert";
 import MovieCastList from "@/components/MovieCastList";
@@ -50,7 +50,7 @@ const SeasonPage = () => {
     const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
 
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null); // Proper typing for error
+    const [, setError] = useState<string | null>(null); // Proper typing for error
 
     const { tmdbId, seasonNo = "1" } = useParams<{ tmdbId: string, seasonNo?: string }>();
     const currentSeasonNo = parseInt(seasonNo, 10);
@@ -81,7 +81,7 @@ const SeasonPage = () => {
         try {
             setLoading(true);
             console.log("SeasonPage -> API Call -> request:", tmdbId, seasonNo);
-            const response = await axios.get(`http://localhost:8080/track-servie/servies/${tmdbId}/Season/${seasonNo}`);
+            const response = await axiosInstance.get(`servies/${tmdbId}/Season/${seasonNo}`);
             console.log("SeasonPage -> API Call -> response:", response.data);
             setSeason(response.data);
             setTotalSeasons(response.data.totalSeasons);
@@ -144,9 +144,10 @@ const SeasonPage = () => {
             );
             setSeasonWatchRuntime(totalWatchRuntime);
         } catch (err) {
-            if (axios.isAxiosError(err))
-                setError(err.response?.data?.message || "Something went wrong");
-            else if (err instanceof Error) setError(err.message);
+            // if (axios.isAxiosError(err))
+            //     setError(err.response?.data?.message || "Something went wrong");
+            // else
+            if (err instanceof Error) setError(err.message);
             else setError("An unknown error occurred");
         } finally {
             setLoading(false);
@@ -179,9 +180,7 @@ const SeasonPage = () => {
         );
 
         try {
-            const response = await axios.put(
-                `http://localhost:8080/track-servie/servies/${tmdbId}/Season/${seasonNo}/toggle`
-            );
+            const response = await axiosInstance.put(`servies/${tmdbId}/Season/${seasonNo}/toggle`);
             if (response.status === 200)
                 setAlert({
                     type: "success",
@@ -233,8 +232,7 @@ const SeasonPage = () => {
         setSeasonWatchRuntime(newSeasonWatchRuntime);
 
         try {
-            const response = await axios.put(
-                `http://localhost:8080/track-servie/servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/toggle`
+            const response = await axiosInstance.put(`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/toggle`
             );
             if (response.status === 200)
                 setAlert({
@@ -360,9 +358,8 @@ const SeasonPage = () => {
                                         onClose={() => setAlert(null)}
                                     />
                                 )}
-
                                 <a
-                                    href={`/track-servie/servies/${tmdbId}/Season/${season.seasonNo}/Episode/${episode.episodeNo}`}
+                                    href={`servies/${tmdbId}/Season/${season.seasonNo}/Episode/${episode.episodeNo}`}
                                 >
                                     <img
                                         src={

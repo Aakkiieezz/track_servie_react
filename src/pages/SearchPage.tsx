@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useSearchParams } from 'react-router-dom';
 import SearchPageHeader from "../components/SearchPage/SearchPageHeader";
 import PaginationBar from "../components/PaginationBar";
-import axios from "axios";
+import axiosInstance from '../utils/axiosInstance';
 import SearchServieGrid from "../components/SearchPage/SearchServieGrid";
 
 interface Servie {
@@ -63,8 +63,8 @@ const SearchPage: React.FC = () => {
 
             console.log("SearchPage -> API Call -> request:", filters, pageNumber);
 
-            const response = await axios.get(
-                "http://localhost:8080/track-servie/servies/search",
+            const response = await axiosInstance.get(
+                "servies/search",
                 {
                     params: {
                         type: filters.type,

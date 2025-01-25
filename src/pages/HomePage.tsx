@@ -3,7 +3,7 @@ import HomePageHeader from "../components/HomePage/HomePageHeader";
 import ServieGrid from "../components/HomePage/ServieGrid";
 import PaginationBar from "../components/PaginationBar";
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import axios from "axios";
+import axiosInstance from '../utils/axiosInstance';
 
 interface Servie {
     // Servie fields
@@ -79,8 +79,8 @@ const HomePage: React.FC = () => {
 
             console.log("HomePage -> API Call -> request:", filters, pageNumber);
 
-            const response = await axios.post(
-                "http://localhost:8080/track-servie/servies",
+            const response = await axiosInstance.post(
+                "servies",
                 {
                     type: filters.type,
                     languages: filters.languages,

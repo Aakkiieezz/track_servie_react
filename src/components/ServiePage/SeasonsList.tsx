@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ProgressBar from '../ProgressBar';
-import axios from 'axios';
+import axiosInstance from '../../utils/axiosInstance';
 import Alert from '../Alert';
 
 interface Season {
@@ -112,7 +112,7 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWat
       });
 
     try {
-      const response = await axios.put(`http://localhost:8080/track-servie/servies/${tmdbId}/Season/${seasonNo}/toggle`);
+      const response = await axiosInstance.put(`servies/${tmdbId}/Season/${seasonNo}/toggle`);
 
       if (response.status === 200)
         setAlert({ type: "success", message: `Updated watch status of S${seasonNo} successfully !!` });
@@ -207,7 +207,7 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWat
             </div>
 
             <div className="buttons-container rounded">
-              <a href={`/track-servie/servies/${tmdbId}/Season/${season.seasonNo}`}>
+              <a href={`servies/${tmdbId}/Season/${season.seasonNo}`}>
                 <strong>{season.name}</strong>
               </a>
               <br />
@@ -225,7 +225,7 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWat
 
               {/* Link to poster page if posterPath exists */}
               {season.posterPath && (
-                <a href={`/track-servie/servies/${tmdbId}/Season/${season.seasonNo}/posters`}>
+                <a href={`servies/${tmdbId}/Season/${season.seasonNo}/posters`}>
                   <i className="bi bi-file-image"></i>
                 </a>
               )}

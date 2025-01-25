@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import ProgressBar from "../ProgressBar";
-import axios from 'axios';
+import axiosInstance from '../../utils/axiosInstance';
 import Alert from '../Alert';
 import "../thymeleafCss.css";
 
@@ -65,15 +65,15 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
     });
 
     try {
-      const response = await axios.put(
-        `http://localhost:8080/track-servie/servies/${tmdbId}`,
+      const response = await axiosInstance.put(
+        `servies/${tmdbId}`,
         null,
         {
           params: {
             type: childtype,
             like: newLikedState,
-          },
-        }
+          }
+        },
       );
 
       if (response.status === 200)
@@ -107,7 +107,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
     });
 
     try {
-      const response = await axios.put(`http://localhost:8080/track-servie/servies/${childtype}/${tmdbId}/toggle`);
+      const response = await axiosInstance.put(`servies/${childtype}/${tmdbId}/toggle`);
 
       if (response.status === 200)
         setAlert({ type: "success", message: `Updated watch status of ${childtype} ${tmdbId} successfully !!` });
@@ -184,12 +184,12 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                       <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
                     </a>
                     <a
-                      href={`/track-servie/servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
+                      href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
                     >
                       <i className="bi bi-file-image"></i>
                     </a>
                     <a
-                      href={`/track-servie/list/${servie.tmdbId}?childtype=${servie.childtype}`}
+                      href={`list/${servie.tmdbId}?childtype=${servie.childtype}`}
                     >
                       <i className="bi bi-clock-fill"></i>
                     </a>
@@ -247,7 +247,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                       <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
                     </a>
                     <a
-                      href={`/track-servie/servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
+                      href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
                     >
                       <i className="bi bi-file-image"></i>
                     </a>

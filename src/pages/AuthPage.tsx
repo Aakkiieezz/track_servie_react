@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axiosInstance from '../utils/axiosInstance';
 import { useNavigate } from "react-router-dom";
 import Alert from "../components/Alert";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -22,14 +22,9 @@ const AuthPage: React.FC = () => {
             }
 
             try {
-                const response = await axios.post(
-                    "http://localhost:8080/track-servie/auth/register",
+                const response = await axiosInstance.post(
+                    "auth/register",
                     { username, password, email },
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
                 );
                 if (response.status === 200) {
                     setIsRegister(false);
@@ -42,14 +37,9 @@ const AuthPage: React.FC = () => {
             }
         } else {
             try {
-                const response = await axios.post(
-                    "http://localhost:8080/track-servie/auth/login",
+                const response = await axiosInstance.post(
+                    "auth/login",
                     { username, password },
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
                 );
                 if (response.status === 200) {
                     localStorage.setItem("token", response.data.token);

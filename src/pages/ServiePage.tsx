@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 import ProgressBar from '../components/ProgressBar';
 import MovieCastList from '../components/MovieCastList';
 import SeasonsList from '../components/ServiePage/SeasonsList';
@@ -93,7 +93,7 @@ const ServiePage = () => {
             console.log("ServiePage -> useEffect() -> ApiCall -> request : ", childType, tmdbId);
             try {
                 setLoading(true);
-                const response = await axios.get<ServieDto>(`http://localhost:8080/track-servie/servies/${tmdbId}`,
+                const response = await axiosInstance.get<ServieDto>(`servies/${tmdbId}`,
                     {
                         params: {
                             type: childType,
@@ -115,9 +115,10 @@ const ServiePage = () => {
                 setRating(response.data.rated);
 
             } catch (err) {
-                if (axios.isAxiosError(err))
-                    setError(err.response?.data?.message || 'Something went wrong');
-                else if (err instanceof Error)
+                // if (axios.isAxiosError(err))
+                //     setError(err.response?.data?.message || 'Something went wrong');
+                // else
+                if (err instanceof Error)
                     setError(err.message);
                 else
                     setError('An unknown error occurred');
@@ -153,7 +154,7 @@ const ServiePage = () => {
         setTotalEpWatched(servieWatchStateNew ? totalEpisodes : 0);
 
         try {
-            const response = await axios.put(`http://localhost:8080/track-servie/servies/${childtype}/${tmdbId}/toggle`);
+            const response = await axiosInstance.put(`servies/${childtype}/${tmdbId}/toggle`);
 
             if (response.status === 200)
                 setAlert({ type: "success", message: `Updated watch status of ${childtype} ${tmdbId} successfully !!` });
@@ -197,8 +198,8 @@ const ServiePage = () => {
         const ratingCurrent = rating;
         setRating(newRating);
         try {
-            await axios.put(
-                `http://localhost:8080/track-servie/servies/${tmdbId}`,
+            await axiosInstance.put(
+                `servies/${tmdbId}`,
                 null,
                 {
                     params: {
@@ -258,7 +259,7 @@ const ServiePage = () => {
                         <div className="row row-cols-auto left">
                             {data?.genres.map((genre) => (
                                 <div key={genre.id} className="col">
-                                    <a href={`/track-servie/servies?genreIds=${genre.id}`} className="btn btn-secondary btn-sm mx-1">{genre.name}</a>
+                                    <a href={`servies?genreIds=${genre.id}`} className="btn btn-secondary btn-sm mx-1">{genre.name}</a>
                                 </div>
                             ))}
                         </div>
@@ -304,7 +305,7 @@ const ServiePage = () => {
                         {data?.collectionId && (
                             <>
                                 <h5>{data.collectionName}</h5>
-                                <a href={`/track-servie/servies/movie-collection/${data.collectionId}`}>
+                                <a href={`servies/movie-collection/${data.collectionId}`}>
                                     <img
                                         className="rounded"
                                         src={`https://www.themoviedb.org/t/p/original${data.colleactionPosterPath}`}

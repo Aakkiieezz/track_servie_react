@@ -34,7 +34,7 @@ const router = createBrowserRouter([
     { path: "/profile", element: <PrivateRoute element={<ProfilePage />} /> },
     { path: "/search", element: <PrivateRoute element={<SearchPage />} /> },
     {
-        path: "/track-servie/servies/:tmdbId/Season/:seasonNo",
+        path: "/servies/:tmdbId/Season/:seasonNo",
         element: <PrivateRoute element={<SeasonPage />} />,
     },
     { path: "/servie", element: <ServiePage /> },

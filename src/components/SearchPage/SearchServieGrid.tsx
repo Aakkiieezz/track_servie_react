@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import "../thymeleafCss.css";
-import axios from "axios";
+import axiosInstance from '../../utils/axiosInstance';
 import ProgressBar from "../ProgressBar";
 import Alert from "../Alert";
 
@@ -50,7 +50,7 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
     });
 
     try {
-      const response = await axios.put(`http://localhost:8080/track-servie/servies/${childtype}/${tmdbId}/toggle`);
+      const response = await axiosInstance.put(`servies/${childtype}/${tmdbId}/toggle`);
 
       console.log(response);
 
@@ -129,12 +129,12 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
                     </a>
 
                     <a
-                      href={`/track-servie/servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
+                      href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
                     >
                       <i className="bi bi-file-image"></i>
                     </a>
                     <a
-                      href={`/track-servie/list/${servie.tmdbId}?childtype=${servie.childtype}`}
+                      href={`list/${servie.tmdbId}?childtype=${servie.childtype}`}
                     >
                       <i className="bi bi-clock-fill"></i>
                     </a>
@@ -175,12 +175,12 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
                       )}
                     </a>
                     <a
-                      href={`/track-servie/servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
+                      href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
                     >
                       <i className="bi bi-file-image"></i>
                     </a>
                     <a
-                      href={`/track-servie/list/${servie.tmdbId}?childtype=${servie.childtype}`}
+                      href={`list/${servie.tmdbId}?childtype=${servie.childtype}`}
                     >
                       <i className="bi bi-clock-fill"></i>
                     </a>

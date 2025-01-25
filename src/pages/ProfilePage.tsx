@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axiosInstance from '../utils/axiosInstance';
+
 import styles from "../components/ProfilePage/ProfilePage.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Alert from "../components/Alert";
@@ -23,8 +24,8 @@ const ProfilePage: React.FC = () => {
   const deleteImage = async () => {
     console.log("Deleting profile image...");
     try {
-      const response = await axios.post(
-        "http://localhost:8080/track-servie/user/image/delete",
+      const response = await axiosInstance.post(
+        "user/image/delete",
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -52,8 +53,8 @@ const ProfilePage: React.FC = () => {
       formData.append("file", file);
 
       try {
-        const response = await axios.post(
-          "http://localhost:8080/track-servie/user/image/upload",
+        const response = await axiosInstance.post(
+          "user/image/upload",
           formData,
           {
             headers: {

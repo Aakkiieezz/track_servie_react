@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 import Alert from '../components/Alert';
 import "../components/thymeleafCss.css";
 
@@ -45,7 +45,7 @@ const PersonPage: React.FC = () => {
 
     useEffect(() => {
         if (personId) {
-            axios.get(`http://localhost:8080/track-servie/react/person/${personId}`)
+            axiosInstance.get(`react/person/${personId}`)
                 .then((response) => {
                     console.log(response.data.servies[0].posterPath)
                     console.log(response)
@@ -83,7 +83,7 @@ const PersonPage: React.FC = () => {
         });
 
         try {
-            const response = await axios.put(`http://localhost:8080/track-servie/servies/${childtype}/${tmdbId}/toggle`);
+            const response = await axiosInstance.put(`servies/${childtype}/${tmdbId}/toggle`);
             const message = newCompletedState ?
                 `Marked ${childtype} as watched successfully !!` :
                 `Marked ${childtype} as un-watched successfully !!`
