@@ -45,7 +45,7 @@ const PersonPage: React.FC = () => {
 
     useEffect(() => {
         if (personId) {
-            axiosInstance.get(`react/person/${personId}`)
+            axiosInstance.get(`person/${personId}`)
                 .then((response) => {
                     console.log(response.data.servies[0].posterPath)
                     console.log(response)
