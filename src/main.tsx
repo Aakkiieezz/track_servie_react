@@ -17,6 +17,7 @@ import SeasonPage from "./pages/SeasonPage.tsx";
 import PersonPage from "./pages/PersonPage.tsx";
 import Stats from "./pages/Stats.tsx";
 import StatsLangBarLog from "./pages/StatsLangBarLog.tsx";
+import MovieCollection from "./pages/MovieCollection.tsx";
 
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
     return isAuthenticated() ? element : <Navigate to="/login" />;
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
         element: <PrivateRoute element={<HomePage />} />,
         errorElement: <NotFoundPage />,
     },
+    { path: "/movie-collection/:collectionId", element: <MovieCollection /> },
     { path: "/person/:personId", element: <PersonPage /> },
     { path: "/profile", element: <PrivateRoute element={<ProfilePage />} /> },
     { path: "/search", element: <PrivateRoute element={<SearchPage />} /> },

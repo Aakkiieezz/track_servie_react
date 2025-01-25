@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import ProgressBar from '../components/ProgressBar';
 import MovieCastList from '../components/MovieCastList';
@@ -62,6 +62,7 @@ interface ServieDto {
 }
 
 const ServiePage = () => {
+    const navigate = useNavigate();
     const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
 
     const location = useLocation();
@@ -305,14 +306,21 @@ const ServiePage = () => {
                         {data?.collectionId && (
                             <>
                                 <h5>{data.collectionName}</h5>
-                                <a href={`servies/movie-collection/${data.collectionId}`}>
+                                <img
+                                    className="rounded"
+                                    src={`https://www.themoviedb.org/t/p/original${data.colleactionPosterPath}`}
+                                    alt="Poster Unavailable"
+                                    style={{ width: "200px", height: "300px" }}
+                                    onClick={() => navigate(`/movie-collection/${data.collectionId}`)}
+                                />
+                                {/* <a href={`servies/movie-collection/${data.collectionId}`}>
                                     <img
                                         className="rounded"
                                         src={`https://www.themoviedb.org/t/p/original${data.colleactionPosterPath}`}
                                         alt="Poster Unavailable"
                                         style={{ width: "200px", height: "300px" }}
                                     />
-                                </a>
+                                </a> */}
                             </>
                         )}
 
