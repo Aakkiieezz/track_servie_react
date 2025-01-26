@@ -236,8 +236,6 @@ const ServiePage = () => {
                         e.currentTarget.src = 'src/assets/defaultBackground.png';
                     }}
                 />
-                {childType === "tv" && (<ProgressBar episodesWatched={totalEpWatched} totalEpisodes={totalEpisodes} />
-                )}
                 <div className="content-overlay">
                     {/* Main Content */}
                     <div className="container">
@@ -340,7 +338,10 @@ const ServiePage = () => {
                                 <br />
                                 <br />
 
-                                <h3>{data?.totalSeasons} Seasons</h3>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', width: '100%' }}>
+                                    <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>{data?.totalSeasons} Seasons</h3>
+                                    <ProgressBar episodesWatched={totalEpWatched} totalEpisodes={totalEpisodes} />
+                                </div>
                                 <SeasonsList
                                     seasons={data?.seasons}
                                     tmdbId={tmdbId}

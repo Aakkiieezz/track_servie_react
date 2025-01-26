@@ -15,7 +15,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ episodesWatched, totalEpisode
                 className="progress"
                 style={{ width: `${progress}%` }}
             >
-                {formattedProgress} %
+                {progress > 10 && <span className="progress-text">{formattedProgress}%</span>}
             </div>
         </div>
     );

@@ -13,7 +13,7 @@ const NavigationBar: React.FC<SeasonProps> = ({ tmdbId, currentSeasonNo, totalSe
   useParams<{ seasonNo: string; }>();
 
   const navigateToSeason = (tmdbId: string, seasonNumber: number) => {
-    navigate(`servies/${tmdbId}/Season/${seasonNumber}`);
+    navigate(`/servies/${tmdbId}/Season/${seasonNumber}`);
   };
 
   return (

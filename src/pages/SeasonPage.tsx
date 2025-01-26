@@ -5,6 +5,7 @@ import "../components/thymeleafCss.css";
 import Alert from "../components/Alert";
 import MovieCastList from "@/components/MovieCastList";
 import NavigationBar from "@/components/SeasonPage/NavigationBar";
+import ProgressBar from '../components/ProgressBar';
 
 interface Season {
     id: string;
@@ -337,10 +338,10 @@ const SeasonPage = () => {
 
             <br />
 
-            <h3>{season.episodeCount} Episodes</h3>
-            {/* <EpisodesList
-                episodes={season.episodes}
-            /> */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', width: '100%' }}>
+                <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>{season.episodeCount} Episodes</h3>
+                <ProgressBar episodesWatched={epWatchCount} totalEpisodes={totalEpisodes} />
+            </div>
 
             <div className="row">
                 {season.episodes.map((episode) => {
