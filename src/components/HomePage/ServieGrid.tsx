@@ -157,9 +157,9 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                 <>
                   <img
                     className="rounded image-border"
-                    src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
-                    // src={`http://localhost:8080/track-servie/posterImgs${servie.posterPath}`}
-                    // src={`http://localhost:8080/track-servie/staticPosterImgs${servie.posterPath}`}
+                    // src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
+                    // src={`http://localhost:8080/track-servie/posterImgs_resize220x330${servie.posterPath}`}
+                    src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace('.jpg', '.webp')}`}
                     alt={servie.title}
                   />
                   <div className="buttons-container rounded">
@@ -208,9 +208,9 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                 <>
                   <img
                     className="rounded image-border"
-                    src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
-                    // src={`http://localhost:8080/track-servie/posterImgs${servie.posterPath}`}
-                    // src={`http://localhost:8080/track-servie/staticPosterImgs${servie.posterPath}`}
+                    // src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
+                    // src={`http://localhost:8080/track-servie/posterImgs_resize220x330${servie.posterPath}`}
+                    src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace('.jpg', '.webp')}`}
                     alt={servie.title}
                   />
                   <div className="buttons-container rounded">
