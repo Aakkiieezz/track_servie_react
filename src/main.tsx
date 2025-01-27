@@ -18,6 +18,7 @@ import PersonPage from "./pages/PersonPage.tsx";
 import Stats from "./pages/Stats.tsx";
 import StatsLangBarLog from "./pages/StatsLangBarLog.tsx";
 import MovieCollection from "./pages/MovieCollection.tsx";
+import WatchListPage from "./pages/WatchListPage.tsx";
 
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
     return isAuthenticated() ? element : <Navigate to="/login" />;
@@ -42,6 +43,7 @@ const router = createBrowserRouter([
     { path: "/servie", element: <ServiePage /> },
     { path: "/stats", element: <PrivateRoute element={<Stats />} /> },
     { path: "/statslangbarlog", element: <PrivateRoute element={<StatsLangBarLog />} /> },
+    { path: "/watchlist", element: <PrivateRoute element={<WatchListPage />} /> }
 ]);
 
 createRoot(document.getElementById("root")!).render(

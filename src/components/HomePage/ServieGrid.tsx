@@ -130,6 +130,28 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
     console.log(`Removing servie with ID ${tmdbId} of type ${childtype}`);
   };
 
+  const toggleWatchList = async (tmdbId: number, childType: "movie" | "tv") => {
+    try {
+      const response = await axiosInstance.put(
+        `list/${tmdbId}`,
+        null,
+        {
+          params: {
+            childtype: childType,
+          }
+        },
+      );
+      if (response.status === 200)
+        setAlert({ type: "success", message: `Successfully added/removed from watchlist !!` });
+
+    } catch (error) {
+      console.error('Failed to add/remove from watchlist', error);
+
+      setAlert({ type: "danger", message: "Failed to add/remove from watchlist !!" });
+    }
+  }
+
+
   return (
     <div className="row center">
       {servies.map((servie) => {
@@ -188,11 +210,14 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                     >
                       <i className="bi bi-file-image"></i>
                     </a>
+
                     <a
-                      href={`list/${servie.tmdbId}?childtype=${servie.childtype}`}
+                      href="#"
+                      onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
                     >
                       <i className="bi bi-clock-fill"></i>
                     </a>
+
                     <a
                       href="#"
                       onClick={() => removeServie(servie.tmdbId, servie.childtype)}
