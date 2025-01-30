@@ -288,6 +288,20 @@ const ServiePage = () => {
                             <HalfStarRating maxStars={5} initialRating={rating} onRatingChange={handleRatingChange} />
                         </div>
 
+                        {(childType === 'movie') && data?.runtime && (
+                            <>
+                                <span>Runtime : {formatRuntime(data?.runtime)}</span>
+                                <br />
+                            </>
+                        )}
+
+                        {(childType === 'tv') && data?.totalRuntime && (
+                            <>
+                                <span>Total Watched Runtime : {formatRuntime(servieWatchRuntime)}  / {formatRuntime(servieRuntime)}</span>
+                                <br />
+                            </>
+                        )}
+
                         {/* Cast Section */}
                         {childType === "movie" && (
                             <>
@@ -319,13 +333,6 @@ const ServiePage = () => {
                                         style={{ width: "200px", height: "300px" }}
                                     />
                                 </a> */}
-                            </>
-                        )}
-
-                        {data?.totalRuntime && (
-                            <>
-                                <span>Total Watched Runtime : {formatRuntime(servieWatchRuntime)}  / {formatRuntime(servieRuntime)}</span>
-                                <br />
                             </>
                         )}
 

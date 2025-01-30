@@ -30,6 +30,7 @@ interface Servie {
     episodesWatched: number;
     totalEpisodes: number;
     completed: boolean;
+    popularity: number;
 }
 
 const PersonPage: React.FC = () => {
@@ -40,6 +41,7 @@ const PersonPage: React.FC = () => {
     const [servieWatchState, setServieWatchState] = useState<{ [key: string]: boolean }>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [blurCompleted, setBlurCompleted] = useState<boolean>(false);
+    const [sortOrder, setSortOrder] = useState<string>('title');
 
     console.log("PersonPage -> personId: ${personId}");
 
@@ -47,8 +49,6 @@ const PersonPage: React.FC = () => {
         if (personId) {
             axiosInstance.get(`person/${personId}`)
                 .then((response) => {
-                    console.log(response.data.servies[0].posterPath)
-                    console.log(response)
                     setPersonData(response.data);
                     setLoading(false);
                     console.log("PersonPage -> useEffect(personId) -> Updated PersonData when api is called");
@@ -104,9 +104,17 @@ const PersonPage: React.FC = () => {
     if (loading) return <div>Loading...</div>;
     if (!personData) return <div>Person data not found</div>;
 
+
+
     const handleBlurToggle = () => {
         setBlurCompleted(!blurCompleted);
     };
+
+    const sortedServies = [...personData.servies].sort((a, b) => {
+        if (sortOrder === 'popularity')
+            return b.popularity - a.popularity;
+        return a.title.localeCompare(b.title);
+    });
 
     return (
         <div className="container">
@@ -151,9 +159,23 @@ const PersonPage: React.FC = () => {
                 </div>
             </div>
 
+            <div className="row my-3">
+                <div className="col-12">
+                    <label>Sort by: </label>
+                    <select
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(e.target.value)}
+                        className="form-select w-auto d-inline-block ms-2"
+                    >
+                        <option value="title">Title (A-Z)</option>
+                        <option value="popularity">Popularity (High to Low)</option>
+                    </select>
+                </div>
+            </div>
+
             {/* Servies section */}
             <div className="row center">
-                {personData.servies.map(servie => {
+                {sortedServies.map(servie => {
 
                     const key = `${servie.childtype}-${servie.tmdbId}`;
                     const isCompleted = servieWatchState[key];
@@ -181,9 +203,11 @@ const PersonPage: React.FC = () => {
                                 />
                                 <div className="buttons-container rounded">
 
-                                    <Link to='/servie' state={{ childType: "movie", tmdbId: servie.tmdbId }}>
+                                    <Link to='/servie' state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}>
                                         <strong>{servie.title}</strong>
                                     </Link>
+                                    <br />
+                                    <span>Popularity: {servie.popularity}</span>
                                     <br />
                                     {servie.childtype === 'movie' ? (
                                         <span>{new Date(servie.releaseDate).getFullYear()}</span>
