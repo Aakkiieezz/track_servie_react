@@ -13,6 +13,10 @@ const AuthPage: React.FC = () => {
     const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
     const navigate = useNavigate();
 
+    const handleGoogleSignIn = () => {
+        window.location.href = "http://localhost:8080/track-servie/oauth2/authorization/google";
+    };
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (isRegister) {
@@ -44,7 +48,6 @@ const AuthPage: React.FC = () => {
                 if (response.status === 200) {
                     localStorage.setItem("token", response.data.token);
                     localStorage.setItem("username", response.data.username);
-
                     console.log("Fetching profile img from : ", "http://localhost:8080/track-servie/" + response.data.profileImgUrl)
                     localStorage.setItem("profileImgUrl", "http://localhost:8080/track-servie/" + response.data.profileImgUrl);
                     setAlert({ type: "success", message: "Logged in Successfully !!" });
@@ -78,7 +81,6 @@ const AuthPage: React.FC = () => {
                         className="mb-4"
                         style={{ width: "100%", maxWidth: "500px" }} // Ensure it's responsive
                     />
-                    <h2 className="text-center mb-4">{isRegister ? "Register" : "Login"}</h2>
                     <form onSubmit={handleSubmit}>
                         {/* username */}
                         <div className="form-group mb-3">
@@ -134,6 +136,22 @@ const AuthPage: React.FC = () => {
                             </button>
                         </div>
                     </form>
+
+                    {/* Google Login Button */}
+                    {!isRegister && (
+                        <div className="d-grid gap-2 mb-3">
+                            <button className="btn btn-primary d-flex align-items-center justify-content-center position-relative"
+                                onClick={handleGoogleSignIn}>
+                                <img
+                                    src="src/assets/google-logo.jpg"
+                                    alt="Google Logo"
+                                    // style={{ height: "90%", aspectRatio: "1 / 1", position: "absolute", left: "0", borderRadius: "4px" }} />
+                                    style={{ height: "90%", aspectRatio: "1 / 1", position: "absolute", left: "2px", borderRadius: "4px" }} />
+                                Login with Google
+                            </button>
+                        </div>
+                    )}
+
                     <div className="text-center">
                         <p>
                             {isRegister ? "Already have an account?" : "Don't have an account?"}{" "}

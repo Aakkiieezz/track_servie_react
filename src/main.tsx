@@ -20,6 +20,22 @@ import StatsLangBarLog from "./pages/StatsLangBarLog.tsx";
 import MovieCollection from "./pages/MovieCollection.tsx";
 import WatchListPage from "./pages/WatchListPage.tsx";
 
+const processToken = () => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    const username = params.get("username");
+    const profileImgUrl = params.get("profileImgUrl");
+
+    if (token && username) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("username", username);
+        localStorage.setItem("profileImgUrl", "http://localhost:8080/track-servie/" + profileImgUrl);
+        window.history.replaceState({}, document.title, "/");
+    }
+};
+
+processToken();
+
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
     return isAuthenticated() ? element : <Navigate to="/login" />;
 };
@@ -27,11 +43,7 @@ const PrivateRoute = ({ element }: { element: JSX.Element }) => {
 const router = createBrowserRouter([
 
     { path: "/login", element: <AuthPage /> },
-    {
-        path: "/",
-        element: <PrivateRoute element={<HomePage />} />,
-        errorElement: <NotFoundPage />,
-    },
+    { path: "/", element: <PrivateRoute element={<HomePage />} />, errorElement: <NotFoundPage /> },
     { path: "/movie-collection/:collectionId", element: <MovieCollection /> },
     { path: "/person/:personId", element: <PersonPage /> },
     { path: "/profile", element: <PrivateRoute element={<ProfilePage />} /> },
