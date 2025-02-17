@@ -164,16 +164,15 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
                         {servie.episodesWatched}/{servie.totalEpisodes}
                       </span>
                     )}
+
+                    {/* {toggle completed} */}
                     <a
                       href="#"
                       onClick={() => toggleWatch(servie.tmdbId, servie.childtype)}
                     >
-                      {servie.completed ? (
-                        <i className="bi bi-eye-slash-fill"></i>
-                      ) : (
-                        <i className="bi bi-eye-fill"></i>
-                      )}
+                      {isCompleted ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
                     </a>
+
                     <a
                       href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
                     >
