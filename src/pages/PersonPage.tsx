@@ -35,6 +35,7 @@ interface Servie {
 
 const PersonPage: React.FC = () => {
 
+    const [filterType, setFilterType] = useState<string>("Servie");
     const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
     const { personId } = useParams<{ personId: string }>();
     const [personData, setPersonData] = useState<PersonResponse | null>(null);
@@ -116,9 +117,13 @@ const PersonPage: React.FC = () => {
         return a.title.localeCompare(b.title);
     });
 
+
+    const filteredServies = sortedServies.filter(servie =>
+        filterType === "Servie" || servie.childtype === filterType.toLowerCase()
+    );
+
     return (
         <div className="container">
-
             <div className="row">
 
                 {/* Person's image */}
@@ -173,9 +178,25 @@ const PersonPage: React.FC = () => {
                 </div>
             </div>
 
+            {/* Filter Section */}
+            <div className="row my-3">
+                <div className="col-12">
+                    <label>Filter by Type: </label>
+                    <select
+                        value={filterType}
+                        onChange={(e) => setFilterType(e.target.value)}
+                        className="form-select w-auto d-inline-block ms-2"
+                    >
+                        <option value="Servie">Servie</option>
+                        <option value="Movie">Movies</option>
+                        <option value="TV">TV Shows</option>
+                    </select>
+                </div>
+            </div>
+
             {/* Servies section */}
             <div className="row center">
-                {sortedServies.map(servie => {
+                {filteredServies.map(servie => {
 
                     const key = `${servie.childtype}-${servie.tmdbId}`;
                     const isCompleted = servieWatchState[key];

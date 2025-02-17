@@ -267,7 +267,6 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                       {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
                     </a>
 
-
                     <a href="#" onClick={() => toggleLike(servie.childtype, servie.tmdbId)}>
                       <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
                     </a>
