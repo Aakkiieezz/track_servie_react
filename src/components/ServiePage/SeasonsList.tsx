@@ -200,7 +200,7 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWat
               <img
                 className="rounded"
                 src={season.posterPath
-                  ? `https://www.themoviedb.org/t/p/original${season.posterPath}`
+                  ? `https://www.themoviedb.org/t/p/w300${season.posterPath}`
                   : `https://placehold.co/400x600?text=S${season.seasonNo}`}
                 alt={season.name || 'No poster available'}
               />
