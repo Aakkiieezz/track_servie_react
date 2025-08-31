@@ -309,3 +309,9 @@ nav {
  filter: brightness(25%);
  transition: filter 0.3s ease-in-out;
 }
+
+.page-link:hover {
+ background-color: #f0f0f0; /* light gray background */
+ color: #007bff; /* Bootstrap blue text */
+ border-color: #dee2e6; /* subtle border */
+}
