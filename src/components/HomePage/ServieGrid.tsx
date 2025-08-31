@@ -151,7 +151,6 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
     }
   }
 
-
   return (
     <div className="row center">
       {servies.map((servie) => {
@@ -179,9 +178,11 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                 <>
                   <img
                     className="rounded image-border"
-                    // src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
-                    // src={`http://localhost:8080/track-servie/posterImgs_resize220x330${servie.posterPath}`}
                     src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace('.jpg', '.webp')}`}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null; // prevent infinite loop if fallback also fails
+                      e.currentTarget.src = `https://www.themoviedb.org/t/p/original${servie.posterPath}`;
+                    }}
                     alt={servie.title}
                   />
                   <div className="buttons-container rounded">
@@ -233,9 +234,11 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                 <>
                   <img
                     className="rounded image-border"
-                    // src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
-                    // src={`http://localhost:8080/track-servie/posterImgs_resize220x330${servie.posterPath}`}
                     src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace('.jpg', '.webp')}`}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null; // prevent infinite loop if fallback also fails
+                      e.currentTarget.src = `https://www.themoviedb.org/t/p/original${servie.posterPath}`;
+                    }}
                     alt={servie.title}
                   />
                   <div className="buttons-container rounded">
@@ -275,11 +278,19 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                     >
                       <i className="bi bi-file-image"></i>
                     </a>
-                    <a
+
+                    {/* <a
                       href={`/toggleWatch-servie/list/${servie.tmdbId}?childtype=${servie.childtype}`}
                     >
                       <i className="bi bi-clock-fill"></i>
+                    </a> */}
+                    <a
+                      href="#"
+                      onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
+                    >
+                      <i className="bi bi-clock-fill"></i>
                     </a>
+
                     <a
                       href="#"
                       onClick={() => removeServie(servie.tmdbId, servie.childtype)}

@@ -78,6 +78,27 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
     }
   };
 
+  const toggleWatchList = async (tmdbId: number, childType: "movie" | "tv") => {
+    try {
+      const response = await axiosInstance.put(
+        `list/${tmdbId}`,
+        null,
+        {
+          params: {
+            childtype: childType,
+          }
+        },
+      );
+      if (response.status === 200)
+        setAlert({ type: "success", message: `Successfully added/removed from watchlist !!` });
+
+    } catch (error) {
+      console.error('Failed to add/remove from watchlist', error);
+
+      setAlert({ type: "danger", message: "Failed to add/remove from watchlist !!" });
+    }
+  }
+
   return (
     <div className="row">
       {servies.map((servie) => {
@@ -133,8 +154,14 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
                     >
                       <i className="bi bi-file-image"></i>
                     </a>
-                    <a
+                    {/* <a
                       href={`list/${servie.tmdbId}?childtype=${servie.childtype}`}
+                    >
+                      <i className="bi bi-clock-fill"></i>
+                    </a> */}
+                    <a
+                      href="#"
+                      onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
                     >
                       <i className="bi bi-clock-fill"></i>
                     </a>
@@ -178,8 +205,14 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
                     >
                       <i className="bi bi-file-image"></i>
                     </a>
-                    <a
+                    {/* <a
                       href={`list/${servie.tmdbId}?childtype=${servie.childtype}`}
+                    >
+                      <i className="bi bi-clock-fill"></i>
+                    </a> */}
+                    <a
+                      href="#"
+                      onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
                     >
                       <i className="bi bi-clock-fill"></i>
                     </a>
