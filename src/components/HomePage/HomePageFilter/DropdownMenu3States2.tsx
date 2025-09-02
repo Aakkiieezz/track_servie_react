@@ -8,6 +8,7 @@ interface DropdownMenu3States2Props {
    setSelected: React.Dispatch<
       React.SetStateAction<Record<string, "blank" | "tick" | "cross">>
    >;
+   disabledOptions?: string[];
 }
 
 const DropdownMenu3States2: React.FC<DropdownMenu3States2Props> = ({
@@ -15,6 +16,7 @@ const DropdownMenu3States2: React.FC<DropdownMenu3States2Props> = ({
    options,
    selected,
    setSelected,
+   disabledOptions = [],
 }) => {
    const handleCheckboxChange = (option: string) => {
       setSelected((prevSelected) => {
@@ -46,13 +48,15 @@ const DropdownMenu3States2: React.FC<DropdownMenu3States2Props> = ({
 
          {/* Dropdown menu */}
          <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownMenuButton">
-            {options.map((option) => (
-               <li key={option} className="dropdown-item">
-                  <div className="form-check d-flex align-items-center">
-                     <input
-                        className="form-check-input me-2"
-                        type="checkbox"
-                        id={`checkbox-${option}`}
+            {options.map((option) => {
+               const isDisabled = disabledOptions.includes(option);
+               return (
+                  <li key={option} className={`dropdown-item${isDisabled ? " disabled" : ""}`}>
+                     <div className="form-check d-flex align-items-center">
+                        <input
+                           className="form-check-input me-2"
+                           type="checkbox"
+                           id={`checkbox-${option}`}
                         checked={selected[option] === "tick"}
                         onChange={() => handleCheckboxChange(option)}
                      />
@@ -64,7 +68,8 @@ const DropdownMenu3States2: React.FC<DropdownMenu3States2Props> = ({
                      </label>
                   </div>
                </li>
-            ))}
+               );
+            })}
          </ul>
       </div>
    );

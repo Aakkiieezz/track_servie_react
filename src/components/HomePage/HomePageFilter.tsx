@@ -35,6 +35,10 @@ const genreOptions = [
     "Western",
 ];
 
+// Genres to disable for each type
+const disabledGenresForMovie = ["Kids", "News", "Politics", "Reality", "Soap", "Talk"];
+const disabledGenresForSeries = ["History", "Horror", "Music", "Romance", "TV Movie", "Thriller"];
+
 const langOptions = [
     { id: "cn", label: "Chinese(Cantonese)" },
     { id: "zh", label: "Chinese(Mandarin)" },
@@ -140,6 +144,13 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange }) =
         });
     };
 
+    // Compute disabled genres based on selected type
+    const getDisabledGenres = () => {
+        if (type === "movie") return disabledGenresForMovie;
+        if (type === "tv") return disabledGenresForSeries;
+        return [];
+    };
+
     return (
         <form onSubmit={handleSubmit} className="d-flex flex-row align-items-center">
 
@@ -240,6 +251,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange }) =
                 options={genreOptions}
                 selected={selected}
                 setSelected={setSelected}
+                disabledOptions={getDisabledGenres()}
             />
 
             <DropdownMenu
