@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SearchPageFilter from './SearchPageFilter';
 import ProfilePic from "../ProfilePage/ProfilePic";
 import { Link } from 'react-router-dom';
@@ -15,6 +15,15 @@ interface SearchPageHeaderProps {
 }
 
 const SearchPageHeader: React.FC<SearchPageHeaderProps> = ({ handleSearchFilterChange: handleFilterChange }) => {
+
+    // Add expand/collapse state
+    const [isSearchFilterExpanded, setSearchFilterExpanded] = useState(false);
+    
+    const handleExpandSearchFilter = () => {
+        setSearchFilterExpanded(true);
+    };
+
+    const handleCollapseSearchFilter = () => setSearchFilterExpanded(false);
 
     // Learning Purpose
     const onFilterChange = (filters: SearchFilters) => {
@@ -33,7 +42,12 @@ const SearchPageHeader: React.FC<SearchPageHeaderProps> = ({ handleSearchFilterC
             </div>
 
             {/* Search Form */}
-            <SearchPageFilter handleFilterChange={onFilterChange} />
+            <SearchPageFilter
+                handleFilterChange={onFilterChange} 
+                expanded={isSearchFilterExpanded}
+                onExpand={handleExpandSearchFilter}
+                onCollapse={handleCollapseSearchFilter}
+            />
 
             {/* Profile Picture */}
             <ProfilePic />

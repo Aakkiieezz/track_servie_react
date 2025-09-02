@@ -5,6 +5,9 @@ import YearRangePicker from "../YearRangePickerProps";
 
 interface HomePageFilterProps {
     handleFilterChange: (filters: any) => void;
+    expanded: boolean;
+    onExpand: () => void;
+    onCollapse: () => void;
 }
 
 const genreOptions = [
@@ -71,7 +74,21 @@ const statusOptions = [
     "Ended",
 ];
 
-const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange }) => {
+const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, expanded, onExpand, onCollapse }) => {
+    
+    if (!expanded) {
+        return (
+            <button
+                className="btn btn-outline-primary me-2"
+                onClick={onExpand}
+                style={{ minWidth: 120 }}
+                title="Expand filters"
+            >
+                <i className="bi bi-funnel"></i> Filters
+            </button>
+        );
+    }
+    
     const [type, setType] = useState("");
     const [sortBy, setSortBy] = useState("title");
     const [sortDir, setSortDir] = useState("asc");
@@ -153,6 +170,17 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange }) =
 
     return (
         <form onSubmit={handleSubmit} className="d-flex flex-row align-items-center">
+
+            {/* Search Icon Button to collapse */}
+            <button
+                type="button"
+                className="btn btn-link p-0 me-2"
+                onClick={onCollapse}
+                title="Collapse filters"
+                style={{ fontSize: "1.2rem" }}
+            >
+                <i className="bi bi-funnel"></i>
+            </button>
 
             {/* Type Dropdown */}
             <div className="dropdown position-relative">
