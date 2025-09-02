@@ -129,6 +129,9 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
                     className="rounded image-border"
                     src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
                     alt={servie.title}
+                    onError={(e) => {
+                      e.currentTarget.src = '/src/assets/defaultPoster.png';
+                    }}
                   />
                   <div className="buttons-container rounded">
                     <Link to="/servie" state={{ childType: "movie", tmdbId: servie.tmdbId }}>
@@ -176,6 +179,9 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
                     className="rounded image-border"
                     src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
                     alt={servie.title}
+                    onError={(e) => {
+                      e.currentTarget.src = '/src/assets/defaultPoster.png';
+                    }}
                   />
                   <div className="buttons-container rounded">
                     <Link to="/servie" state={{ childType: "tv", tmdbId: servie.tmdbId }}>
