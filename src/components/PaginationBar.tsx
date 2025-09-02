@@ -13,11 +13,15 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
     const hasPrevious = pgNo > 0;
     const hasNext = pgNo < totalPages - 1;
 
-    const handlePageChange = (newPgNo: number) => {
+    const handlePageChange = (newPgNo: number, event?: React.MouseEvent<HTMLButtonElement>) => {
         console.log("PaginationBar -> handlePageChange -> pgNumber : ", newPgNo);
 
         if (newPgNo >= 0 && newPgNo < totalPages)
             onPageChange(newPgNo);
+
+        // Remove focus from the clicked button
+        if (event)
+            event.currentTarget.blur();
     };
 
     return (
@@ -29,7 +33,7 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
                     <li className={`page-item ${!hasPrevious ? 'disabled' : ''}`}>
                         <button
                             className="page-link"
-                            onClick={() => handlePageChange(pgNo - 1)}
+                            onClick={(event) => handlePageChange(pgNo - 1, event)}
                             disabled={!hasPrevious}>
                             Previous
                         </button>
@@ -38,7 +42,7 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
                     {/* First Page */}
                     {pgNo !== 0 && (
                         <li className="page-item">
-                            <button className="page-link" onClick={() => handlePageChange(0)}>1</button>
+                            <button className="page-link" onClick={(event) => handlePageChange(0, event)}>1</button>
                         </li>
                     )}
 
@@ -52,7 +56,7 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
                     {/* Previous Pages (current - 2) */}
                     {pgNo > 2 && (
                         <li className="page-item">
-                            <button className="page-link" onClick={() => handlePageChange(pgNo - 2)}>
+                            <button className="page-link" onClick={(event) => handlePageChange(pgNo - 2, event)}>
                                 {pgNo - 1}
                             </button>
                         </li>
@@ -61,7 +65,7 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
                     {/* Previous Page (current - 1) */}
                     {pgNo > 1 && (
                         <li className="page-item">
-                            <button className="page-link" onClick={() => handlePageChange(pgNo - 1)}>
+                            <button className="page-link" onClick={(event) => handlePageChange(pgNo - 1, event)}>
                                 {pgNo}
                             </button>
                         </li>
@@ -75,7 +79,7 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
                     {/* Next Page (current + 1) */}
                     {pgNo < totalPages - 2 && (
                         <li className="page-item">
-                            <button className="page-link" onClick={() => handlePageChange(pgNo + 1)}>
+                            <button className="page-link" onClick={(event) => handlePageChange(pgNo + 1, event)}>
                                 {pgNo + 2}
                             </button>
                         </li>
@@ -84,7 +88,7 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
                     {/* Next Next Page (current + 2) */}
                     {pgNo < totalPages - 3 && (
                         <li className="page-item">
-                            <button className="page-link" onClick={() => handlePageChange(pgNo + 2)}>
+                            <button className="page-link" onClick={(event) => handlePageChange(pgNo + 2, event)}>
                                 {pgNo + 3}
                             </button>
                         </li>
@@ -100,7 +104,7 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
                     {/* Last Page */}
                     {pgNo !== totalPages - 1 && (
                         <li className="page-item">
-                            <button className="page-link" onClick={() => handlePageChange(totalPages - 1)}>
+                            <button className="page-link" onClick={(event) => handlePageChange(totalPages - 1, event)}>
                                 {totalPages}
                             </button>
                         </li>
@@ -110,7 +114,7 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
                     <li className={`page-item ${!hasNext ? 'disabled' : ''}`}>
                         <button
                             className="page-link"
-                            onClick={() => handlePageChange(pgNo + 1)}
+                            onClick={(event) => handlePageChange(pgNo + 1, event)}
                             disabled={!hasNext}>
                             Next
                         </button>
