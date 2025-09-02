@@ -78,6 +78,50 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  const handleExportData = async () => {
+  try {
+    const response = await axiosInstance.get("http://localhost:8080/track-servie/export/user-data", {
+      responseType: "blob", // important!
+    });
+
+    // Fetch filename from our custom header
+    const fileName = response.headers["x-filename"] || "backup.zip";
+
+    // Create a blob URL
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+    setAlert({ type: "success", message: "Downloaded file successfully." });
+  } catch (error) {
+    console.error("Error downloading file:", error);
+    setAlert({ type: "danger", message: "Error downloading file : " + error });
+  }
+};
+
+  const handleImportData = async () => {
+    try {
+      // Example: GET to export endpoint
+      const response = await axiosInstance.get("user/data/export", { responseType: "blob" });
+      // Download CSV file
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "account_data.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setAlert({ type: "success", message: "Data exported successfully." });
+    } catch (error) {
+      setAlert({ type: "danger", message: "Error exporting data." });
+    }
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "Profile":
@@ -85,7 +129,18 @@ const ProfilePage: React.FC = () => {
       case "Settings":
         return <p>Here are the posts by {username}.</p>;
       case "Data":
-        return <p>Profile settings for {username}.</p>;
+        return (
+          <div>
+            <h3>Account data</h3>
+            <p>Import data to your account, or export your account in CSV format:</p>
+            <button className="btn btn-primary me-2" onClick={handleImportData}>
+              Import your data
+            </button>
+            <button className="btn btn-secondary" onClick={handleExportData}>
+              Export your data
+            </button>
+          </div>
+        );
       default:
         return null;
     }
