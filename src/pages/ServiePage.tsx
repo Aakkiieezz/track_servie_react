@@ -59,6 +59,8 @@ interface ServieDto {
     completed: boolean;
     rated: number;
     cast: MovieCast[];
+    voteAverage: number;
+    voteCount: number;
 }
 
 const ServiePage = () => {
@@ -288,19 +290,33 @@ const ServiePage = () => {
                             <HalfStarRating maxStars={5} initialRating={rating} onRatingChange={handleRatingChange} />
                         </div>
 
+                        {/* Runtime Section */}
                         {(childType === 'movie') && data?.runtime && (
                             <>
                                 <span>Runtime : {formatRuntime(data?.runtime)}</span>
                                 <br />
                             </>
                         )}
-
                         {(childType === 'tv') && data?.totalRuntime && (
                             <>
                                 <span>Total Watched Runtime : {formatRuntime(servieWatchRuntime)}  / {formatRuntime(servieRuntime)}</span>
                                 <br />
                             </>
                         )}
+
+                        {/* Release Date Section */}
+                        {(childType === 'movie') && data?.releaseDate && (
+                            <>
+                                <span>Release Date : {format(new Date(data.releaseDate), 'dd MMM yyyy')}</span>
+                                <br />
+                            </>
+                        )}
+
+                        Vote Average : {data && (data.voteAverage > 0 ? data.voteAverage + ' / 10' : 'Not Rated Yet')}
+                        
+                        <br />
+
+                        Vote Count : {data && (data.voteCount > 0 ? data.voteCount : 'No Votes Yet')}
 
                         {/* Cast Section */}
                         {childType === "movie" && (
