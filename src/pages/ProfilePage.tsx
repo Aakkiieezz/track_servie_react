@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosInstance from '../utils/axiosInstance';
 
 import styles from "../components/ProfilePage/ProfilePage.module.css";
@@ -7,12 +7,30 @@ import Alert from "../components/Alert";
 import { Link } from "react-router-dom";
 
 const ProfilePage: React.FC = () => {
+  
   const username = localStorage.getItem("username");
   const [activeTab, setActiveTab] = useState("Overview");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [profilePicUrl, setProfilePicUrl] = useState<string | null>(localStorage.getItem("profileImgUrl"));
   const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
 
+  const [watchedCounts, setWatchedCounts] = useState<{ movie: number; tv: number }>({ movie: 0, tv: 0 });
+
+  useEffect(() => {
+    const fetchWatchedCounts = async () => {
+      try {
+        const response = await axiosInstance.get("user/watched-counts");
+        setWatchedCounts({
+          movie: response.data.movie,
+          tv: response.data.tv,
+        });
+      } catch (error) {
+        setWatchedCounts({ movie: 0, tv: 0 });
+      }
+    };
+    fetchWatchedCounts();
+  }, []);
+  
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -196,6 +214,11 @@ const ProfilePage: React.FC = () => {
           )}
         </div>
         <h1 className={styles.username}>{username}</h1>
+      </div>
+
+      <div>
+        Movies watched: {watchedCounts.movie} <br />
+        Series watched: {watchedCounts.tv}
       </div>
 
       <div className={styles.tabNavigation}>
