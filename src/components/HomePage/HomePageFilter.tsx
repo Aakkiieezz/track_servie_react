@@ -74,6 +74,14 @@ const statusOptions = [
     "Ended",
 ];
 
+const sortOptions = [
+  { key: "title", label: "Title" },
+  { key: "recent", label: "Recently Added" },
+  { key: "date", label: "Release Date" },
+  { key: "popularity", label: "Popularity" },
+  { key: "voteAverage", label: "Vote Average" },
+];
+
 const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, expanded, onExpand, onCollapse }) => {
     
     if (!expanded) {
@@ -104,11 +112,10 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
         const ticked: string[] = [];
         const crossed: string[] = [];
         Object.keys(selected).forEach((key) => {
-            if (selected[key] === "tick") {
+            if (selected[key] === "tick")
                 ticked.push(key);
-            } else if (selected[key] === "cross") {
+            else if (selected[key] === "cross")
                 crossed.push(key);
-            }
         });
         return { ticked, crossed };
     };
@@ -232,19 +239,23 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                 >
-                    {sortBy === "title" ? "Title" : "Release Date"}
+                    {{
+                        title: "Title",
+                        date: "Release Date",
+                        popularity: "Popularity",
+                        voteAverage: "Avg Vote",
+                        recent: "Recently Added",
+                    }[sortBy] || "Sort By"}
                 </button>
+                
                 <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="sortByDropdown">
-                    <li>
-                        <button className="dropdown-item" onClick={() => setSortBy("title")}>
-                            Title
+                    {sortOptions.map(({ key, label }) => (
+                        <li key={key}>
+                        <button className="dropdown-item" onClick={() => setSortBy(key)}>
+                            {label}
                         </button>
-                    </li>
-                    <li>
-                        <button className="dropdown-item" onClick={() => setSortBy("date")}>
-                            Release Date
-                        </button>
-                    </li>
+                        </li>
+                    ))}
                 </ul>
             </div>
 
