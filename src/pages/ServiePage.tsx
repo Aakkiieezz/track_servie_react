@@ -61,6 +61,7 @@ interface ServieDto {
     cast: MovieCast[];
     voteAverage: number;
     voteCount: number;
+    keywords: { id: number; name: string }[];
 }
 
 const ServiePage = () => {
@@ -257,13 +258,31 @@ const ServiePage = () => {
 
                         {/* Genres Section */}
                         <h4>Genres</h4>
-                        <div className="row row-cols-auto left">
+                        <div className="d-flex flex-wrap gap-2">
                             {data?.genres.map((genre) => (
-                                <div key={genre.id} className="col">
-                                    <a href={`servies?genreIds=${genre.id}`} className="btn btn-secondary btn-sm mx-1">{genre.name}</a>
-                                </div>
+                                <a key={genre.id} href={`servies?genreIds=${genre.id}`} className="btn btn-secondary btn-sm">
+                                    {genre.name}
+                                </a>
                             ))}
                         </div>
+
+                        <br />
+
+                        {/* Keywords Section */}
+                        {data?.keywords && data.keywords.length > 0 && (
+                            <>
+                                <h4>Keywords</h4>
+                                <div className="d-flex flex-wrap gap-2">
+                                    {data.keywords.map((keyword) => (
+                                        <a key={keyword.id} href={`servies?keywordIds=${keyword.id}`} className="btn btn-secondary btn-sm text-capitalize">
+                                            {keyword.name}
+                                        </a>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+
+                        <br />
 
                         {/* {toggle completed} */}
                         <a
