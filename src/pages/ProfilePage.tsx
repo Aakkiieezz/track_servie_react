@@ -6,6 +6,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Alert from "../components/Alert";
 import { Link } from "react-router-dom";
 
+interface FollowUser {
+  id: number;
+  username: string;
+  profileImgUrl: string;
+}
+
 const ProfilePage: React.FC = () => {
   
   const username = localStorage.getItem("username");
@@ -30,6 +36,23 @@ const ProfilePage: React.FC = () => {
     };
     fetchWatchedCounts();
   }, []);
+
+  const [following, setFollowing] = useState<FollowUser[]>([]);
+  const [followers, setFollowers] = useState<FollowUser[]>([]);
+  const [activeNetworkTab, setActiveNetworkTab] = useState<"Following" | "Followers">("Following");
+
+  useEffect(() => {
+    if (activeTab === "Network")
+      if (activeNetworkTab === "Following")
+        axiosInstance.get("/follows/following", { params: { page: 0, size: 20 } })
+          .then(res => setFollowing(res.data.content))
+          .catch(() => setFollowing([]));
+      else
+        axiosInstance.get("/follows/followers", { params: { page: 0, size: 20 } })
+          .then(res => setFollowers(res.data.content))
+          .catch(() => setFollowers([]));
+  }, [activeTab, activeNetworkTab]);
+
   
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -97,30 +120,30 @@ const ProfilePage: React.FC = () => {
   };
 
   const handleExportData = async () => {
-  try {
-    const response = await axiosInstance.get("http://localhost:8080/track-servie/export/user-data", {
-      responseType: "blob", // important!
-    });
+    try {
+      const response = await axiosInstance.get("http://localhost:8080/track-servie/export/user-data", {
+        responseType: "blob", // important!
+      });
 
-    // Fetch filename from our custom header
-    const fileName = response.headers["x-filename"] || "backup.zip";
+      // Fetch filename from our custom header
+      const fileName = response.headers["x-filename"] || "backup.zip";
 
-    // Create a blob URL
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
+      // Create a blob URL
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
 
-    link.setAttribute("download", fileName);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
-    setAlert({ type: "success", message: "Downloaded file successfully." });
-  } catch (error) {
-    console.error("Error downloading file:", error);
-    setAlert({ type: "danger", message: "Error downloading file : " + error });
-  }
-};
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      setAlert({ type: "success", message: "Downloaded file successfully." });
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      setAlert({ type: "danger", message: "Error downloading file : " + error });
+    }
+  };
 
   const handleImportData = async () => {
     try {
@@ -146,6 +169,89 @@ const ProfilePage: React.FC = () => {
         return <p>This is the overview content for {username}.</p>;
       case "Settings":
         return <p>Here are the posts by {username}.</p>;
+      case "Network":
+        return (
+          <div>
+            {/* Sub-tabs */}
+            <div className="d-flex mb-3">
+              <button
+                className={`btn ${activeNetworkTab === "Following" ? "btn-primary" : "btn-outline-primary"} me-2`}
+                onClick={() => setActiveNetworkTab("Following")}
+              >
+                Following
+              </button>
+              <button
+                className={`btn ${activeNetworkTab === "Followers" ? "btn-primary" : "btn-outline-primary"}`}
+                onClick={() => setActiveNetworkTab("Followers")}
+              >
+                Followers
+              </button>
+            </div>
+
+            {/* Content */}
+            {activeNetworkTab === "Following" && (
+              <div>
+                {following.length === 0 ? (
+                  <p>You are not following anyone yet.</p>
+                ) : (
+                  following.map(user => (
+                    <div
+                      key={user.id}
+                      className="d-flex align-items-center mb-3"
+                      style={{ gap: "10px" }}
+                    >
+                      <img
+                        src={user.profileImgUrl}
+                        alt={user.username}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                        }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+                        }}
+                      />
+                      <span>{user.username}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {activeNetworkTab === "Followers" && (
+              <div>
+                {followers.length === 0 ? (
+                  <p>No one is following you yet :( </p>
+                ) : (
+                  followers.map(user => (
+                    <div
+                      key={user.id}
+                      className="d-flex align-items-center mb-3"
+                      style={{ gap: "10px" }}
+                    >
+                      <img
+                        src={user.profileImgUrl}
+                        alt={user.username}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                        }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+                        }}
+                      />
+                      <span>{user.username}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        );
       case "Data":
         return (
           <div>
@@ -236,6 +342,14 @@ const ProfilePage: React.FC = () => {
           onClick={() => handleTabChange("Settings")}
         >
           Settings
+        </button>
+
+        <button
+          className={`${styles.tabButton} ${activeTab === "Network" ? styles.active : ""
+            }`}
+          onClick={() => handleTabChange("Network")}
+        >
+          Network
         </button>
 
         <button
