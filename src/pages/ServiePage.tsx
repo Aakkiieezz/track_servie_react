@@ -119,9 +119,6 @@ const ServiePage = () => {
                 setRating(response.data.rated);
 
             } catch (err) {
-                // if (axios.isAxiosError(err))
-                //     setError(err.response?.data?.message || 'Something went wrong');
-                // else
                 if (err instanceof Error)
                     setError(err.message);
                 else
@@ -173,7 +170,6 @@ const ServiePage = () => {
             setAlert({ type: "danger", message: "Failed to update watch status !!" });
         }
     };
-
 
     const handleEpWatchCountChange = (data: { totalWatchedEp: number; totalWatchedRuntime: number }) => {
         setTotalEpWatched(data.totalWatchedEp);
@@ -244,7 +240,7 @@ const ServiePage = () => {
                     <div className="container">
 
                         {/* Title/Logo Section */}
-                        {!isImageError && data?.logoPath ? (
+                        {/* {!isImageError && data?.logoPath ? (
                             <img
                                 className="rounded"
                                 src={`https://www.themoviedb.org/t/p/original${data.logoPath}`}
@@ -252,9 +248,32 @@ const ServiePage = () => {
                                 style={{ maxHeight: '300px', maxWidth: '300px' }}
                                 onError={() => setIsImageError(true)}
                             />
-                        ) : (<h1>{data?.title}</h1>)}
+                        ) : (<h1>{data?.title}</h1>)} */}
 
-                        <br />
+                        {/* Title/Logo Section */}
+                        <div className="title-logo">
+                        {!isImageError && data?.logoPath ? (
+                            <img
+                                src={`https://www.themoviedb.org/t/p/original${data.logoPath}`}
+                                alt={data?.title || "logo"}
+                                onError={() => setIsImageError(true)}
+                            />
+                        ) : (
+                            <h1 className="title" title={data?.title}>
+                                {data?.title}
+                            </h1>
+                        )}
+                        </div>
+
+
+                        {/* Release Date Section */}
+                        {(childType === 'movie') && data?.releaseDate && (
+                            <>
+                                <span>{new Date(data.releaseDate).getFullYear()}</span>
+                                <br />
+                            </>
+                        )}
+                        
 
                         {/* Genres Section */}
                         <h4>Genres</h4>
