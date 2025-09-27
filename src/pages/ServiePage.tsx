@@ -8,6 +8,8 @@ import { format } from 'date-fns';
 import Alert from '../components/Alert';
 import "../components/thymeleafCss.css";
 import HalfStarRating from '@/components/HalfStarRating';
+// import YouTubePopup from './YoutubePopup';
+import VideoPopup from './VideoPopup';
 
 interface GenreDtoServiePage {
     id: number;
@@ -62,6 +64,8 @@ interface ServieDto {
     voteAverage: number;
     voteCount: number;
     keywords: { id: number; name: string }[];
+    trailerSite: string | null;
+    trailerKey: string;
 }
 
 const ServiePage = () => {
@@ -265,15 +269,25 @@ const ServiePage = () => {
                         )}
                         </div>
 
+                        <br />
 
-                        {/* Release Date Section */}
+                        {/* Release Year Section */}
                         {(childType === 'movie') && data?.releaseDate && (
                             <>
                                 <span>{new Date(data.releaseDate).getFullYear()}</span>
                                 <br />
                             </>
                         )}
-                        
+
+                        <br />
+
+                        <div>
+                            {(data?.trailerSite === "YouTube" || data?.trailerSite === "Vimeo") ? (
+                                  <VideoPopup videoSite={data.trailerSite} videoKey={data.trailerKey} />
+                            ) : (
+                                <p>No official trailer</p>
+                            )}
+                        </div>
 
                         {/* Genres Section */}
                         <h4>Genres</h4>
