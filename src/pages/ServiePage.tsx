@@ -57,6 +57,8 @@ interface ServieDto {
     totalRuntime: number;
     totalWatchedRuntime: number;
     seasons: SeasonDtoServiePage[];
+    firstAirDate?: string;
+    lastAirDate?: string;
     episodesWatched: number;
     completed: boolean;
     rated: number;
@@ -277,6 +279,16 @@ const ServiePage = () => {
                                 <span>{new Date(data.releaseDate).getFullYear()}</span>
                                 <br />
                             </>
+                        )}
+
+                        {(childType === 'tv') && data?.firstAirDate && (
+                        <span>
+                            {new Date(data?.firstAirDate).getFullYear()} -{" "}
+                            {new Date(data?.lastAirDate!).getFullYear() ===
+                            new Date().getFullYear()
+                            ? "present"
+                            : new Date(data?.lastAirDate!).getFullYear()}
+                        </span>
                         )}
 
                         <br />
