@@ -5,14 +5,14 @@ interface KeyValuePair {
   label: string;
 }
 
-interface DropdownMenuProps {
+interface DropdownMultiselectProps {
   label: string;
   options: KeyValuePair[] | string[];
   selected: string[];
   setSelected: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const DropdownMenu: React.FC<DropdownMenuProps> = ({
+const DropdownMultiselect: React.FC<DropdownMultiselectProps> = ({
   label,
   options,
   selected,
@@ -35,13 +35,13 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       <button
         className="btn btn-outline-primary dropdown-toggle"
         type="button"
-        id="dropdownMenuButton"
+        id="dropdownMultiselectButton"
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
         {label}
       </button>
-      <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownMenuButton">
+      <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownMultiselectButton">
         {options.map((option) => {
           const id = isOptionObject(option) ? option.id : option;
           const displayLabel = isOptionObject(option) ? option.label : option;
@@ -68,4 +68,4 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   );
 };
 
-export default DropdownMenu;
+export default DropdownMultiselect;

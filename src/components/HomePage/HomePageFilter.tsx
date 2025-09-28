@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import DropdownMenu from "./HomePageFilter/DropdownMenu";
-import DropdownMenu3States2 from "./HomePageFilter/DropdownMenu3States2";
-import YearRangePicker from "../YearRangePickerProps";
+import DropdownMultiselect from "./HomePageFilter/DropdownMultiselect";
+import DropdownMenu3States2 from "./HomePageFilter/DropdownMultiselect3State";
+// import YearRangePicker from "../YearRangePickerProps";
 
 interface HomePageFilterProps {
     handleFilterChange: (filters: any) => void;
@@ -101,13 +101,6 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
     const [sortBy, setSortBy] = useState("title");
     const [sortDir, setSortDir] = useState("asc");
 
-    // 2 states
-    //  const [genres, setGenres] = useState<string[]>([]);
-
-    // 3 states (2)
-    const [tickedGenres2, setTickedGenres2] = useState<string[]>([]);
-    const [crossedGenres2, setCrossedGenres2] = useState<string[]>([]);
-
     const getSelectedLists = () => {
         const ticked: string[] = [];
         const crossed: string[] = [];
@@ -127,18 +120,17 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
     const [languages, setLanguages] = useState<string[]>([]);
     const [statuses, setStatuses] = useState<string[]>([]);
 
-    const [startYear, setStartYear] = useState("");
-    const [endYear, setEndYear] = useState("");
+    // const [startYear, setStartYear] = useState("");
+    // const [endYear, setEndYear] = useState("");
 
-    const [startYear2, setStartYear2] = useState<Date | undefined>(undefined);
-    const [endYear2, setEndYear2] = useState<Date | undefined>(undefined);
+    // const [startYear2, setStartYear2] = useState<Date | undefined>(undefined);
+    // const [endYear2, setEndYear2] = useState<Date | undefined>(undefined);
 
-    const [watched, setWatched] = useState("");
+    // const [watched, setWatched] = useState("");
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // 3 states (2)
         const { ticked, crossed } = getSelectedLists();
 
         console.log("HomePageFilter -> handleFilterChange() triggered")
@@ -148,23 +140,19 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
             sortBy,
             sortDir,
 
-            // 2 states
-            // genres,
-
-            // 3 states (2)
             tickedGenres2: ticked,
             crossedGenres2: crossed,
 
             languages,
             statuses,
 
-            startYear,
-            endYear,
+            // startYear,
+            // endYear,
 
-            startYear2,
-            endYear2,
+            // startYear2,
+            // endYear2,
 
-            watched,
+            // watched,
         });
     };
 
@@ -293,14 +281,14 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
                 disabledOptions={getDisabledGenres()}
             />
 
-            <DropdownMenu
+            <DropdownMultiselect
                 label="Languages"
                 options={langOptions}
                 selected={languages}
                 setSelected={setLanguages}
             />
 
-            <DropdownMenu
+            <DropdownMultiselect
                 label="Statuses"
                 options={statusOptions}
                 selected={statuses}
@@ -321,19 +309,19 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
                 placeholder="End Year"
             /> */}
 
-            <YearRangePicker
+            {/* <YearRangePicker
                 startYear2={startYear2}
                 endYear2={endYear2}
                 setStartYear2={setStartYear2}
                 setEndYear2={setEndYear2}
-            />
+            /> */}
 
             {/* Watched */}
-            <select value={watched} onChange={(e) => setWatched(e.target.value)}>
+            {/* <select value={watched} onChange={(e) => setWatched(e.target.value)}>
                 <option value="">All</option>
                 <option value="true">Watched</option>
                 <option value="false">Unwatched</option>
-            </select>
+            </select> */}
 
             <button type="submit">Search</button>
         </form>

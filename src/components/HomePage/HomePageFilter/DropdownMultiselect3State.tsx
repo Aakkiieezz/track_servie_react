@@ -1,7 +1,7 @@
 import React from "react";
-import "./DropdownMenu3States2Css.css"; // Ensure this contains the styles for blank, tick, and cross states
+import "./DropdownMultiselect3StateCss.css"; // Ensure this contains the styles for blank, tick, and cross states
 
-interface DropdownMenu3States2Props {
+interface DropdownMultiselect3StateProps {
    label: string;
    options: string[];
    selected: Record<string, "blank" | "tick" | "cross">;
@@ -11,7 +11,7 @@ interface DropdownMenu3States2Props {
    disabledOptions?: string[];
 }
 
-const DropdownMenu3States2: React.FC<DropdownMenu3States2Props> = ({
+const DropdownMultiselect3State: React.FC<DropdownMultiselect3StateProps> = ({
    label,
    options,
    selected,
@@ -47,7 +47,7 @@ const DropdownMenu3States2: React.FC<DropdownMenu3States2Props> = ({
          </button>
 
          {/* Dropdown menu */}
-         <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownMenuButton">
+         <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownMultiselect3StateButton">
             {options.map((option) => {
                const isDisabled = disabledOptions.includes(option);
                return (
@@ -75,4 +75,4 @@ const DropdownMenu3States2: React.FC<DropdownMenu3States2Props> = ({
    );
 };
 
-export default DropdownMenu3States2;
+export default DropdownMultiselect3State;
