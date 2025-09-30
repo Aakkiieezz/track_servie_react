@@ -39,38 +39,45 @@ const DropdownMultiselect3State: React.FC<DropdownMultiselect3StateProps> = ({
          <button
             className="btn btn-outline-primary dropdown-toggle"
             type="button"
-            id="dropdownMenuButton"
+            id="dropdownMultiselect3StateButton"
             data-bs-toggle="dropdown"
             aria-expanded="false"
          >
             {label}
          </button>
 
-         {/* Dropdown menu */}
-         <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownMultiselect3StateButton">
-            {options.map((option) => {
-               const isDisabled = disabledOptions.includes(option);
-               return (
-                  <li key={option} className={`dropdown-item${isDisabled ? " disabled" : ""}`}>
-                     <div className="form-check d-flex align-items-center">
-                        <input
-                           className="form-check-input me-2"
-                           type="checkbox"
-                           id={`checkbox-${option}`}
-                        checked={selected[option] === "tick"}
-                        onChange={() => handleCheckboxChange(option)}
-                     />
-                     <label
-                        className={`form-check-label ${selected[option]}`}
-                        htmlFor={`checkbox-${option}`}
+         {/* Dropdown menu with grid layout */}
+         <div className="dropdown-menu dropdown-menu-light p-3" aria-labelledby="dropdownMultiselect3StateButton" style={{ minWidth: "400px" }}>
+            <div className="dropdown-grid">
+               {options.map((option) => {
+                  const isDisabled = disabledOptions.includes(option);
+                  return (
+                     <div 
+                        key={option} 
+                        className={`dropdown-grid-item ${isDisabled ? "disabled" : ""}`}
                      >
-                        {option}
-                     </label>
-                  </div>
-               </li>
-               );
-            })}
-         </ul>
+                        <div className="form-check">
+                           <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id={`checkbox-${option}`}
+                              checked={selected[option] === "tick"}
+                              onChange={() => !isDisabled && handleCheckboxChange(option)}
+                              disabled={isDisabled}
+                           />
+                           <label
+                              className={`form-check-label ${selected[option]} ${isDisabled ? "text-muted" : ""}`}
+                              htmlFor={`checkbox-${option}`}
+                           >
+                              {option}
+                           </label>
+                        </div>
+                     </div>
+                  );
+               })}
+            </div>
+         </div>
+
       </div>
    );
 };

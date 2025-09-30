@@ -16,3 +16,52 @@
  left: -20px; /* Adjust position based on your layout */
  top: 0;
 }
+
+/* Grid layout for dropdown */
+.dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 columns */
+  gap: 8px; /* Space between grid items */
+}
+
+.dropdown-grid-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.dropdown-grid-item:hover:not(.disabled) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-grid-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dropdown-grid-item .form-check {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.dropdown-grid-item .form-check-input {
+  margin-right: 6px;
+  margin-top: 0;
+}
+
+.dropdown-grid-item .form-check-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* Ensure dropdown menu has enough width */
+.dropdown-menu {
+  min-width: auto;
+}
