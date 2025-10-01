@@ -1,25 +1,27 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import "./MovieCastList.css";
+import "./CastListSlider.css";
 
-type MovieCast = {
+type Cast = {
     personId: number;
     name: string;
     character: string;
     profilePath: string;
     gender: number;
+    totalEpisodes: number;
 };
 
-type MovieCastListProps = {
-    profiles?: MovieCast[];
+type CastListSliderProps = {
+    profiles?: Cast[];
+    childType: "movie" | "tv";
 };
 
-const MovieCastList: React.FC<MovieCastListProps> = ({ profiles = [] }) => {
+const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childType }) => {
     const navigate = useNavigate();
 
     const [hoveredProfileId, setHoveredProfileId] = useState<number | null>(null);
 
-    const getProfileImage = (profile: MovieCast) => {
+    const getProfileImage = (profile: Cast) => {
         if (profile.profilePath)
             return `https://www.themoviedb.org/t/p/original${profile.profilePath}`;
         else {
@@ -62,6 +64,12 @@ const MovieCastList: React.FC<MovieCastListProps> = ({ profiles = [] }) => {
                         <p title={profile.character} className={hoveredProfileId === profile.personId ? 'expanded' : ''}>
                             {hoveredProfileId === profile.personId ? profile.character : profile.character.slice(0, 10) + '...'}
                         </p>
+
+                        {childType === "tv" && (
+                            <p>
+                                {profile.totalEpisodes} eps
+                            </p>
+                        )}
                     </div>
                 </div>
             ))}
@@ -70,4 +78,4 @@ const MovieCastList: React.FC<MovieCastListProps> = ({ profiles = [] }) => {
 };
 
 
-export default MovieCastList;
+export default CastListSlider;

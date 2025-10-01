@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axiosInstance from '../utils/axiosInstance';
 import "../components/thymeleafCss.css";
 import Alert from "../components/Alert";
-import MovieCastList from "@/components/MovieCastList";
+import CastListSlider from "@/components/CastListSlider";
 import NavigationBar from "@/components/SeasonPage/NavigationBar";
 import ProgressBar from '../components/ProgressBar';
 
@@ -20,18 +20,20 @@ interface Season {
     totalRuntime: number;
     watchedRuntime: number;
     lastModified: string;
-    seasonCast: MovieCast[];
+    seasonCast: Cast[];
+	seasonCastGuests: Cast[];
     episodes: Episode[];
     totalSeasons: number;
     hasSpecials: boolean;
 }
 
-interface MovieCast {
+interface Cast {
     personId: number;
     name: string;
     character: string;
     profilePath: string;
     gender: number;
+    totalEpisodes: number;
 }
 
 interface Episode {
@@ -77,6 +79,8 @@ const SeasonPage = () => {
 
     const [totalSeasons, setTotalSeasons] = useState(0);
     const [hasSpecials, setHasSpecials] = useState(false);
+
+    const [seasonCastActiveTab, setSeasonCastActiveTab] = useState<"regulars" | "guests">("regulars");
 
     const fetchSeasonData = async (tmdbId: string, seasonNo: string) => {
         try {
@@ -332,8 +336,30 @@ const SeasonPage = () => {
             <br />
 
             <h3>Actors - Season Regulars</h3>
+            
+            {/* Tab buttons */}
+            <div className="d-flex mb-3">
+                <button
+                    className={`btn ${seasonCastActiveTab === "regulars" ? "btn-primary" : "btn-outline-primary"} me-2`}
+                    onClick={() => setSeasonCastActiveTab("regulars")}
+                    >
+                    Season Regulars ({season?.seasonCast?.length ?? 0})
+                </button>
+                <button
+                    className={`btn ${seasonCastActiveTab === "guests" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setSeasonCastActiveTab("guests")}
+                    >
+                    Guest Stars ({season?.seasonCastGuests?.length ?? 0})
+                </button>
+            </div>
+
+            {/* Tab content */}
             <div className="cast-slider-container">
-                <MovieCastList profiles={season?.seasonCast} />
+            {seasonCastActiveTab === "regulars" ? (
+                <CastListSlider profiles={season?.seasonCast} childType='movie' />
+            ) : (
+                <CastListSlider profiles={season?.seasonCastGuests} childType='tv' />
+            )}
             </div>
 
             <br />

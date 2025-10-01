@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import ProgressBar from '../components/ProgressBar';
-import MovieCastList from '../components/MovieCastList';
+import CastListSlider from '../components/CastListSlider';
 import SeasonsList from '../components/ServiePage/SeasonsList';
 import { format } from 'date-fns';
 import Alert from '../components/Alert';
@@ -28,12 +28,13 @@ interface SeasonDtoServiePage {
     totalWatchedRuntime: number;
 }
 
-interface MovieCast {
+interface Cast {
     personId: number;
     name: string;
     character: string;
     profilePath: string;
     gender: number;
+    totalEpisodes: number;
 }
 
 interface ServieDto {
@@ -62,7 +63,9 @@ interface ServieDto {
     episodesWatched: number;
     completed: boolean;
     rated: number;
-    cast: MovieCast[];
+    cast: Cast[];
+    seriesCastRegulars: Cast[];
+	seriesCastGuests: Cast[];
     voteAverage: number;
     voteCount: number;
     keywords: { id: number; name: string }[];
@@ -139,6 +142,8 @@ const ServiePage = () => {
             fetchData();
 
     }, [tmdbId, childType]);
+
+    const [seriesCastActiveTab, setSeriesCastActiveTab] = useState<"regulars" | "guests">("regulars");
 
     const lastModified: string | Date = new Date();
 
@@ -387,10 +392,42 @@ const ServiePage = () => {
                             <>
                                 <h4>Cast</h4>
                                 <div className="cast-slider-container">
-                                    <MovieCastList profiles={data?.cast} />
+                                    <CastListSlider profiles={data?.cast} childType={childType} />
                                 </div>
                             </>
                         )}
+
+                        {childType === "tv" && (
+                            <>
+                                <h4>Cast</h4>
+
+                                {/* Tab buttons */}
+                                <div className="d-flex mb-3">
+                                    <button
+                                        className={`btn ${seriesCastActiveTab === "regulars" ? "btn-primary" : "btn-outline-primary"} me-2`}
+                                        onClick={() => setSeriesCastActiveTab("regulars")}
+                                        >
+                                        Series Regulars ({data?.seriesCastRegulars?.length ?? 0})
+                                    </button>
+                                    <button
+                                        className={`btn ${seriesCastActiveTab === "guests" ? "btn-primary" : "btn-outline-primary"}`}
+                                        onClick={() => setSeriesCastActiveTab("guests")}
+                                        >
+                                        Guest Stars ({data?.seriesCastGuests?.length ?? 0})
+                                    </button>
+                                </div>
+
+                                {/* Tab content */}
+                                <div className="cast-slider-container">
+                                {seriesCastActiveTab === "regulars" ? (
+                                    <CastListSlider profiles={data?.seriesCastRegulars} childType={childType} />
+                                ) : (
+                                    <CastListSlider profiles={data?.seriesCastGuests} childType={childType} />
+                                )}
+                                </div>
+                            </>
+                        )}
+
 
                         <br />
 
