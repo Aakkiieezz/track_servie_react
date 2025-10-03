@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./ProfilePic.module.css";
 import { handleLogout } from "../../utils/auth";
 
+
 const ProfilePic: React.FC = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate(); // For routing
@@ -44,6 +45,7 @@ const ProfilePic: React.FC = () => {
             {isDropdownOpen && (
                 <ul className={styles.dropdownMenu}>
                     <li onClick={handleSettings}>Settings</li>
+                    <li onClick={() => navigate("/watchlist")}>Watchlist</li>
                     <li onClick={() => handleLogout(navigate)}>Logout</li>
                 </ul>
             )}

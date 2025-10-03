@@ -62,13 +62,19 @@ const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childTyp
                         </p>
                         {/* Character Name */}
                         <p title={profile.character} className={hoveredProfileId === profile.personId ? 'expanded' : ''}>
-                            {hoveredProfileId === profile.personId ? profile.character : profile.character.slice(0, 10) + '...'}
+                            {hoveredProfileId === profile.personId ? `as ${profile.character}` : profile.character.slice(0, 10) + '...'}
                         </p>
 
+                        {/* Episodes */}
                         {childType === "tv" && (
-                            <p>
-                                {profile.totalEpisodes} eps
-                            </p>
+                        <p 
+                            title={`${profile.totalEpisodes} eps`} 
+                            className={hoveredProfileId === profile.personId ? 'expanded' : ''}
+                        >
+                            {hoveredProfileId === profile.personId 
+                            ? `${profile.totalEpisodes} episodes` 
+                            : `${profile.totalEpisodes} eps`}
+                        </p>
                         )}
                     </div>
                 </div>
@@ -76,6 +82,5 @@ const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childTyp
         </div>
     );
 };
-
 
 export default CastListSlider;
