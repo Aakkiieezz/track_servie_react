@@ -419,11 +419,11 @@ const ServiePage = () => {
 
                                 {/* Tab content */}
                                 <div className="cast-slider-container">
-                                {seriesCastActiveTab === "regulars" ? (
-                                    <CastListSlider profiles={data?.seriesCastRegulars} childType={childType} />
-                                ) : (
-                                    <CastListSlider profiles={data?.seriesCastGuests} childType={childType} />
-                                )}
+                                    {seriesCastActiveTab === "regulars" ? (
+                                        <CastListSlider profiles={data?.seriesCastRegulars} childType={childType} />
+                                    ) : (
+                                        <CastListSlider profiles={data?.seriesCastGuests} childType={childType} />
+                                    )}
                                 </div>
                             </>
                         )}

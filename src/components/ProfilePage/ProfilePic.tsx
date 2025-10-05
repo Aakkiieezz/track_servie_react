@@ -46,6 +46,7 @@ const ProfilePic: React.FC = () => {
                 <ul className={styles.dropdownMenu}>
                     <li onClick={handleSettings}>Settings</li>
                     <li onClick={() => navigate("/watchlist")}>Watchlist</li>
+                    <li onClick={() => navigate("/list")}>Lists</li>
                     <li onClick={() => handleLogout(navigate)}>Logout</li>
                 </ul>
             )}
