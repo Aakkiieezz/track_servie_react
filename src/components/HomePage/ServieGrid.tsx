@@ -4,6 +4,7 @@ import ProgressBar from "../ProgressBar";
 import axiosInstance from '../../utils/axiosInstance';
 import Alert from '../Alert';
 import "../thymeleafCss.css";
+import ServieOptionsModal from "../ServieOptionsModal";
 
 interface Servie {
   // Servie fields
@@ -151,165 +152,216 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
     }
   }
 
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [selectedServie, setSelectedServie] = useState<{ tmdbId: number; childtype: string } | null>(null);
+
+  const openOptionsMenu = (tmdbId: number, childtype: string) => {
+    setSelectedServie({ tmdbId, childtype });
+    setShowOptionsModal(true);
+  };
+
+  const closeOptionsMenu = () => {
+    setShowOptionsModal(false);
+    setSelectedServie(null);
+  };
+
+  const handleModalSuccess = (message: string) => {
+    setAlert({ type: "success", message });
+  };
+
+  const handleModalError = (message: string) => {
+    setAlert({ type: "danger", message });
+  };
+
   return (
-    <div className="row center">
-      {servies.map((servie) => {
+    <>
+      <div className="row center">
+        {servies.map((servie) => {
+          const key = `${servie.childtype}-${servie.tmdbId}`;
+          const watchStateRender = servieWatchState[key];
+          const likeStateRender = servieLikedState[key];
+          return (
+            <div
+              className="col-xxl-1 col-sm-2 col-3 image-container poster"
+              key={key}
+            >
+              <div>
+                {/* Movie Card */}
+                {servie.childtype === "movie" && (
+                  <>
+                    <img
+                      className="rounded image-border"
+                      src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace('.jpg', '.webp')}`}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null; // prevent infinite loop if fallback also fails
+                        e.currentTarget.src = `https://www.themoviedb.org/t/p/original${servie.posterPath}`;
+                      }}
+                      alt={servie.title}
+                    />
+                    <div className="buttons-container rounded">
+                      <Link to='/servie' state={{ childType: "movie", tmdbId: servie.tmdbId }}>
+                        <strong>{servie.title}</strong>
+                      </Link>
+                      <br />
+                      {servie.releaseDate && (
+                        <span>{new Date(servie.releaseDate).getFullYear()}</span>
+                      )}
+                      <br />
 
-        const key = `${servie.childtype}-${servie.tmdbId}`;
-        const watchStateRender = servieWatchState[key];
-        const likeStateRender = servieLikedState[key];
-        return (
-          <div
-            className="col-xxl-1 col-sm-2 col-3 image-container poster"
-            key={key}
-          >
-            {/* Alert Component */}
-            {alert && (
-              <Alert
-                type={alert.type}
-                message={alert.message}
-                onClose={() => setAlert(null)}
-              />
-            )}
+                      <a
+                        href="#"
+                        onClick={() =>
+                          toggleWatch(servie.childtype, servie.tmdbId)
+                        }
+                      >
+                        {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
+                      </a>
+                      <a href="#" onClick={() => toggleLike(servie.childtype, servie.tmdbId)}>
+                        <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
+                      </a>
+                      <a
+                        href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
+                      >
+                        <i className="bi bi-file-image"></i>
+                      </a>
 
-            <div>
-              {/* Movie Card */}
-              {servie.childtype === "movie" && (
-                <>
-                  <img
-                    className="rounded image-border"
-                    src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace('.jpg', '.webp')}`}
-                    onError={(e) => {
-                      e.currentTarget.onerror = null; // prevent infinite loop if fallback also fails
-                      e.currentTarget.src = `https://www.themoviedb.org/t/p/original${servie.posterPath}`;
-                    }}
-                    alt={servie.title}
-                  />
-                  <div className="buttons-container rounded">
-                    <Link to='/servie' state={{ childType: "movie", tmdbId: servie.tmdbId }}>
-                      <strong>{servie.title}</strong>
-                    </Link>
-                    <br />
-                    {servie.releaseDate && (
-                      <span>{new Date(servie.releaseDate).getFullYear()}</span>
-                    )}
-                    <br />
+                      <a
+                        href="#"
+                        onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
+                      >
+                        <i className="bi bi-clock-fill"></i>
+                      </a>
 
-                    <a
-                      href="#"
-                      onClick={() =>
-                        toggleWatch(servie.childtype, servie.tmdbId)
-                      }
-                    >
-                      {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
-                    </a>
-                    <a href="#" onClick={() => toggleLike(servie.childtype, servie.tmdbId)}>
-                      <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
-                    </a>
-                    <a
-                      href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
-                    >
-                      <i className="bi bi-file-image"></i>
-                    </a>
+                      <a
+                        href="#"
+                        onClick={() => removeServie(servie.tmdbId, servie.childtype)}
+                      >
+                        <i className="bi bi-x-circle-fill"></i>
+                      </a>
 
-                    <a
-                      href="#"
-                      onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
-                    >
-                      <i className="bi bi-clock-fill"></i>
-                    </a>
+                      <a href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          openOptionsMenu(servie.tmdbId, servie.childtype);
+                        }}
+                      >
+                        <i className="bi bi-three-dots-vertical"></i>
+                      </a>
+                    </div>
+                  </>
+                )}
 
-                    <a
-                      href="#"
-                      onClick={() => removeServie(servie.tmdbId, servie.childtype)}
-                    >
-                      <i className="bi bi-x-circle-fill"></i>
-                    </a>
-                  </div>
-                </>
-              )}
+                {/* TV Show Card */}
+                {servie.childtype === "tv" && (
+                  <>
+                    <img
+                      className="rounded image-border"
+                      src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace('.jpg', '.webp')}`}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null; // prevent infinite loop if fallback also fails
+                        e.currentTarget.src = `https://www.themoviedb.org/t/p/original${servie.posterPath}`;
+                      }}
+                      alt={servie.title}
+                    />
+                    <div className="buttons-container rounded">
+                      <Link to='/servie' state={{ childType: "tv", tmdbId: servie.tmdbId }}>
+                        <strong>{servie.title}</strong>
+                      </Link>
+                      <br />
+                      {servie.firstAirDate && (
+                        <span>
+                          {new Date(servie.firstAirDate).getFullYear()} -{" "}
+                          {new Date(servie.lastAirDate!).getFullYear() ===
+                            new Date().getFullYear()
+                            ? "present"
+                            : new Date(servie.lastAirDate!).getFullYear()}
+                        </span>
+                      )}
+                      <br />
+                      {servie.episodesWatched && servie.totalEpisodes && (
+                        <span>
+                          {servie.episodesWatched}/{servie.totalEpisodes}
+                        </span>
+                      )}
+                      <br />
+                      <a
+                        href="#"
+                        onClick={() =>
+                          toggleWatch(servie.childtype, servie.tmdbId)
+                        }
+                      >
+                        {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
+                      </a>
 
-              {/* TV Show Card */}
-              {servie.childtype === "tv" && (
-                <>
-                  <img
-                    className="rounded image-border"
-                    src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace('.jpg', '.webp')}`}
-                    onError={(e) => {
-                      e.currentTarget.onerror = null; // prevent infinite loop if fallback also fails
-                      e.currentTarget.src = `https://www.themoviedb.org/t/p/original${servie.posterPath}`;
-                    }}
-                    alt={servie.title}
-                  />
-                  <div className="buttons-container rounded">
-                    <Link to='/servie' state={{ childType: "tv", tmdbId: servie.tmdbId }}>
-                      <strong>{servie.title}</strong>
-                    </Link>
-                    <br />
-                    {servie.firstAirDate && (
-                      <span>
-                        {new Date(servie.firstAirDate).getFullYear()} -{" "}
-                        {new Date(servie.lastAirDate!).getFullYear() ===
-                          new Date().getFullYear()
-                          ? "present"
-                          : new Date(servie.lastAirDate!).getFullYear()}
-                      </span>
-                    )}
-                    <br />
-                    {servie.episodesWatched && servie.totalEpisodes && (
-                      <span>
-                        {servie.episodesWatched}/{servie.totalEpisodes}
-                      </span>
-                    )}
-                    <a
-                      href="#"
-                      onClick={() =>
-                        toggleWatch(servie.childtype, servie.tmdbId)
-                      }
-                    >
-                      {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
-                    </a>
+                      <a href="#" onClick={() => toggleLike(servie.childtype, servie.tmdbId)}>
+                        <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
+                      </a>
+                      <a
+                        href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
+                      >
+                        <i className="bi bi-file-image"></i>
+                      </a>
 
-                    <a href="#" onClick={() => toggleLike(servie.childtype, servie.tmdbId)}>
-                      <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
-                    </a>
-                    <a
-                      href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
-                    >
-                      <i className="bi bi-file-image"></i>
-                    </a>
-
-                    {/* <a
+                      {/* <a
                       href={`/toggleWatch-servie/list/${servie.tmdbId}?childtype=${servie.childtype}`}
                     >
                       <i className="bi bi-clock-fill"></i>
                     </a> */}
-                    <a
-                      href="#"
-                      onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
-                    >
-                      <i className="bi bi-clock-fill"></i>
-                    </a>
+                      <a
+                        href="#"
+                        onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
+                      >
+                        <i className="bi bi-clock-fill"></i>
+                      </a>
 
-                    <a
-                      href="#"
-                      onClick={() => removeServie(servie.tmdbId, servie.childtype)}
-                    >
-                      <i className="bi bi-x-circle-fill"></i>
-                    </a>
+                      <a
+                        href="#"
+                        onClick={() => removeServie(servie.tmdbId, servie.childtype)}
+                      >
+                        <i className="bi bi-x-circle-fill"></i>
+                      </a>
 
-                    {/* Progress bar */}
-                    {servie.episodesWatched && servie.totalEpisodes &&
-                      (<ProgressBar episodesWatched={servie.episodesWatched} totalEpisodes={servie.totalEpisodes} />)
-                    }
-                  </div>
-                </>
-              )}
+                      <a href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          openOptionsMenu(servie.tmdbId, servie.childtype);
+                        }}
+                      >
+                        <i className="bi bi-three-dots-vertical"></i>
+                      </a>
+
+                      {/* Progress bar */}
+                      {servie.episodesWatched && servie.totalEpisodes &&
+                        (<ProgressBar episodesWatched={servie.episodesWatched} totalEpisodes={servie.totalEpisodes} />)
+                      }
+                    </div>
+                  </>
+                )}
+
+              </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+
+      {/* Alert Component */}
+      {alert && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
+
+      {/* Options Modal */}
+      <ServieOptionsModal
+        isOpen={showOptionsModal}
+        onClose={closeOptionsMenu}
+        servie={selectedServie}
+        onSuccess={handleModalSuccess}
+        onError={handleModalError}
+      />
+    </>
   );
 };
 
