@@ -278,12 +278,27 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                         </span>
                       )}
                       <br />
-                      {servie.episodesWatched && servie.totalEpisodes && (
+                      
+                      {/* {servie.episodesWatched && servie.totalEpisodes && (
                         <span>
                           {servie.episodesWatched}/{servie.totalEpisodes}
                         </span>
-                      )}
+                      )} */}
+
+                      <span>{servie.episodesWatched}/{servie.totalEpisodes}</span>
+                      
                       <br />
+
+                      {/* Progress bar */}
+                      {servie.totalEpisodes != null && servie.episodesWatched != null && (
+                        <ProgressBar 
+                          episodesWatched={servie.episodesWatched} 
+                          totalEpisodes={servie.totalEpisodes} 
+                        />
+                      )}
+
+                      <br />
+
                       <a
                         href="#"
                         onClick={() =>
@@ -329,11 +344,6 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                       >
                         <i className="bi bi-three-dots-vertical"></i>
                       </a>
-
-                      {/* Progress bar */}
-                      {servie.episodesWatched && servie.totalEpisodes &&
-                        (<ProgressBar episodesWatched={servie.episodesWatched} totalEpisodes={servie.totalEpisodes} />)
-                      }
                     </div>
                   </>
                 )}
