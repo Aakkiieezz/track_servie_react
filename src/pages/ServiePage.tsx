@@ -10,6 +10,18 @@ import "../components/thymeleafCss.css";
 import HalfStarRating from '@/components/HalfStarRating';
 // import YouTubePopup from './YoutubePopup';
 import VideoPopup from './VideoPopup';
+import MovieReviewModal from '@/components/MovieReviewModal';
+
+interface ReviewData {
+    tmdbId: number;
+    childType: string;
+    watchedOn: string;
+    watchedBefore: boolean;
+    review: string;
+    tags: string[];
+    rating: number;
+    liked: boolean;
+}
 
 interface GenreDtoServiePage {
     id: number;
@@ -99,6 +111,8 @@ const ServiePage = () => {
 
     // const [seasonRuntime, setSeasonRuntime] = useState<{ [key: string]: number }>({});
     const totalEpisodes = data?.totalEpisodes || 1;
+
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -223,6 +237,34 @@ const ServiePage = () => {
             setRating(ratingCurrent);
             console.error('Failed to update watch status', error);
             setAlert({ type: "danger", message: "Failed to update watch status !!" });
+        }
+    };
+
+    const handleSaveReview = async (reviewData: ReviewData) => {
+        try {
+            const response = await axiosInstance.post(
+                `/servies/review/${tmdbId}`,
+                { review: reviewData.review },
+                {
+                  params: {
+                    type: reviewData.childType,
+                    rating: reviewData.rating,
+                  },
+                }
+            );
+            
+            if (response.status === 200 || response.status === 201) {
+                setAlert({ 
+                    type: "success", 
+                    message: "Review saved successfully!" 
+                });
+            }
+        } catch (error) {
+            console.error('Failed to save review', error);
+            setAlert({ 
+                type: "danger", 
+                message: "Failed to save review!" 
+            });
         }
     };
 
@@ -428,6 +470,38 @@ const ServiePage = () => {
                             </>
                         )}
 
+                        <br />
+
+                        {/* Review Button - Add this in the appropriate location */}
+                        <div style={{ margin: '20px 0' }}>
+                            <button
+                                onClick={() => setIsReviewModalOpen(true)}
+                                className="btn btn-primary"
+                                style={{
+                                    padding: '10px 24px',
+                                    fontSize: '16px',
+                                    fontWeight: 600
+                                }}
+                            >
+                                <i className="bi bi-pencil-square me-2"></i>
+                                Add Review
+                            </button>
+                        </div>
+
+                        {/* Add the Modal Component at the end of your return statement, before the closing </> */}
+                        <MovieReviewModal
+                            isOpen={isReviewModalOpen}
+                            onClose={() => setIsReviewModalOpen(false)}
+                            onSave={handleSaveReview}
+                            tmdbId={tmdbId}
+                            childType={childType}
+                            title={data?.title || ''}
+                            year={childType === 'movie' 
+                                ? (data?.releaseDate ? new Date(data.releaseDate).getFullYear().toString() : '')
+                                : (data?.firstAirDate ? new Date(data.firstAirDate).getFullYear().toString() : '')
+                            }
+                            posterPath={`https://www.themoviedb.org/t/p/w500${data?.backdropPath || ''}`}
+                        />
 
                         <br />
 
