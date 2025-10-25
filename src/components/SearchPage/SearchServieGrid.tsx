@@ -81,7 +81,7 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
   const toggleWatchList = async (tmdbId: number, childType: "movie" | "tv") => {
     try {
       const response = await axiosInstance.put(
-        `list/${tmdbId}`,
+        `watchlist/${tmdbId}`,
         null,
         {
           params: {

@@ -1,5 +1,5 @@
 // ServieOptionsModal.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 
 interface ServieOptionsModalProps {
@@ -9,6 +9,7 @@ interface ServieOptionsModalProps {
         tmdbId: number;
         childtype: string;
     } | null;
+    listIds: number[];
     onSuccess: (message: string) => void;
     onError: (message: string) => void;
 }
@@ -28,6 +29,7 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     isOpen,
     onClose,
     servie,
+    listIds,
     onSuccess,
     onError,
 }) => {
@@ -35,11 +37,20 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     const [userLists, setUserLists] = useState<ListDto2[]>([]);
     const [loadingLists, setLoadingLists] = useState(false);
 
+    // Reset state when modal opens/closes
+    useEffect(() => {
+        if (!isOpen) {
+            setShowListModal(false);
+            setUserLists([]);
+        }
+    }, [isOpen]);
+
     if (!isOpen || !servie) return null;
 
     const openListModal = async () => {
         console.log("here");
         setLoadingLists(true);
+
         try {
             const response = await axiosInstance.get<ListDtoDetails>('list/get-all');
             setUserLists(response.data.lists);
@@ -55,6 +66,7 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     const closeListModal = () => {
         setShowListModal(false);
         setUserLists([]);
+        onClose(); // Close the entire modal when list modal closes
     };
 
     const addToList = async (listId: number) => {
@@ -128,21 +140,31 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                                     <p className="text-muted text-center">No lists available</p>
                                 ) : (
                                     <div className="list-group">
-                                        {userLists.map((list) => (
+                                        {userLists.map((list) => {
+                                        const isAlreadyAdded = listIds.includes(list.id);
+                                        return (
                                             <button
                                                 key={list.id}
-                                                className="list-group-item list-group-item-action"
+                                                className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${
+                                                    isAlreadyAdded ? 'list-group-item-success' : ''
+                                                }`}
                                                 onClick={() => addToList(list.id)}
+                                                disabled={isAlreadyAdded}
                                             >
-                                                <div className="d-flex w-100 justify-content-between">
+                                                <div>
                                                     <h6 className="mb-1">{list.name}</h6>
-                                                    <small>{list.totalServiesCount} items</small>
+                                                    {list.description && (
+                                                        <small className="text-muted">{list.description}</small>
+                                                    )}
                                                 </div>
-                                                {list.description && (
-                                                    <small className="text-muted">{list.description}</small>
-                                                )}
+
+                                                <div className="text-end">
+                                                    <small className="me-2 text-muted">{list.totalServiesCount} items</small>
+                                                    {isAlreadyAdded && <i className="bi bi-check2-circle text-success fs-5"></i>}
+                                                </div>
                                             </button>
-                                        ))}
+                                        );
+                                    })}
                                     </div>
                                 )}
                             </div>

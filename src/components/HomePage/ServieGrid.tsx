@@ -25,6 +25,9 @@ interface Servie {
   episodesWatched?: number;
   completed: boolean;
   liked: boolean;
+
+  // Separate
+  listIds: number[];
 }
 
 interface ServieGridProps {
@@ -132,9 +135,10 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
   };
 
   const toggleWatchList = async (tmdbId: number, childType: "movie" | "tv") => {
+    console.log("watchlist toggle");
     try {
       const response = await axiosInstance.put(
-        `list/${tmdbId}`,
+        `watchlist/${tmdbId}`,
         null,
         {
           params: {
@@ -154,9 +158,11 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
 
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [selectedServie, setSelectedServie] = useState<{ tmdbId: number; childtype: string } | null>(null);
+  const [listIds, setListIds] = useState<number[]>([]);
 
-  const openOptionsMenu = (tmdbId: number, childtype: string) => {
+  const openOptionsMenu = (tmdbId: number, childtype: string, listIds: number[]) => {
     setSelectedServie({ tmdbId, childtype });
+    setListIds(listIds);
     setShowOptionsModal(true);
   };
 
@@ -242,7 +248,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                       <a href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          openOptionsMenu(servie.tmdbId, servie.childtype);
+                          openOptionsMenu(servie.tmdbId, servie.childtype, servie.listIds);
                         }}
                       >
                         <i className="bi bi-three-dots-vertical"></i>
@@ -339,7 +345,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                       <a href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          openOptionsMenu(servie.tmdbId, servie.childtype);
+                          openOptionsMenu(servie.tmdbId, servie.childtype, servie.listIds);
                         }}
                       >
                         <i className="bi bi-three-dots-vertical"></i>
@@ -368,6 +374,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
         isOpen={showOptionsModal}
         onClose={closeOptionsMenu}
         servie={selectedServie}
+        listIds={listIds}
         onSuccess={handleModalSuccess}
         onError={handleModalError}
       />
