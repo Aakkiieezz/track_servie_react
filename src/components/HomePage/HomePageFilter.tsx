@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import DropdownMultiselect from "./HomePageFilter/DropdownMultiselect";
-import DropdownMenu3States2 from "./HomePageFilter/DropdownMultiselect3State";
-// import YearRangePicker from "../YearRangePickerProps";
+import DropdownMenu3States from "./HomePageFilter/DropdownMultiselect3State";
 
 interface HomePageFilterProps {
     handleFilterChange: (filters: any) => void;
@@ -11,31 +10,10 @@ interface HomePageFilterProps {
 }
 
 const genreOptions = [
-    "Action",
-    "Adventure",
-    "Animation",
-    "Comedy",
-    "Crime",
-    "Documentary",
-    "Drama",
-    "Family",
-    "Fantasy",
-    "History",
-    "Horror",
-    "Kids",
-    "Music",
-    "Mystery",
-    "News",
-    "Politics",
-    "Reality",
-    "Romance",
-    "Science Fiction",
-    "Soap",
-    "Talk",
-    "TV Movie",
-    "Thriller",
-    "War",
-    "Western",
+    "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary",
+    "Drama", "Family", "Fantasy", "History", "Horror", "Kids", "Music",
+    "Mystery", "News", "Politics", "Reality", "Romance", "Science Fiction",
+    "Soap", "Talk", "TV Movie", "Thriller", "War", "Western",
 ];
 
 // Genres to disable for each type
@@ -63,27 +41,20 @@ const langOptions = [
 ];
 
 const statusOptions = [
-    "Rumored",
-    "Planned",
-    "Pilot",
-    "In Production",
-    "Post Production",
-    "Canceled",
-    "Airing",
-    "Released",
-    "Ended",
+    "Rumored", "Planned", "Pilot", "In Production",
+    "Post Production", "Canceled", "Airing", "Released", "Ended"
 ];
 
 const sortOptions = [
-  { key: "title", label: "Title" },
-  { key: "recent", label: "Recently Added" },
-  { key: "date", label: "Release Date" },
-  { key: "popularity", label: "Popularity" },
-  { key: "voteAverage", label: "Vote Average" },
+    { key: "title", label: "Title" },
+    { key: "recent", label: "Recently Added" },
+    { key: "date", label: "Release Date" },
+    { key: "popularity", label: "Popularity" },
+    { key: "voteAverage", label: "Vote Average" },
 ];
 
 const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, expanded, onExpand, onCollapse }) => {
-    
+
     if (!expanded) {
         return (
             <button
@@ -96,7 +67,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
             </button>
         );
     }
-    
+
     const [type, setType] = useState("");
     const [sortBy, setSortBy] = useState("title");
     const [sortDir, setSortDir] = useState("asc");
@@ -120,14 +91,6 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
     const [languages, setLanguages] = useState<string[]>([]);
     const [statuses, setStatuses] = useState<string[]>([]);
 
-    // const [startYear, setStartYear] = useState("");
-    // const [endYear, setEndYear] = useState("");
-
-    // const [startYear2, setStartYear2] = useState<Date | undefined>(undefined);
-    // const [endYear2, setEndYear2] = useState<Date | undefined>(undefined);
-
-    // const [watched, setWatched] = useState("");
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -139,20 +102,10 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
             type,
             sortBy,
             sortDir,
-
-            tickedGenres2: ticked,
-            crossedGenres2: crossed,
-
+            tickedGenres: ticked,
+            crossedGenres: crossed,
             languages,
-            statuses,
-
-            // startYear,
-            // endYear,
-
-            // startYear2,
-            // endYear2,
-
-            // watched,
+            statuses
         });
     };
 
@@ -235,13 +188,13 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
                         recent: "Recently Added",
                     }[sortBy] || "Sort By"}
                 </button>
-                
+
                 <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="sortByDropdown">
                     {sortOptions.map(({ key, label }) => (
                         <li key={key}>
-                        <button className="dropdown-item" onClick={() => setSortBy(key)}>
-                            {label}
-                        </button>
+                            <button className="dropdown-item" onClick={() => setSortBy(key)}>
+                                {label}
+                            </button>
                         </li>
                     ))}
                 </ul>
@@ -273,7 +226,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
             </div>
 
             {/* 3 states */}
-            <DropdownMenu3States2
+            <DropdownMenu3States
                 label="Genres"
                 options={genreOptions}
                 selected={selected}
@@ -294,34 +247,6 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
                 selected={statuses}
                 setSelected={setStatuses}
             />
-
-            {/* Year Range */}
-            {/* <input
-                type="number"
-                value={startYear}
-                onChange={(e) => setStartYear(e.target.value)}
-                placeholder="Start Year"
-            /> */}
-            {/* <input
-                type="number"
-                value={endYear}
-                onChange={(e) => setEndYear(e.target.value)}
-                placeholder="End Year"
-            /> */}
-
-            {/* <YearRangePicker
-                startYear2={startYear2}
-                endYear2={endYear2}
-                setStartYear2={setStartYear2}
-                setEndYear2={setEndYear2}
-            /> */}
-
-            {/* Watched */}
-            {/* <select value={watched} onChange={(e) => setWatched(e.target.value)}>
-                <option value="">All</option>
-                <option value="true">Watched</option>
-                <option value="false">Unwatched</option>
-            </select> */}
 
             <button type="submit">Search</button>
         </form>

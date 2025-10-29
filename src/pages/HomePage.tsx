@@ -33,8 +33,8 @@ interface Filters {
     type: string;
     sortBy: string;
     sortDir: "asc" | "desc";
-    tickedGenres2: string[];
-    crossedGenres2: string[];
+    tickedGenres: string[];
+    crossedGenres: string[];
     languages: string[];
     statuses: string[];
     startYear: string;
@@ -56,8 +56,8 @@ const HomePage: React.FC = () => {
         type: "",
         sortBy: "title",
         sortDir: "asc",
-        tickedGenres2: [],
-        crossedGenres2: [],
+        tickedGenres: [],
+        crossedGenres: [],
         languages: [],
         statuses: [],
         startYear: "",
@@ -88,8 +88,8 @@ const HomePage: React.FC = () => {
                     type: filters.type,
                     languages: filters.languages,
                     statuses: filters.statuses,
-                    selectedGenres: filters.tickedGenres2,
-                    rejectedGenres: filters.crossedGenres2,
+                    selectedGenres: filters.tickedGenres,
+                    rejectedGenres: filters.crossedGenres,
                     sortBy: filters.sortBy,
                     sortDir: filters.sortDir,
                 },

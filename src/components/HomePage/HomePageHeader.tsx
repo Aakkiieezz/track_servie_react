@@ -4,7 +4,7 @@ import HomePageFilter from "./HomePageFilter";
 import ProfilePic from "../ProfilePage/ProfilePic";
 import SearchPageFilter from '../SearchPage/SearchPageFilter';
 
-type SearchType = 'movie' | 'tv' | 'multi' | 'person' | 'collection';
+type SearchType = 'movie' | 'tv' | 'servie' | 'person' | 'collection';
 
 interface SearchFilters {
     query: string;
@@ -39,12 +39,6 @@ const HomePageHeader: React.FC<HomePageHeaderProps> = ({ handleFilterChange }) =
         navigate(`/search?query=${filters.query}&type=${filters.type}`);
     };
 
-    // Learning Purpose
-    const onFilterChange = (filters: any) => {
-        console.log("HomePageHeader -> onFilterChange -> filters : ", filters);
-        handleFilterChange(filters);
-    };
-
     return (
         <header className="d-flex justify-content-between align-items-center p-3">
 
@@ -53,15 +47,10 @@ const HomePageHeader: React.FC<HomePageHeaderProps> = ({ handleFilterChange }) =
                 <img src="/src/assets/logo.png" alt="Logo" style={{ width: "200px" }} />
             </div>
 
-            {/* WORKING PROOF */}
-            {/* <h1 className="text-3xl font-bold underline">
-                Hello world!
-            </h1> */}
-
             {/* Filter Component */}
             {/* <HomePageFilter handleFilterChange={onFilterChange} /> */}
             <HomePageFilter
-                handleFilterChange={onFilterChange}
+                handleFilterChange={handleFilterChange}
                 expanded={isHomeFilterExpanded}
                 onExpand={handleExpandHomeFilter}
                 onCollapse={handleCollapseHomeFilter}
