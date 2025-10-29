@@ -3,7 +3,7 @@ import SearchPageFilter from './SearchPageFilter';
 import ProfilePic from "../ProfilePage/ProfilePic";
 import { Link } from 'react-router-dom';
 
-type SearchType = 'movie' | 'tv' | 'multi' | 'person' | 'collection';
+type SearchType = 'movie' | 'tv' | 'servie' | 'person' | 'collection';
 
 interface SearchFilters {
     query: string;

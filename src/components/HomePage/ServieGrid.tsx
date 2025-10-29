@@ -158,11 +158,9 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
 
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [selectedServie, setSelectedServie] = useState<{ tmdbId: number; childtype: string } | null>(null);
-  const [listIds, setListIds] = useState<number[]>([]);
 
-  const openOptionsMenu = (tmdbId: number, childtype: string, listIds: number[]) => {
+  const openOptionsMenu = (tmdbId: number, childtype: string) => {
     setSelectedServie({ tmdbId, childtype });
-    setListIds(listIds);
     setShowOptionsModal(true);
   };
 
@@ -248,7 +246,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                       <a href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          openOptionsMenu(servie.tmdbId, servie.childtype, servie.listIds);
+                          openOptionsMenu(servie.tmdbId, servie.childtype);
                         }}
                       >
                         <i className="bi bi-three-dots-vertical"></i>
@@ -345,7 +343,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                       <a href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          openOptionsMenu(servie.tmdbId, servie.childtype, servie.listIds);
+                          openOptionsMenu(servie.tmdbId, servie.childtype);
                         }}
                       >
                         <i className="bi bi-three-dots-vertical"></i>
@@ -374,7 +372,6 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
         isOpen={showOptionsModal}
         onClose={closeOptionsMenu}
         servie={selectedServie}
-        listIds={listIds}
         onSuccess={handleModalSuccess}
         onError={handleModalError}
       />
