@@ -1,6 +1,6 @@
-// ServieOptionsModal.tsx
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
+import { useServieListStore } from '../store/useServieListStore';
 
 interface ServieOptionsModalProps {
     isOpen: boolean;
@@ -9,51 +9,53 @@ interface ServieOptionsModalProps {
         tmdbId: number;
         childtype: string;
     } | null;
-    listIds: number[];
     onSuccess: (message: string) => void;
     onError: (message: string) => void;
-}
-
-interface ListDto2 {
-    id: number;
-    name: string;
-    description: string;
-    totalServiesCount: number;
-}
-
-interface ListDtoDetails {
-    lists: ListDto2[];
 }
 
 const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     isOpen,
     onClose,
     servie,
-    listIds,
     onSuccess,
     onError,
 }) => {
+    
     const [showListModal, setShowListModal] = useState(false);
-    const [userLists, setUserLists] = useState<ListDto2[]>([]);
     const [loadingLists, setLoadingLists] = useState(false);
 
-    // Reset state when modal opens/closes
+    // ✅ Zustand store
+    const {
+        fetchAllServieLists,
+        servieListMap,
+        listDetails,
+        addListId,
+        removeListId,
+        fetchListDetails,
+    } = useServieListStore();
+
+    // Reset modal when closed
     useEffect(() => {
-        if (!isOpen) {
-            setShowListModal(false);
-            setUserLists([]);
-        }
+        if (!isOpen) setShowListModal(false);
     }, [isOpen]);
+
+    // Fetch data when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            fetchAllServieLists();
+            fetchListDetails();
+        }
+    }, [isOpen, fetchAllServieLists, fetchListDetails]);
 
     if (!isOpen || !servie) return null;
 
-    const openListModal = async () => {
-        console.log("here");
-        setLoadingLists(true);
+    const servieKey = `${servie.childtype}-${servie.tmdbId}`;
+    const listIds = servieListMap[servieKey] || [];
 
+    const openListModal = async () => {
+        setLoadingLists(true);
         try {
-            const response = await axiosInstance.get<ListDtoDetails>('list/get-all');
-            setUserLists(response.data.lists);
+            await fetchListDetails();
             setShowListModal(true);
         } catch (error) {
             console.error('Failed to fetch lists', error);
@@ -65,19 +67,18 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
 
     const closeListModal = () => {
         setShowListModal(false);
-        setUserLists([]);
         onClose(); // Close the entire modal when list modal closes
     };
 
-    const addToList = async (listId: number) => {
+    // ✅ Add to list (both backend + local)
+    const handleAddToList = async (listId: number) => {
         try {
-
-            const response = await axiosInstance.post(`list/${listId}/add-servie/${servie.childtype}/${servie.tmdbId}`);
-
+            const response = await axiosInstance.post(
+                `list/${listId}/add-servie/${servie.childtype}/${servie.tmdbId}`
+            );
             if (response.status === 200) {
+                addListId(servieKey, listId); // ✅ Update local state instantly
                 onSuccess('Added to list successfully !!');
-                closeListModal();
-                onClose();
             }
         } catch (error) {
             console.error('Failed to add to list', error);
@@ -85,17 +86,36 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
         }
     };
 
+    // ✅ Remove from list (both backend + local)
+    const handleRemoveFromList = async (listId: number) => {
+        try {
+            const response = await axiosInstance.delete(
+                `list/${listId}/remove-servie/${servie.childtype}/${servie.tmdbId}`
+            );
+            if (response.status === 200) {
+                removeListId(servieKey, listId); // ✅ Update local store
+                onSuccess('Removed from list successfully !!');
+            }
+        } catch (error) {
+            console.error('Failed to remove from list', error);
+            onError('Failed to remove from list !!');
+        }
+    };
+
     const handleGiveRating = () => {
         console.log('Give rating for:', servie);
         onClose();
-        // Implement rating functionality here
     };
 
     return (
         <>
-            {/* Options Modal */}
+            {/* Main options modal */}
             {!showListModal && (
-                <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                <div
+                    className="modal show d-block"
+                    tabIndex={-1}
+                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                >
                     <div className="modal-dialog modal-dialog-centered modal-sm">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -110,7 +130,7 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                                         disabled={loadingLists}
                                     >
                                         <i className="bi bi-list-ul me-2"></i>
-                                        {loadingLists ? 'Loading...' : 'Add to List'}
+                                        {loadingLists ? 'Loading...' : 'Add / Remove from List'}
                                     </button>
                                     <button
                                         className="list-group-item list-group-item-action"
@@ -126,9 +146,13 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                 </div>
             )}
 
-            {/* List Selection Modal */}
+            {/* List selection modal */}
             {showListModal && (
-                <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                <div
+                    className="modal show d-block"
+                    tabIndex={-1}
+                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                >
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -136,35 +160,43 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                                 <button type="button" className="btn-close" onClick={closeListModal}></button>
                             </div>
                             <div className="modal-body">
-                                {userLists.length === 0 ? (
+                                {listDetails.length === 0 ? (
                                     <p className="text-muted text-center">No lists available</p>
                                 ) : (
                                     <div className="list-group">
-                                        {userLists.map((list) => {
-                                        const isAlreadyAdded = listIds.includes(list.id);
-                                        return (
-                                            <button
-                                                key={list.id}
-                                                className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${
-                                                    isAlreadyAdded ? 'list-group-item-success' : ''
-                                                }`}
-                                                onClick={() => addToList(list.id)}
-                                                disabled={isAlreadyAdded}
-                                            >
-                                                <div>
-                                                    <h6 className="mb-1">{list.name}</h6>
-                                                    {list.description && (
-                                                        <small className="text-muted">{list.description}</small>
-                                                    )}
-                                                </div>
+                                        {listDetails.map((list) => {
+                                            const isAlreadyAdded = listIds.includes(list.id);
+                                            return (
+                                                <button
+                                                    key={list.id}
+                                                    className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${isAlreadyAdded ? 'list-group-item-success' : ''
+                                                        }`}
+                                                    onClick={() =>
+                                                        isAlreadyAdded
+                                                            ? handleRemoveFromList(list.id)
+                                                            : handleAddToList(list.id)
+                                                    }
+                                                >
+                                                    <div>
+                                                        <h6 className="mb-1">{list.name}</h6>
+                                                        {list.description && (
+                                                            <small className="text-muted">{list.description}</small>
+                                                        )}
+                                                    </div>
 
-                                                <div className="text-end">
-                                                    <small className="me-2 text-muted">{list.totalServiesCount} items</small>
-                                                    {isAlreadyAdded && <i className="bi bi-check2-circle text-success fs-5"></i>}
-                                                </div>
-                                            </button>
-                                        );
-                                    })}
+                                                    <div className="text-end">
+                                                        <small className="me-2 text-muted">
+                                                            {list.totalServiesCount} items
+                                                        </small>
+                                                        {isAlreadyAdded ? (
+                                                            <i className="bi bi-check2-circle text-success fs-5"></i>
+                                                        ) : (
+                                                            <i className="bi bi-plus-circle text-primary fs-5"></i>
+                                                        )}
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>
