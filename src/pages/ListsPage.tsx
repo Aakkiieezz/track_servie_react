@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 interface ListDto2 {
@@ -28,7 +27,7 @@ const ListsPage: React.FC = () => {
       setLoading(true);
       console.log("AllListPage -> API Call -> request");
 
-      const response = await axiosInstance.get<ListDtoDetails>(`list/get-all`);
+      const response = await axiosInstance.get<ListDtoDetails>(`list/all`);
 
       if (response.status === 200) {
         console.log("AllListPage -> API Call -> response:", response.data);
