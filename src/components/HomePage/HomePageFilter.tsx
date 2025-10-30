@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useFilterStore } from "../../store/useFilterStore";
 import DropdownMultiselect from "./HomePageFilter/DropdownMultiselect";
 import DropdownMenu3States from "./HomePageFilter/DropdownMultiselect3State";
 
@@ -41,8 +42,8 @@ const langOptions = [
 ];
 
 const statusOptions = [
-    "Rumored", "Planned", "Pilot", "In Production",
-    "Post Production", "Canceled", "Airing", "Released", "Ended"
+    "Rumored", "Planned", "Pilot", "In Production", "Post Production",
+    "Canceled", "Airing", "Released", "Ended",
 ];
 
 const sortOptions = [
@@ -53,7 +54,68 @@ const sortOptions = [
     { key: "voteAverage", label: "Vote Average" },
 ];
 
-const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, expanded, onExpand, onCollapse }) => {
+const HomePageFilter: React.FC<HomePageFilterProps> = ({ 
+    handleFilterChange, 
+    expanded, 
+    onExpand, 
+    onCollapse 
+}) => {
+    // Get persisted filters from Zustand
+    const persistedFilters = useFilterStore();
+    
+    // Initialize local state from Zustand store
+    const [type, setType] = useState(persistedFilters.type);
+    const [sortBy, setSortBy] = useState(persistedFilters.sortBy);
+    const [sortDir, setSortDir] = useState(persistedFilters.sortDir);
+    const [languages, setLanguages] = useState<string[]>(persistedFilters.languages);
+    const [statuses, setStatuses] = useState<string[]>(persistedFilters.statuses);
+    
+    // Initialize selected genres from persisted state
+    const [selected, setSelected] = useState<Record<string, "blank" | "tick" | "cross">>(() => {
+        const initial: Record<string, "blank" | "tick" | "cross"> = genreOptions.reduce(
+            (acc, option) => ({ ...acc, [option]: "blank" as const }), 
+            {} as Record<string, "blank" | "tick" | "cross">
+        );
+        
+        persistedFilters.tickedGenres.forEach(genre => {
+            if (initial[genre] !== undefined) initial[genre] = "tick";
+        });
+        
+        persistedFilters.crossedGenres.forEach(genre => {
+            if (initial[genre] !== undefined) initial[genre] = "cross";
+        });
+        
+        return initial;
+    });
+
+    // Sync local state when component mounts or Zustand state changes
+    useEffect(() => {
+        console.log("HomePageFilter -> Syncing with persisted filters:", persistedFilters);
+        
+        setType(persistedFilters.type);
+        setSortBy(persistedFilters.sortBy);
+        setSortDir(persistedFilters.sortDir);
+        setLanguages(persistedFilters.languages);
+        setStatuses(persistedFilters.statuses);
+        
+        // Sync selected genres
+        const newSelected: Record<string, "blank" | "tick" | "cross"> = genreOptions.reduce(
+            (acc, option) => ({ ...acc, [option]: "blank" as const }), 
+            {} as Record<string, "blank" | "tick" | "cross">
+        );
+        
+        persistedFilters.tickedGenres.forEach(genre => {
+            if (newSelected[genre] !== undefined) newSelected[genre] = "tick";
+        });
+        
+        persistedFilters.crossedGenres.forEach(genre => {
+            if (newSelected[genre] !== undefined) newSelected[genre] = "cross";
+        });
+        
+        setSelected(newSelected);
+    }, [persistedFilters.type, persistedFilters.sortBy, persistedFilters.sortDir,
+        persistedFilters.tickedGenres, persistedFilters.crossedGenres,
+        persistedFilters.languages, persistedFilters.statuses]);
 
     if (!expanded) {
         return (
@@ -68,48 +130,70 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
         );
     }
 
-    const [type, setType] = useState("");
-    const [sortBy, setSortBy] = useState("title");
-    const [sortDir, setSortDir] = useState("asc");
-
     const getSelectedLists = () => {
         const ticked: string[] = [];
         const crossed: string[] = [];
         Object.keys(selected).forEach((key) => {
-            if (selected[key] === "tick")
-                ticked.push(key);
-            else if (selected[key] === "cross")
-                crossed.push(key);
+            if (selected[key] === "tick") ticked.push(key);
+            else if (selected[key] === "cross") crossed.push(key);
         });
         return { ticked, crossed };
     };
-
-    const [selected, setSelected] = useState<
-        Record<string, "blank" | "tick" | "cross">
-    >(genreOptions.reduce((acc, option) => ({ ...acc, [option]: "blank" }), {}));
-
-    const [languages, setLanguages] = useState<string[]>([]);
-    const [statuses, setStatuses] = useState<string[]>([]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         const { ticked, crossed } = getSelectedLists();
 
-        console.log("HomePageFilter -> handleFilterChange() triggered")
-
-        handleFilterChange({
+        const newFilters = {
             type,
             sortBy,
             sortDir,
             tickedGenres: ticked,
             crossedGenres: crossed,
             languages,
-            statuses
+            statuses,
+        };
+
+        console.log("HomePageFilter -> handleSubmit -> new filters:", newFilters);
+
+        // Save to Zustand (which also saves to localStorage via persist middleware)
+        persistedFilters.setFilters(newFilters);
+
+        // Notify parent
+        handleFilterChange(newFilters);
+    };
+
+    const handleReset = () => {
+        // Reset Zustand store
+        persistedFilters.resetFilters();
+        
+        // Reset local state to defaults
+        setType("");
+        setSortBy("title");
+        setSortDir("asc");
+        setLanguages([]);
+        setStatuses([]);
+        
+        // Reset selected genres
+        const resetSelected: Record<string, "blank" | "tick" | "cross"> = genreOptions.reduce(
+            (acc, option) => ({ ...acc, [option]: "blank" as const }), 
+            {} as Record<string, "blank" | "tick" | "cross">
+        );
+        setSelected(resetSelected);
+        
+        // Notify parent with default filters
+        handleFilterChange({
+            type: "",
+            sortBy: "title",
+            sortDir: "asc",
+            tickedGenres: [],
+            crossedGenres: [],
+            languages: [],
+            statuses: []
         });
     };
 
-    // Compute disabled genres based on selected type
     const getDisabledGenres = () => {
         if (type === "movie") return disabledGenresForMovie;
         if (type === "tv") return disabledGenresForSeries;
@@ -118,8 +202,6 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
 
     return (
         <form onSubmit={handleSubmit} className="d-flex flex-row align-items-center">
-
-            {/* Search Icon Button to collapse */}
             <button
                 type="button"
                 className="btn btn-link p-0 me-2"
@@ -130,44 +212,35 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
                 <i className="bi bi-funnel"></i>
             </button>
 
+            <button 
+                type="button" 
+                className="btn btn-outline-secondary ms-2"
+                onClick={handleReset}
+                title="Clear all filters"
+            >
+                <i className="bi bi-x-circle"></i>
+            </button>
+
             {/* Type Dropdown */}
             <div className="dropdown position-relative">
-                {/* Label */}
                 <span
                     className="position-absolute bg-white px-1 text-secondary"
-                    style={{
-                        top: "-10px",
-                        left: "5px",
-                        fontSize: "0.8rem",
-                    }}
-                >Type
-                </span>
+                    style={{ top: "-10px", left: "5px", fontSize: "0.8rem" }}
+                >Type</span>
                 <button
                     className="btn btn-outline-primary dropdown-toggle w-100"
                     type="button"
                     id="typeDropdown"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
-                    style={{ paddingTop: "0.5rem" }} // Adjust padding for extra space below label
+                    style={{ paddingTop: "0.5rem" }}
                 >
                     {type === "" ? "Servies" : type === "movie" ? "Movies" : "Series"}
                 </button>
                 <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="typeDropdown">
-                    <li>
-                        <button className="dropdown-item" onClick={() => setType("")}>
-                            Servies
-                        </button>
-                    </li>
-                    <li>
-                        <button className="dropdown-item" onClick={() => setType("movie")}>
-                            Movies
-                        </button>
-                    </li>
-                    <li>
-                        <button className="dropdown-item" onClick={() => setType("tv")}>
-                            Series
-                        </button>
-                    </li>
+                    <li><button className="dropdown-item" type="button" onClick={() => setType("")}>Servies</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => setType("movie")}>Movies</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => setType("tv")}>Series</button></li>
                 </ul>
             </div>
 
@@ -188,11 +261,10 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
                         recent: "Recently Added",
                     }[sortBy] || "Sort By"}
                 </button>
-
                 <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="sortByDropdown">
                     {sortOptions.map(({ key, label }) => (
                         <li key={key}>
-                            <button className="dropdown-item" onClick={() => setSortBy(key)}>
+                            <button className="dropdown-item" type="button" onClick={() => setSortBy(key)}>
                                 {label}
                             </button>
                         </li>
@@ -212,20 +284,11 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
                     {sortDir === "asc" ? "Ascending" : "Descending"}
                 </button>
                 <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="sortDirDropdown">
-                    <li>
-                        <button className="dropdown-item" onClick={() => setSortDir("asc")}>
-                            Ascending
-                        </button>
-                    </li>
-                    <li>
-                        <button className="dropdown-item" onClick={() => setSortDir("desc")}>
-                            Descending
-                        </button>
-                    </li>
+                    <li><button className="dropdown-item" type="button" onClick={() => setSortDir("asc")}>Ascending</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => setSortDir("desc")}>Descending</button></li>
                 </ul>
             </div>
 
-            {/* 3 states */}
             <DropdownMenu3States
                 label="Genres"
                 options={genreOptions}

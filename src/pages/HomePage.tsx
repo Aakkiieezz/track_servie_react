@@ -4,6 +4,7 @@ import ServieGrid from "../components/HomePage/ServieGrid";
 import PaginationBar from "../components/PaginationBar";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import axiosInstance from '../utils/axiosInstance';
+import { useFilterStore } from '../store/useFilterStore';
 
 interface Servie {
     // Servie fields
@@ -24,9 +25,6 @@ interface Servie {
     episodesWatched?: number;
     completed: boolean;
     liked: boolean;
-
-    // Separate
-    listIds: number[];
 }
 
 interface Filters {
@@ -37,9 +35,6 @@ interface Filters {
     crossedGenres: string[];
     languages: string[];
     statuses: string[];
-    startYear: string;
-    endYear: string;
-    watched: string;
 }
 
 interface Pagination {
@@ -48,50 +43,33 @@ interface Pagination {
 }
 
 const HomePage: React.FC = () => {
+    // Get filters from Zustand store
+    const filters = useFilterStore();
 
     const [servies, setServies] = useState<Servie[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-
-    const defaultFilters = {
-        type: "",
-        sortBy: "title",
-        sortDir: "asc",
-        tickedGenres: [],
-        crossedGenres: [],
-        languages: [],
-        statuses: [],
-        startYear: "",
-        endYear: "",
-        watched: "",
-    };
-
-    const savedFilters = JSON.parse(localStorage.getItem('filters') || JSON.stringify(defaultFilters));
-
-    const [filters, setFilters] = useState<Filters>(savedFilters);
-
     const [, setPageNumber] = useState<number | null>(null);
-
     const [pagination, setPagination] = useState<Pagination>({
         pageNumber: 0,
         totalPages: 0,
     });
 
-    const fetchServies = async (filters: Filters, pageNumber: number | null = null) => {
+    const fetchServies = async (currentFilters: Filters, pageNumber: number | null = null) => {
         try {
             setLoading(true);
 
-            console.log("HomePage -> API Call -> request:", filters, pageNumber);
+            console.log("HomePage -> API Call -> request:", currentFilters, pageNumber);
 
             const response = await axiosInstance.post(
                 "servies",
                 {
-                    type: filters.type,
-                    languages: filters.languages,
-                    statuses: filters.statuses,
-                    selectedGenres: filters.tickedGenres,
-                    rejectedGenres: filters.crossedGenres,
-                    sortBy: filters.sortBy,
-                    sortDir: filters.sortDir,
+                    type: currentFilters.type,
+                    languages: currentFilters.languages,
+                    statuses: currentFilters.statuses,
+                    selectedGenres: currentFilters.tickedGenres,
+                    rejectedGenres: currentFilters.crossedGenres,
+                    sortBy: currentFilters.sortBy,
+                    sortDir: currentFilters.sortDir,
                 },
                 {
                     params: {
@@ -103,7 +81,6 @@ const HomePage: React.FC = () => {
             console.log("HomePage -> API Call -> response:", response.data);
 
             setServies(response.data.servies);
-
             setPagination({
                 pageNumber: response.data.pageNumber,
                 totalPages: response.data.totalPages,
@@ -112,25 +89,51 @@ const HomePage: React.FC = () => {
         } catch (error) {
             console.error("Error fetching servies", error);
         } finally {
-            setLoading(false); // End loading state
+            setLoading(false);
         }
     };
 
+    // Fetch on mount with persisted filters
     useEffect(() => {
-        console.log("HomePage -> useEffect -> default filters :", filters);
-        fetchServies(filters, null);
-    }, []);
+        const currentFilters = {
+            type: filters.type,
+            sortBy: filters.sortBy,
+            sortDir: filters.sortDir as "asc" | "desc",
+            tickedGenres: filters.tickedGenres,
+            crossedGenres: filters.crossedGenres,
+            languages: filters.languages,
+            statuses: filters.statuses,
+        };
+        
+        console.log("HomePage -> useEffect -> fetching with filters:", currentFilters);
+        fetchServies(currentFilters, null);
+    }, []); // Only run on mount
 
     const handleFilterChange = (newFilters: Filters) => {
-        console.log("HomePage -> handleFilterChange -> filter :", newFilters);
-        setFilters(newFilters);
+        console.log("HomePage -> handleFilterChange -> filter:", newFilters);
+        
+        // Update Zustand store
+        filters.setFilters(newFilters);
+        
+        // Fetch with new filters
         fetchServies(newFilters, null);
     };
 
     const handlePageChange = (newPgNumber: number) => {
-        console.log("HomePage -> handlePageChange -> pgNumber : ", newPgNumber);
+        console.log("HomePage -> handlePageChange -> pgNumber:", newPgNumber);
         setPageNumber(newPgNumber);
-        fetchServies(filters, newPgNumber);
+        
+        const currentFilters = {
+            type: filters.type,
+            sortBy: filters.sortBy,
+            sortDir: filters.sortDir as "asc" | "desc",
+            tickedGenres: filters.tickedGenres,
+            crossedGenres: filters.crossedGenres,
+            languages: filters.languages,
+            statuses: filters.statuses,
+        };
+        
+        fetchServies(currentFilters, newPgNumber);
     };
 
     return (

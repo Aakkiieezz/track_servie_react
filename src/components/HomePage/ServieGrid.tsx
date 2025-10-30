@@ -25,9 +25,6 @@ interface Servie {
   episodesWatched?: number;
   completed: boolean;
   liked: boolean;
-
-  // Separate
-  listIds: number[];
 }
 
 interface ServieGridProps {
