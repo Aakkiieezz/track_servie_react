@@ -1,5 +1,5 @@
 import React from "react";
-import "./DropdownMultiselect3StateCss.css"; // Ensure this contains the styles for blank, tick, and cross states
+import "./DropdownMultiselect3StateCss.css";
 
 interface DropdownMultiselect3StateProps {
    label: string;
@@ -65,6 +65,12 @@ const DropdownMultiselect3State: React.FC<DropdownMultiselect3StateProps> = ({
                               onChange={() => !isDisabled && handleCheckboxChange(option)}
                               disabled={isDisabled}
                            />
+                           {/* Cross overlay that appears only in cross state */}
+                           {selected[option] === "cross" && (
+                              <div className="form-check-input cross-overlay">
+                                 ✘
+                              </div>
+                           )}
                            <label
                               className={`form-check-label ${selected[option]} ${isDisabled ? "text-muted" : ""}`}
                               htmlFor={`checkbox-${option}`}
@@ -77,7 +83,6 @@ const DropdownMultiselect3State: React.FC<DropdownMultiselect3StateProps> = ({
                })}
             </div>
          </div>
-
       </div>
    );
 };

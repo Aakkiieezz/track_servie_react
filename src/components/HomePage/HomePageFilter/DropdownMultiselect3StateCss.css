@@ -6,15 +6,31 @@
 /* Style for the cross state (add this class to the label when the cross state is active) */
 .form-check-label.cross {
  color: red; /* Optional: to visually indicate the cross state */
- position: relative;
 }
 
-/* Add the cross symbol next to the label text */
-.form-check-label.cross::after {
- content: "✘"; /* Cross symbol */
- position: absolute;
- left: -20px; /* Adjust position based on your layout */
- top: 0;
+/* Container for the checkbox to position the cross overlay */
+.dropdown-grid-item .form-check {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Cross overlay that appears on top of the checkbox */
+.form-check-input.cross-overlay {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px; /* Match Bootstrap checkbox size */
+  height: 16px; /* Match Bootstrap checkbox size */
+  pointer-events: none;
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: red;
 }
 
 /* Grid layout for dropdown */

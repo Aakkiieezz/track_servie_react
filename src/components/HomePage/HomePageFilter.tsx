@@ -120,7 +120,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({
     if (!expanded) {
         return (
             <button
-                className="btn btn-outline-primary me-2"
+                className="btn btn-outline-primary"
                 onClick={onExpand}
                 style={{ minWidth: 120 }}
                 title="Expand filters"
@@ -142,9 +142,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
         const { ticked, crossed } = getSelectedLists();
-
         const newFilters = {
             type,
             sortBy,
@@ -201,7 +199,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="d-flex flex-row align-items-center">
+        <form onSubmit={handleSubmit} className="d-flex flex-row align-items-center gap-1">
             <button
                 type="button"
                 className="btn btn-link p-0 me-2"
@@ -212,21 +210,18 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({
                 <i className="bi bi-funnel"></i>
             </button>
 
+            {/* Clear Button */}
             <button 
                 type="button" 
-                className="btn btn-outline-secondary ms-2"
+                className="btn btn-outline-danger d-flex align-items-center"
                 onClick={handleReset}
                 title="Clear all filters"
             >
-                <i className="bi bi-x-circle"></i>
+                <i className="bi bi-arrow-counterclockwise"></i>
             </button>
 
             {/* Type Dropdown */}
             <div className="dropdown position-relative">
-                <span
-                    className="position-absolute bg-white px-1 text-secondary"
-                    style={{ top: "-10px", left: "5px", fontSize: "0.8rem" }}
-                >Type</span>
                 <button
                     className="btn btn-outline-primary dropdown-toggle w-100"
                     type="button"
@@ -311,7 +306,10 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({
                 setSelected={setStatuses}
             />
 
-            <button type="submit">Search</button>
+            {/* Apply Button */}
+            <button type="submit" className="btn btn-primary d-flex align-items-center">
+                Apply
+            </button>
         </form>
     );
 };
