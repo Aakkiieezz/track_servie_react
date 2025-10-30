@@ -123,7 +123,9 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
       {/* Search Form */}
       {expanded && (
         <>
-          <button
+          <form onSubmit={handleSearchSubmit} className="d-flex flex-row align-items-center gap-1">
+
+            <button
             type="button"
             className="btn btn-link p-0 me-2"
             onClick={onCollapse}
@@ -133,43 +135,51 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
             <i className="bi bi-search"></i>
           </button>
 
-          <form
-            onSubmit={handleSearchSubmit}
-            style={{
-              ...styles.form,
-              opacity: expanded ? 1 : 0,
-              pointerEvents: expanded ? 'auto' : 'none',
-            }}
-          >
-            {/* Search Input */}
-            <input
-              type="text"
-              id="query"
-              name="query"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => {
-                // 👇 show dropdown again when input focused and we have results
-                if (searchResults.length > 0) setShowDropdown(true);
-              }}
-              placeholder="Search..."
-              style={styles.input}
-            />
+            {/* 🔍 Search Input */}
+            <div className="input-group flex-grow-1">
+              {/* <span className="input-group-text bg-light border-end-0">
+                <i className="bi bi-search"></i>
+              </span> */}
+              <input
+                type="text"
+                id="query"
+                name="query"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={() => {
+                  if (searchResults.length > 0) setShowDropdown(true);
+                }}
+                placeholder="Search..."
+                className="form-control border-start-0"
+                style={{ boxShadow: 'none' }}
+              />
+            </div>
 
-            {/* Dropdown */}
-            <select
-              id="type"
-              name="type"
-              value={type}
-              onChange={(e) => setType(e.target.value as SearchType)}
-              style={styles.select}
-            >
-              <option value="movie">Movie</option>
-              <option value="tv">Series</option>
-              <option value="servie">Servie</option>
-              <option value="person">Person</option>
-              <option value="collection">Collection</option>
-            </select>
+            {/* 🔽 Type Dropdown */}
+            <div className="dropdown">
+              <button
+                className="btn btn-outline-primary dropdown-toggle"
+                type="button"
+                id="typeDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {{
+                  movie: 'Movies',
+                  tv: 'Series',
+                  servie: 'Servies',
+                  person: 'Persons',
+                  collection: 'Collections',
+                }[type] || 'Select Type'}
+              </button>
+              <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="typeDropdown">
+                <li><button className="dropdown-item" type="button" onClick={() => setType('movie')}>Movies</button></li>
+                <li><button className="dropdown-item" type="button" onClick={() => setType('tv')}>Series</button></li>
+                <li><button className="dropdown-item" type="button" onClick={() => setType('servie')}>Servies</button></li>
+                <li><button className="dropdown-item" type="button" onClick={() => setType('person')}>Persons</button></li>
+                <li><button className="dropdown-item" type="button" onClick={() => setType('collection')}>Collections</button></li>
+              </ul>
+            </div>
           </form>
 
           {/* 🔽 Animated dropdown */}
@@ -257,7 +267,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: 'flex',
     alignItems: 'center',
     position: 'relative',
-    transition: 'width 0.3s ease-in-out',
   },
   searchIcon: {
     cursor: 'pointer',
