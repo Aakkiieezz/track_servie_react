@@ -5,6 +5,7 @@ import PaginationBar from "../components/PaginationBar";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import axiosInstance from '../utils/axiosInstance';
 import { useFilterStore } from '../store/useFilterStore';
+import { useSearchParams } from 'react-router-dom';
 
 interface Servie {
     // Servie fields
@@ -46,19 +47,25 @@ const HomePage: React.FC = () => {
     // Get filters from Zustand store
     const filters = useFilterStore();
 
+    const [searchParams, setSearchParams] = useSearchParams();
+
     const [servies, setServies] = useState<Servie[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [, setPageNumber] = useState<number | null>(null);
     const [pagination, setPagination] = useState<Pagination>({
         pageNumber: 0,
         totalPages: 0,
     });
 
-    const fetchServies = async (currentFilters: Filters, pageNumber: number | null = null) => {
+    // Get page from URL (1-based), convert to 0-based for backend
+    // Default to page 1 in URL = page 0 in backend
+    const urlPage = parseInt(searchParams.get('pageNo') || '1');
+    const currentPage = urlPage - 1; // Convert to 0-based
+
+    const fetchServies = async (currentFilters: Filters, pageNo: number) => {
         try {
             setLoading(true);
 
-            console.log("HomePage -> API Call -> request:", currentFilters, pageNumber);
+            console.log("HomePage -> API Call -> request:", currentFilters, pageNo);
 
             const response = await axiosInstance.post(
                 "servies",
@@ -72,9 +79,7 @@ const HomePage: React.FC = () => {
                     sortDir: currentFilters.sortDir,
                 },
                 {
-                    params: {
-                        ...(pageNumber !== null && { pageNumber }),
-                    },
+                    params: { pageNo },
                 }
             );
 
@@ -106,34 +111,36 @@ const HomePage: React.FC = () => {
         };
         
         console.log("HomePage -> useEffect -> fetching with filters:", currentFilters);
-        fetchServies(currentFilters, null);
-    }, []); // Only run on mount
+        fetchServies(currentFilters, currentPage);
+    }, [currentPage]); // Re-fetch when URL page param changes
 
     const handleFilterChange = (newFilters: Filters) => {
         console.log("HomePage -> handleFilterChange -> filter:", newFilters);
         
         // Update Zustand store
         filters.setFilters(newFilters);
+
+        // Reset to first page (remove page param from URL)
+        setSearchParams({});
         
         // Fetch with new filters
-        fetchServies(newFilters, null);
+        fetchServies(newFilters, 0);
     };
 
     const handlePageChange = (newPgNumber: number) => {
         console.log("HomePage -> handlePageChange -> pgNumber:", newPgNumber);
-        setPageNumber(newPgNumber);
+        // setPageNumber(newPgNumber);
+
+        // Convert 0-based backend page to 1-based URL page
+        const urlPageNumber = newPgNumber + 1;
+
+        // Only add page param if not first page
+        if (newPgNumber === 0)
+            setSearchParams({});
+        else
+            setSearchParams({ pageNo: urlPageNumber.toString() });
         
-        const currentFilters = {
-            type: filters.type,
-            sortBy: filters.sortBy,
-            sortDir: filters.sortDir as "asc" | "desc",
-            tickedGenres: filters.tickedGenres,
-            crossedGenres: filters.crossedGenres,
-            languages: filters.languages,
-            statuses: filters.statuses,
-        };
-        
-        fetchServies(currentFilters, newPgNumber);
+        // fetchServies will be called by useEffect watching currentPage
     };
 
     return (
