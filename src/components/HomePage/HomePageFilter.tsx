@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFilterStore } from "../../store/useFilterStore";
 import DropdownMultiselect from "./HomePageFilter/DropdownMultiselect";
 import DropdownMenu3States from "./HomePageFilter/DropdownMultiselect3State";
@@ -46,77 +46,135 @@ const statusOptions = [
     "Canceled", "Airing", "Released", "Ended",
 ];
 
-const sortOptions = [
-    { key: "title", label: "Title" },
-    { key: "recent", label: "Recently Added" },
-    { key: "date", label: "Release Date" },
-    { key: "popularity", label: "Popularity" },
-    { key: "voteAverage", label: "Vote Average" },
-];
+const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, expanded, onExpand, onCollapse }) => {
 
-const HomePageFilter: React.FC<HomePageFilterProps> = ({ 
-    handleFilterChange, 
-    expanded, 
-    onExpand, 
-    onCollapse 
-}) => {
-    // Get persisted filters from Zustand
     const persistedFilters = useFilterStore();
-    
-    // Initialize local state from Zustand store
-    const [type, setType] = useState(persistedFilters.type);
-    const [sortBy, setSortBy] = useState(persistedFilters.sortBy);
-    const [sortDir, setSortDir] = useState(persistedFilters.sortDir);
-    const [languages, setLanguages] = useState<string[]>(persistedFilters.languages);
-    const [statuses, setStatuses] = useState<string[]>(persistedFilters.statuses);
-    
-    // Initialize selected genres from persisted state
-    const [selected, setSelected] = useState<Record<string, "blank" | "tick" | "cross">>(() => {
-        const initial: Record<string, "blank" | "tick" | "cross"> = genreOptions.reduce(
-            (acc, option) => ({ ...acc, [option]: "blank" as const }), 
-            {} as Record<string, "blank" | "tick" | "cross">
-        );
-        
-        persistedFilters.tickedGenres.forEach(genre => {
-            if (initial[genre] !== undefined) initial[genre] = "tick";
-        });
-        
-        persistedFilters.crossedGenres.forEach(genre => {
-            if (initial[genre] !== undefined) initial[genre] = "cross";
-        });
-        
-        return initial;
-    });
 
-    // Sync local state when component mounts or Zustand state changes
+    // ---------------------
+    // TEMPORARY (UI) STATE
+    // ---------------------
+    // These are the values user interacts with. Nothing external reads these.
+    const [tempType, setTempType] = useState<string>("");
+    const [tempSortBy, setTempSortBy] = useState<string>("title");
+    const [tempSortDir, setTempSortDir] = useState<string>("asc");
+    const [tempLanguages, setTempLanguages] = useState<string[]>([]);
+    const [tempStatuses, setTempStatuses] = useState<string[]>([]);
+
+    // selected genres for 3-state control (temp)
+    const [tempGenresSelected, setTempGenresSelected] = useState<Record<string, "blank" | "tick" | "cross">>(() =>
+        genreOptions.reduce((acc, g) => ({ ...acc, [g]: "blank" as const }), {} as Record<string, "blank" | "tick" | "cross">)
+    );
+
+    // ---------------------
+    // Initialize temp state ONCE from persisted store (on mount)
+    // ---------------------
     useEffect(() => {
-        console.log("HomePageFilter -> Syncing with persisted filters:", persistedFilters);
-        
-        setType(persistedFilters.type);
-        setSortBy(persistedFilters.sortBy);
-        setSortDir(persistedFilters.sortDir);
-        setLanguages(persistedFilters.languages);
-        setStatuses(persistedFilters.statuses);
-        
-        // Sync selected genres
-        const newSelected: Record<string, "blank" | "tick" | "cross"> = genreOptions.reduce(
-            (acc, option) => ({ ...acc, [option]: "blank" as const }), 
-            {} as Record<string, "blank" | "tick" | "cross">
-        );
-        
-        persistedFilters.tickedGenres.forEach(genre => {
-            if (newSelected[genre] !== undefined) newSelected[genre] = "tick";
-        });
-        
-        persistedFilters.crossedGenres.forEach(genre => {
-            if (newSelected[genre] !== undefined) newSelected[genre] = "cross";
-        });
-        
-        setSelected(newSelected);
-    }, [persistedFilters.type, persistedFilters.sortBy, persistedFilters.sortDir,
-        persistedFilters.tickedGenres, persistedFilters.crossedGenres,
-        persistedFilters.languages, persistedFilters.statuses]);
+        // Read persisted store once and populate temp state.
+        // IMPORTANT: This effect has an empty deps array intentionally so that
+        // we don't re-sync and overwrite user changes while they are editing.
+        // If you need to explicitly refresh persisted values, add a manual "Reset to saved" control.
+        setTempType(persistedFilters.type ?? "");
+        setTempSortBy(persistedFilters.sortBy ?? "title");
+        setTempSortDir(persistedFilters.sortDir ?? "asc");
+        setTempLanguages(persistedFilters.languages ?? []);
+        setTempStatuses(persistedFilters.statuses ?? []);
 
+        const initialGenresSelected: Record<string, "blank" | "tick" | "cross"> =
+            genreOptions.reduce((acc, option) => ({ ...acc, [option]: "blank" as const }), {} as Record<string, "blank" | "tick" | "cross">);
+
+        (persistedFilters.tickedGenres ?? []).forEach(g => { if (initialGenresSelected[g] !== undefined) initialGenresSelected[g] = "tick"; });
+        (persistedFilters.crossedGenres ?? []).forEach(g => { if (initialGenresSelected[g] !== undefined) initialGenresSelected[g] = "cross"; });
+
+        setTempGenresSelected(initialGenresSelected);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // run once on mount
+
+    // ---------------------
+    // Helpers
+    // ---------------------
+    const getGenresSelectedFromTemp = () => {
+        const ticked: string[] = [];
+        const crossed: string[] = [];
+        Object.keys(tempGenresSelected).forEach(k => {
+            if (tempGenresSelected[k] === "tick") ticked.push(k);
+            if (tempGenresSelected[k] === "cross") crossed.push(k);
+        });
+        return { ticked, crossed };
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Compose new filters from temp values (only now do we persist + notify)
+        const { ticked, crossed } = getGenresSelectedFromTemp();
+        const newFilters = {
+            type: tempType,
+            sortBy: tempSortBy,
+            sortDir: tempSortDir,
+            tickedGenres: ticked,
+            crossedGenres: crossed,
+            languages: tempLanguages,
+            statuses: tempStatuses,
+        };
+
+        console.log("HomePageFilter -> APPLY filters:", newFilters);
+
+        // Persist to Zustand once (this is the moment other parts of app should react)
+        persistedFilters.setFilters(newFilters);
+
+        // Notify parent — parent should perform the API call here
+        handleFilterChange(newFilters);
+    };
+
+    const handleReset = () => {
+        // Reset persisted store (if you want to clear saved state immediately).
+        // If you prefer reset to only happen on Apply, remove this line and just reset temp below.
+        persistedFilters.resetFilters();
+
+        // Reset temp UI state to defaults
+        setTempType("");
+        setTempSortBy("title");
+        setTempSortDir("asc");
+        setTempLanguages([]);
+        setTempStatuses([]);
+        setTempGenresSelected(genreOptions.reduce((acc, g) => ({ ...acc, [g]: "blank" as const }), {} as Record<string, "blank" | "tick" | "cross">));
+
+        // Notify parent with defaults immediately (your existing behavior)
+        handleFilterChange({
+            type: "",
+            sortBy: "title",
+            sortDir: "asc",
+            tickedGenres: [],
+            crossedGenres: [],
+            languages: [],
+            statuses: []
+        });
+    };
+
+    const getDisabledGenres = () => {
+        if (tempType === "movie") return disabledGenresForMovie;
+        if (tempType === "tv") return disabledGenresForSeries;
+        return [];
+    };
+
+    // UI label map for preview
+    const sortingOptionsPreviewLabel = () => {
+        const map: Record<string, string> = {
+            "title_asc": "Sort By : Title (A → Z)",
+            "title_desc": "Sort By : Title (Z → A)",
+            "popularity_desc": "Sort By : Popularity (High → Low)",
+            "popularity_asc": "Sort By : Popularity (Low → High)",
+            "voteAverage_desc": "Sort By : Rating (High → Low)",
+            "recent_desc": "Sort By : Recently Added",
+            "recent_asc": "Sort By : Earliest Added",
+            "date_desc": "Sort By : Release Date (Newest → Oldest)",
+            "date_asc": "Sort By : Release Date (Oldest → Newest)",
+        };
+        return map[`${tempSortBy}_${tempSortDir}`] || "Sort By";
+    };
+
+    // When component collapsed, show the collapsed button
     if (!expanded) {
         return (
             <button
@@ -130,76 +188,9 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({
         );
     }
 
-    const getSelectedLists = () => {
-        const ticked: string[] = [];
-        const crossed: string[] = [];
-        Object.keys(selected).forEach((key) => {
-            if (selected[key] === "tick") ticked.push(key);
-            else if (selected[key] === "cross") crossed.push(key);
-        });
-        return { ticked, crossed };
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const { ticked, crossed } = getSelectedLists();
-        const newFilters = {
-            type,
-            sortBy,
-            sortDir,
-            tickedGenres: ticked,
-            crossedGenres: crossed,
-            languages,
-            statuses,
-        };
-
-        console.log("HomePageFilter -> handleSubmit -> new filters:", newFilters);
-
-        // Save to Zustand (which also saves to localStorage via persist middleware)
-        persistedFilters.setFilters(newFilters);
-
-        // Notify parent
-        handleFilterChange(newFilters);
-    };
-
-    const handleReset = () => {
-        // Reset Zustand store
-        persistedFilters.resetFilters();
-        
-        // Reset local state to defaults
-        setType("");
-        setSortBy("title");
-        setSortDir("asc");
-        setLanguages([]);
-        setStatuses([]);
-        
-        // Reset selected genres
-        const resetSelected: Record<string, "blank" | "tick" | "cross"> = genreOptions.reduce(
-            (acc, option) => ({ ...acc, [option]: "blank" as const }), 
-            {} as Record<string, "blank" | "tick" | "cross">
-        );
-        setSelected(resetSelected);
-        
-        // Notify parent with default filters
-        handleFilterChange({
-            type: "",
-            sortBy: "title",
-            sortDir: "asc",
-            tickedGenres: [],
-            crossedGenres: [],
-            languages: [],
-            statuses: []
-        });
-    };
-
-    const getDisabledGenres = () => {
-        if (type === "movie") return disabledGenresForMovie;
-        if (type === "tv") return disabledGenresForSeries;
-        return [];
-    };
-
     return (
-        <form onSubmit={handleSubmit} className="d-flex flex-row align-items-center gap-1">
+        <form onSubmit={handleSubmit} className="d-flex flex-row align-items-center gap-1 flex-wrap">
+            {/* Collapse */}
             <button
                 type="button"
                 className="btn btn-link p-0 me-2"
@@ -211,8 +202,8 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({
             </button>
 
             {/* Clear Button */}
-            <button 
-                type="button" 
+            <button
+                type="button"
                 className="btn btn-outline-danger d-flex align-items-center"
                 onClick={handleReset}
                 title="Clear all filters"
@@ -220,7 +211,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({
                 <i className="bi bi-arrow-counterclockwise"></i>
             </button>
 
-            {/* Type Dropdown */}
+            {/* Type Dropdown (updates tempType only) */}
             <div className="dropdown position-relative">
                 <button
                     className="btn btn-outline-primary dropdown-toggle w-100"
@@ -230,83 +221,80 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({
                     aria-expanded="false"
                     style={{ paddingTop: "0.5rem" }}
                 >
-                    {type === "" ? "Servies" : type === "movie" ? "Movies" : "Series"}
+                    {tempType === "" ? "Type : Servies" : tempType === "movie" ? "Type : Movies" : "Type : Series"}
                 </button>
                 <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="typeDropdown">
-                    <li><button className="dropdown-item" type="button" onClick={() => setType("")}>Servies</button></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => setType("movie")}>Movies</button></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => setType("tv")}>Series</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => setTempType("")}>Servies</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => setTempType("movie")}>Movies</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => setTempType("tv")}>Series</button></li>
                 </ul>
             </div>
 
-            {/* Sorting Options */}
+            {/* Combined Sort Dropdown (updates only tempSortBy & tempSortDir) */}
             <div className="dropdown">
                 <button
                     className="btn btn-outline-primary dropdown-toggle"
                     type="button"
-                    id="sortByDropdown"
+                    id="sortDropdown"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                 >
-                    {{
-                        title: "Title",
-                        date: "Release Date",
-                        popularity: "Popularity",
-                        voteAverage: "Avg Vote",
-                        recent: "Recently Added",
-                    }[sortBy] || "Sort By"}
+                    {sortingOptionsPreviewLabel()}
                 </button>
-                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="sortByDropdown">
-                    {sortOptions.map(({ key, label }) => (
-                        <li key={key}>
-                            <button className="dropdown-item" type="button" onClick={() => setSortBy(key)}>
-                                {label}
-                            </button>
-                        </li>
-                    ))}
+
+                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="sortDropdown">
+                    <li><h6 className="dropdown-header">Title</h6></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("title"); setTempSortDir("asc"); }}>A → Z</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("title"); setTempSortDir("desc"); }}>Z → A</button></li>
+
+                    <li><hr className="dropdown-divider" /></li>
+                    <li><h6 className="dropdown-header">Popularity</h6></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("popularity"); setTempSortDir("desc"); }}>High → Low</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("popularity"); setTempSortDir("asc"); }}>Low → High</button></li>
+
+                    <li><hr className="dropdown-divider" /></li>
+                    <li><h6 className="dropdown-header">Rating</h6></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("voteAverage"); setTempSortDir("desc"); }}>High → Low</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("voteAverage"); setTempSortDir("asc"); }}>Low → High</button></li>
+
+                    <li><hr className="dropdown-divider" /></li>
+                    <li><h6 className="dropdown-header">When Added</h6></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("recent"); setTempSortDir("desc"); }}>Newest First</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("recent"); setTempSortDir("asc"); }}>Earliest First</button></li>
+
+                    <li><hr className="dropdown-divider" /></li>
+                    <li><h6 className="dropdown-header">Release Date</h6></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("date"); setTempSortDir("desc"); }}>Newest First</button></li>
+                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("date"); setTempSortDir("asc"); }}>Oldest First</button></li>
                 </ul>
             </div>
 
-            {/* Sorting Direction */}
-            <div className="dropdown">
-                <button
-                    className="btn btn-outline-primary dropdown-toggle"
-                    type="button"
-                    id="sortDirDropdown"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                >
-                    {sortDir === "asc" ? "Ascending" : "Descending"}
-                </button>
-                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="sortDirDropdown">
-                    <li><button className="dropdown-item" type="button" onClick={() => setSortDir("asc")}>Ascending</button></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => setSortDir("desc")}>Descending</button></li>
-                </ul>
-            </div>
-
+            {/* Genres (3-state): pass tempSelected and updater */}
             <DropdownMenu3States
                 label="Genres"
                 options={genreOptions}
-                selected={selected}
-                setSelected={setSelected}
+                selected={tempGenresSelected}
+                setSelected={setTempGenresSelected}
                 disabledOptions={getDisabledGenres()}
             />
 
+            {/* Languages - update tempLanguages only */}
             <DropdownMultiselect
                 label="Languages"
                 options={langOptions}
-                selected={languages}
-                setSelected={setLanguages}
+                selected={tempLanguages}
+                setSelected={setTempLanguages}
             />
 
+            {/* Statuses - update tempStatuses only */}
             <DropdownMultiselect
                 label="Statuses"
                 options={statusOptions}
-                selected={statuses}
-                setSelected={setStatuses}
+                selected={tempStatuses}
+                setSelected={setTempStatuses}
             />
 
-            {/* Apply Button */}
+            {/* Form-level Apply: commit temp => persisted + notify parent */}
             <button type="submit" className="btn btn-primary d-flex align-items-center">
                 Apply
             </button>
