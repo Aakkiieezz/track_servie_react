@@ -217,13 +217,13 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                       >
                         {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
                       </a>
+
+                      <Link to='/images' state={{ childType: "movie", tmdbId: servie.tmdbId }}>
+                        <i className="bi bi-file-image"></i>
+                      </Link>
+
                       <a href="#" onClick={() => toggleLike(servie.childtype, servie.tmdbId)}>
                         <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
-                      </a>
-                      <a
-                        href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
-                      >
-                        <i className="bi bi-file-image"></i>
                       </a>
 
                       <a
@@ -309,13 +309,12 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                         {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
                       </a>
 
+                      <Link to='/images' state={{ childType: "tv", tmdbId: servie.tmdbId }}>
+                        <i className="bi bi-file-image"></i>
+                      </Link>
+
                       <a href="#" onClick={() => toggleLike(servie.childtype, servie.tmdbId)}>
                         <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
-                      </a>
-                      <a
-                        href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
-                      >
-                        <i className="bi bi-file-image"></i>
                       </a>
 
                       {/* <a

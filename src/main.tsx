@@ -21,6 +21,7 @@ import MovieCollection from "./pages/MovieCollection.tsx";
 import WatchListPage from "./pages/WatchListPage.tsx";
 import ListsPage from "./pages/ListsPage.tsx";
 import ListPage from "./pages/ListPage.tsx";
+import ImageGalleryPage from "./pages/ImageGalleryPage.tsx";
 
 const processToken = () => {
     const params = new URLSearchParams(window.location.search);
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
         element: <PrivateRoute element={<SeasonPage />} />,
     },
     { path: "/servie", element: <ServiePage /> },
+    { path: "/images", element: <ImageGalleryPage /> },
     { path: "/stats", element: <PrivateRoute element={<Stats />} /> },
     { path: "/statslangbarlog", element: <PrivateRoute element={<StatsLangBarLog />} /> },
     { path: "/watchlist", element: <PrivateRoute element={<WatchListPage />} /> },
