@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import ServieGrid from "../components/HomePage/ServieGrid";
 import PaginationBar from "../components/PaginationBar";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import axiosInstance from "../utils/axiosInstance";
+import SearchPageHeader from "@/components/SearchPage/SearchPageHeader";
 
 interface Servie {
     // Servie fields
@@ -25,12 +28,21 @@ interface Servie {
     liked: boolean;
 }
 
+type SearchType = 'movie' | 'tv' | 'servie' | 'person' | 'collection';
+
+interface SearchFilters {
+    query: string;
+    type: SearchType;
+}
+
 interface Pagination {
     pageNumber: number;
     totalPages: number;
 }
 
-const HomePage: React.FC = () => {
+const WatchListPage: React.FC = () => {
+    const navigate = useNavigate();
+
     const [servies, setServies] = useState<Servie[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [, setPageNumber] = useState<number | null>(null);
@@ -39,21 +51,38 @@ const HomePage: React.FC = () => {
         totalPages: 0,
     });
 
+    const location = useLocation();
+    
+    const queryParams = new URLSearchParams(location.search);
+    const initialQuery = queryParams.get('query') || "";
+    const initialType = (queryParams.get('type') as SearchFilters['type']) || "movie";
+
+    const [, setSearchFilters] = useState<SearchFilters>({ query: initialQuery, type: initialType });
+    const [searchParams] = useSearchParams();
+    
+    useEffect(() => {
+        const queryFromUrl = searchParams.get('query') || '';
+        const typeFromUrl = (searchParams.get('type') as SearchType) || 'movie';
+
+        setSearchFilters({
+            query: queryFromUrl,
+            type: typeFromUrl,
+        });
+    }, [searchParams]);
+
     const fetchServies = async (pageNumber: number | null = null) => {
         try {
             setLoading(true);
 
-            console.log("HomePage -> API Call -> request:", pageNumber);
+            console.log("WatchListPage -> API Call -> request:", pageNumber);
 
-            const response = await axiosInstance.get("list", {
+            const response = await axiosInstance.get("watchlist", {
                 params: {
                     pageNumber: pageNumber !== null ? pageNumber : 0, // Default to 0 if not provided
                     sortBy: "title", // Default to "title" if not provided
                     sortDir: "asc", // Default to "asc" if not provided
                 },
             });
-
-            console.log("HomePage -> API Call -> response:", response.data);
 
             setServies(response.data.servies);
 
@@ -79,9 +108,14 @@ const HomePage: React.FC = () => {
         fetchServies();
     }, []); // Empty dependency array ensures it runs only once
 
+    const handleSearchFilterChange = (filters: SearchFilters) => {
+        navigate(`/search?query=${filters.query}&type=${filters.type}`);
+    };
+
     return (
         <div>
-            {/* <HomePageHeader handleFilterChange={handleFilterChange} /> */}
+
+            <SearchPageHeader handleSearchFilterChange={handleSearchFilterChange} />
 
             {loading ? <p>Loading...</p> : <ServieGrid servies={servies} />}
 
@@ -94,4 +128,4 @@ const HomePage: React.FC = () => {
     );
 };
 
-export default HomePage;
+export default WatchListPage;
