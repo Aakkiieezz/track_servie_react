@@ -5,6 +5,7 @@ import axiosInstance from '../../utils/axiosInstance';
 import Alert from '../Alert';
 import "../thymeleafCss.css";
 import ServieOptionsModal from "../ServieOptionsModal";
+import styles from "../ImageModules/Image.module.css";
 
 interface Servie {
   // Servie fields
@@ -182,13 +183,13 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
           const watchStateRender = servieWatchState[key];
           const likeStateRender = servieLikedState[key];
           return (
-            <div className="col-xxl-1 col-sm-2 col-3 image-container poster"
+            <div className={`col-xxl-1 col-sm-2 col-3 ${styles.imageContainer} ${styles.poster}`}
               key={key} >
               
               <div>
 
                 <img
-                  className="rounded image-border"
+                  className={`rounded ${styles.imageBorder}`}
                   src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace('.jpg', '.webp')}`}
                   onError={(e) => {
                     e.currentTarget.onerror = null; // prevent infinite loop if fallback also fails
@@ -197,7 +198,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                   alt={servie.title}
                 />
 
-                <div className="buttons-container rounded">
+                <div className={`${styles.buttonsContainer} rounded`}>
                   <Link to='/servie' state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}>
                     <strong>{servie.title}</strong>
                   </Link>
@@ -239,27 +240,27 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                   <br />
 
                   <a href="#" onClick={() => toggleWatch(servie.childtype, servie.tmdbId)}>
-                    {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
+                    {watchStateRender ? (<i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
                   </a>
 
                   <Link to='/images' state={{ childType: servie.childtype, tmdbId: servie.tmdbId, title: servie.title, releaseDate: servie.releaseDate, firstAirDate:servie.firstAirDate, lastAirDate:servie.lastAirDate }}>
-                    <i className="bi bi-file-image"></i>
+                    <i className={`bi bi-file-image ${styles.icon}`}></i>
                   </Link>
 
                   <a href="#" onClick={() => toggleLike(servie.childtype, servie.tmdbId)}>
-                    <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
+                    <i className={`bi bi-suit-heart-fill ${styles.icon} ${styles.heart} ${likeStateRender ? styles.liked : styles.notLiked}`}></i>
                   </a>
 
                   <a href="#" onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}>
-                    <i className="bi bi-clock-fill"></i>
+                    <i className={`bi bi-clock-fill ${styles.icon}`}></i>
                   </a>
 
                   <a href="#" onClick={() => removeServie(servie.tmdbId, servie.childtype)}>
-                    <i className="bi bi-x-circle-fill"></i>
+                    <i className={`bi bi-x-circle-fill ${styles.icon} ${styles.remove}`}></i>
                   </a>
 
                   <a href="#" onClick={(e) => { e.preventDefault(); openOptionsMenu(servie.tmdbId, servie.childtype); }}>
-                    <i className="bi bi-three-dots-vertical"></i>
+                    <i className={`bi bi-three-dots-vertical ${styles.icon} ${styles.options}`}></i>
                   </a>
                 </div>
 

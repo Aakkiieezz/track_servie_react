@@ -215,7 +215,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
                   >
                     {result.posterPath ? (
                       <img
-                        className="rounded image-border"
+                        className={`rounded ${styles.imageBorder}`}
                         src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${result.posterPath.replace(
                           '.jpg',
                           '.webp'

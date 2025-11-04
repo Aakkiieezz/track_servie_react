@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import ProgressBar from "../ProgressBar";
 import Alert from "../Alert";
+import styles from "../ImageModules/Image.module.css";
 
 interface Servie {
   tmdbId: number;
@@ -107,13 +108,13 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
           const watchStateRender = servieWatchState[key];
 
           return (
-            <div className="col-xxl-1 custom-col-10 col-sm-2 col-3 image-container poster"
+            <div className={`col-xxl-1 ${styles.customCol10} col-sm-2 col-3 ${styles.imageContainer} ${styles.poster}`}
               key={key} >
 
               <div>
 
                 <img
-                  className="rounded image-border"
+                  className={`rounded ${styles.imageBorder}`}
                   src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
                   alt={servie.title}
                   onError={(e) => {
@@ -121,7 +122,7 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
                   }}
                 />
 
-                <div className="buttons-container rounded">
+                <div className={`${styles.buttonsContainer} rounded`}>
 
                   <Link to='/servie' state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}>
                     <strong>{servie.title}</strong>
@@ -151,15 +152,15 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
                   )}
 
                   <a href="#" onClick={() => toggleWatch(servie.childtype, servie.tmdbId)}>
-                    {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
+                    {watchStateRender ? (<i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
                   </a>
 
                   <Link to='/images' state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}>
-                    <i className="bi bi-file-image"></i>
+                    <i className={`bi bi-file-image ${styles.icon}`}></i>
                   </Link>
 
                   <a href="#" onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}>
-                    <i className="bi bi-clock-fill"></i>
+                    <i className={`bi bi-clock-fill ${styles.icon}`}></i>
                   </a>
 
                 </div>

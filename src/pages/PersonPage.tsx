@@ -4,6 +4,7 @@ import axiosInstance from '../utils/axiosInstance';
 import Alert from '../components/Alert';
 import "../components/thymeleafCss.css";
 import AppHeader from '@/components/AppHeader';
+import styles from "../components/ImageModules/Image.module.css";
 
 interface PersonResponse {
     name: string;
@@ -203,18 +204,18 @@ const PersonPage: React.FC = () => {
                     const isCompleted = servieWatchState[key];
 
                     return (
-                        <div key={key} className="col-xxl-1 custom-col-10 col-sm-2 col-3 image-container poster">
+                        <div key={key} className={`col-xxl-1 ${styles.customCol10} col-sm-2 col-3 ${styles.imageContainer} ${styles.poster}`}>
 
                             <div>
                                 <img
-                                    className={`rounded image-border ${blurCompleted && isCompleted ? 'blurred' : ''}`}
+                                    className={`rounded ${styles.imageBorder} ${blurCompleted && isCompleted ? styles.blurred : ''}`}
                                     src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
                                     alt={servie.title}
                                     onError={(e) => {
                                         e.currentTarget.src = '/src/assets/defaultPoster.png';
                                     }}
                                 />
-                                <div className="buttons-container rounded">
+                                <div className={`${styles.buttonsContainer} rounded`}>
 
                                     <Link to='/servie' state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}>
                                         <strong>{servie.title}</strong>
@@ -240,9 +241,9 @@ const PersonPage: React.FC = () => {
                                         onClick={() => toggleWatch(servie.tmdbId, servie.childtype)}
                                     >
                                         {isCompleted ? (
-                                            <i className="bi bi-eye-slash-fill"></i>
+                                            <i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>
                                         ) : (
-                                            <i className="bi bi-eye-fill"></i>
+                                            <i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>
                                         )}
                                     </a>
                                     <br />

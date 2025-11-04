@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import ProgressBar from '../ProgressBar';
 import axiosInstance from '../../utils/axiosInstance';
 import Alert from '../Alert';
+import styles from "../ImageModules/Image.module.css";
+import styles1 from "./SeasonsList.module.css";
 
 interface Season {
   id: string;
@@ -159,107 +161,109 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWat
   };
 
   return (
-    <div className="row left">
-      {seasons.map((season) => {
+    <>
+      <div className="row left">
+        {seasons.map((season) => {
 
-        const key = season.seasonNo;
-        const watchStateRender = seasonWatchState[key];
-        const epWatchCountRender = epWatchCount[key];
-        const seasonWatchRuntimeRender = seasonWatchRuntime[key];
+          const key = season.seasonNo;
+          const watchStateRender = seasonWatchState[key];
+          const epWatchCountRender = epWatchCount[key];
+          const seasonWatchRuntimeRender = seasonWatchRuntime[key];
 
-        function formatRuntime(totalMinutes: number): string {
-          const days = Math.floor(totalMinutes / 1440);
-          const hours = Math.floor((totalMinutes % 1440) / 60);
-          const minutes = totalMinutes % 60;
+          function formatRuntime(totalMinutes: number): string {
+            const days = Math.floor(totalMinutes / 1440);
+            const hours = Math.floor((totalMinutes % 1440) / 60);
+            const minutes = totalMinutes % 60;
 
-          const parts: string[] = [];
+            const parts: string[] = [];
 
-          if (days > 0)
-            parts.push(`${days}d`);
-          if (hours > 0)
-            parts.push(`${hours}h`);
-          if (minutes > 0)
-            parts.push(`${minutes}m`);
+            if (days > 0)
+              parts.push(`${days}d`);
+            if (hours > 0)
+              parts.push(`${hours}h`);
+            if (minutes > 0)
+              parts.push(`${minutes}m`);
 
-          return parts.length > 0 ? parts.join(' ') : '0m';
-        }
+            return parts.length > 0 ? parts.join(' ') : '0m';
+          }
 
-        return (
-          <div key={key} className="col-xxl-2 col-sm-3 col-4 image-container poster">
+          return (
+            <div key={key} className={`col-xxl-2 col-sm-3 col-4 ${styles.imageContainer} ${styles.poster}`}>
 
-            {/* Alert Component */}
-            {alert && (
-              <Alert
-                type={alert.type}
-                message={alert.message}
-                onClose={() => setAlert(null)}
-              />
-            )}
+              <div className={styles1.imageSeasonPoster}> {/* is this styles1.imageSeasonPoster really necessary ??? */}
+                <img
+                  className="rounded"
+                  src={season.posterPath
+                    ? `https://www.themoviedb.org/t/p/w300${season.posterPath}`
+                    : `https://placehold.co/400x600?text=S${season.seasonNo}`}
+                  alt={season.name || 'No poster available'}
+                />
+              </div>
 
-            <div className="image-season-poster">
-              <img
-                className="rounded"
-                src={season.posterPath
-                  ? `https://www.themoviedb.org/t/p/w300${season.posterPath}`
-                  : `https://placehold.co/400x600?text=S${season.seasonNo}`}
-                alt={season.name || 'No poster available'}
-              />
-            </div>
-
-            <div className="buttons-container rounded">
-              <a href={`servies/${tmdbId}/Season/${season.seasonNo}`}>
-                <strong>{season.name}</strong>
-              </a>
-              <br />
-
-              {/* {toggle completed} */}
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  toggleWatch(tmdbId, season.seasonNo);
-                }}
-              >
-                {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
-              </a>
-
-              {/* Link to poster page if posterPath exists */}
-              {season.posterPath && (
-                <a href={`servies/${tmdbId}/Season/${season.seasonNo}/posters`}>
-                  <i className="bi bi-file-image"></i>
+              <div className={`${styles.buttonsContainer} rounded`}>
+                <a href={`servies/${tmdbId}/Season/${season.seasonNo}`}>
+                  <strong>{season.name}</strong>
                 </a>
-              )}
+                <br />
 
-              <br />
+                {/* {toggle completed} */}
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleWatch(tmdbId, season.seasonNo);
+                  }}
+                >
+                  {watchStateRender ? (<i className={`bi bi-eye-fill ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
+                </a>
 
-              {/* Display episode progress */}
-              {season.episodeCount !== 0 && (
-                <span>
-                  {epWatchCountRender}/{season.episodeCount}
-                </span>
-              )}
+                {/* Link to poster page if posterPath exists */}
+                {season.posterPath && (
+                  <a href={`servies/${tmdbId}/Season/${season.seasonNo}/posters`}>
+                    <i className={`bi bi-file-image ${styles.icon}`}></i>
+                  </a>
+                )}
 
-              <br />
+                <br />
 
-              {season.totalRuntime > 0 && (
-                <span>{formatRuntime(seasonWatchRuntimeRender)}  / {formatRuntime(season.totalRuntime)}</span>
-              )}
+                {/* Display episode progress */}
+                {season.episodeCount !== 0 && (
+                  <span>
+                    {epWatchCountRender}/{season.episodeCount}
+                  </span>
+                )}
 
-              <br />
+                <br />
 
-              {/* Progress bar for episode watching */}
-              {season.episodeCount !== 0 && (<ProgressBar episodesWatched={epWatchCountRender} totalEpisodes={season.episodeCount} />
-              )}
+                {season.totalRuntime > 0 && (
+                  <span>{formatRuntime(seasonWatchRuntimeRender)}  / {formatRuntime(season.totalRuntime)}</span>
+                )}
 
+                <br />
+
+                {/* Progress bar for episode watching */}
+                {season.episodeCount !== 0 && (<ProgressBar episodesWatched={epWatchCountRender} totalEpisodes={season.episodeCount} />
+                )}
+
+              </div>
+
+              <div>
+                <strong>{season.name}</strong>
+              </div>
             </div>
+          );
+        })}
+      </div>
 
-            <div>
-              <strong>{season.name}</strong>
-            </div>
-          </div>
-        );
-      })}
-    </div>
+      {/* Alert Component */}
+      {alert && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
+    </>
   );
 };
 

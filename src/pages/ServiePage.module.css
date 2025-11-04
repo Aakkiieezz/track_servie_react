@@ -1,0 +1,29 @@
+.titleLogo {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* left align */
+  overflow: hidden;
+}
+
+.titleLogo img {
+  height: 100%;       /* stretch to container height */
+  width: auto;        /* keep ratio */
+  display: block;
+  max-width: 1000px;    /* allow wide images without shrinking */
+}
+
+.titleLogo .title {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* left align text */
+  padding: 0 12px;
+  text-align: left;
+  margin: 0;
+  line-height: 1;
+  font-size: clamp(20px, 6vw, 72px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

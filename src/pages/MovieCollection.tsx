@@ -4,6 +4,7 @@ import axiosInstance from '../utils/axiosInstance';
 import Alert from '../components/Alert';
 import "../components/thymeleafCss.css";
 import AppHeader from '@/components/AppHeader';
+import styles from "../components/ImageModules/Image.module.css";
 
 interface MovieDtoMovieCollectionPageDto {
     tmdbId: number;
@@ -177,7 +178,7 @@ const MovieCollection = () => {
 
             <div className="container-fluid backdrop">
                 <img
-                    className="background-image"
+                    className={styles.backgroundImage}
                     src={`https://www.themoviedb.org/t/p/original${data?.backdropPath}`}
                     alt={"Backdrop Unavailable"}
                     onError={(e) => {
@@ -209,18 +210,18 @@ const MovieCollection = () => {
                                 return (
                                     <div
                                         key={movie.tmdbId}
-                                        className="col-lg-2 col-md-3 col-sm-4 col-6 image-container poster"
+                                        className={`col-lg-2 col-md-3 col-sm-4 col-6 ${styles.imageContainer} ${styles.poster}`}
                                     >
                                         {/* Movie Card */}
                                         <div>
                                             <img
-                                                className="rounded image-border"
+                                                className={`rounded ${styles.imageBorder}`}
                                                 src={`https://www.themoviedb.org/t/p/original${movie.posterPath}`}
                                                 // src={`http://localhost:8080/track-servie/posterImgs${servie.posterPath}`}
                                                 // src={`http://localhost:8080/track-servie/staticPosterImgs${servie.posterPath}`}
                                                 alt={movie.title}
                                             />
-                                            <div className="buttons-container rounded">
+                                            <div className={`${styles.buttonsContainer} rounded`}>
                                                 <Link to='/servie' state={{ childType: "movie", tmdbId: movie.tmdbId }}>
                                                     <strong>{movie.title}</strong>
                                                 </Link>
@@ -236,7 +237,7 @@ const MovieCollection = () => {
                                                         toggleWatch("movie", movie.tmdbId)
                                                     }
                                                 >
-                                                    {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
+                                                    {watchStateRender ? (<i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
                                                 </a>
                                                 <a href="#" onClick={() => toggleLike("movie", movie.tmdbId)}>
                                                     <i className={`bi bi-suit-heart-fill ${likeStateRender ? 'liked' : 'not-liked'}`}></i>
@@ -244,18 +245,18 @@ const MovieCollection = () => {
                                                 <a
                                                     href={`servies/${movie.tmdbId}/posters?type="movie"`}
                                                 >
-                                                    <i className="bi bi-file-image"></i>
+                                                    <i className={`bi bi-file-image ${styles.icon}`}></i>
                                                 </a>
                                                 <a
                                                     href={`list/${movie.tmdbId}?childtype="movie"`}
                                                 >
-                                                    <i className="bi bi-clock-fill"></i>
+                                                    <i className={`bi bi-clock-fill ${styles.icon}`}></i>
                                                 </a>
                                                 <a
                                                     href="#"
                                                     onClick={() => removeServie(movie.tmdbId, "movie")}
                                                 >
-                                                    <i className="bi bi-x-circle-fill"></i>
+                                                    <i className={`bi bi-x-circle-fill ${styles.icon} ${styles.remove}`}></i>
                                                 </a>
                                             </div>
                                         </div>

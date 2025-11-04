@@ -1,0 +1,17 @@
+.imageSeasonPoster {
+ position: relative;
+ width: 100%; /* Adjust this to control the width */
+ padding-top: 158.33%; /* 276/437 * 100% = 63.16% for 276x437 aspect ratio */
+ overflow: hidden;
+ border-radius: 5px;
+}
+
+.imageSeasonPoster img {
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ border-radius: 5px;
+}

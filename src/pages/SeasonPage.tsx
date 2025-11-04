@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from '../utils/axiosInstance';
 import "../components/thymeleafCss.css";
+import styles from "../components/ImageModules/Image.module.css";
 import Alert from "../components/Alert";
 import CastListSlider from "@/components/CastListSlider";
 import SeasonsNavBar from "@/components/SeasonPage/SeasonsNavBar";
@@ -289,7 +290,7 @@ const SeasonPage = () => {
                 />
 
                 <div className="row">
-                    <div className="col-4 image-container still">
+                    <div className={`col-4 ${styles.imageContainer} ${styles.poster}`}>
                         <img
                             src={`https://www.themoviedb.org/t/p/original${season.posterPath}`}
                             alt={season.name}
@@ -306,7 +307,7 @@ const SeasonPage = () => {
 
                         {/* {toggle season completed} */}
                         <a href="#" onClick={() => toggleSeasonWatch()}>
-                            {seasonWatchState ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
+                            {seasonWatchState ? (<i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
                         </a>
 
                         {season.episodeCount !== 0 && (
@@ -378,7 +379,7 @@ const SeasonPage = () => {
 
                         return (
                             <>
-                                <div key={key} className="col-4 image-container still">
+                                <div key={key} className={`col-4 ${styles.imageContainer} ${styles.still}`}>
                                     {/* Alert Component */}
                                     {alert && (
                                         <Alert
@@ -448,7 +449,7 @@ const SeasonPage = () => {
                                             toggleEpisodeWatch(episode.episodeNo);
                                         }}
                                     >
-                                        {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
+                                        {watchStateRender ? (<i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
                                     </a>
                                 </div>
                             </>

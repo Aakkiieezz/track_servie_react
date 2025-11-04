@@ -1,0 +1,5 @@
+.pageink:hover {
+ background-color: #f50000; /* light gray background */
+ color: #007bff; /* Bootstrap blue text */
+ border-color: #007efd; /* subtle border */
+}

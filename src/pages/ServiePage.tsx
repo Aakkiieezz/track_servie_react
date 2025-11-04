@@ -7,8 +7,9 @@ import SeasonsList from '../components/ServiePage/SeasonsList';
 import { format } from 'date-fns';
 import Alert from '../components/Alert';
 import "../components/thymeleafCss.css";
+import styles from "../components/ImageModules/Image.module.css";
+import styles1 from "./ServiePage.module.css";
 import HalfStarRating from '@/components/HalfStarRating';
-// import YouTubePopup from './YoutubePopup';
 import VideoPopup from './VideoPopup';
 import MovieReviewModal from '@/components/MovieReviewModal';
 import AppHeader from '@/components/AppHeader';
@@ -284,7 +285,7 @@ const ServiePage = () => {
 
             <div className="container-fluid backdrop">
                 <img
-                    className="background-image"
+                    className={styles.backgroundImage}
                     src={`https://www.themoviedb.org/t/p/original${data?.backdropPath}`}
                     alt={"Backdrop Unavailable"}
                     onError={(e) => {
@@ -296,18 +297,7 @@ const ServiePage = () => {
                     <div className="container">
 
                         {/* Title/Logo Section */}
-                        {/* {!isImageError && data?.logoPath ? (
-                            <img
-                                className="rounded"
-                                src={`https://www.themoviedb.org/t/p/original${data.logoPath}`}
-                                alt={data?.title}
-                                style={{ maxHeight: '300px', maxWidth: '300px' }}
-                                onError={() => setIsImageError(true)}
-                            />
-                        ) : (<h1>{data?.title}</h1>)} */}
-
-                        {/* Title/Logo Section */}
-                        <div className="title-logo">
+                        <div className={styles1.titleLogo}>
                         {!isImageError && data?.logoPath ? (
                             <img
                                 src={`https://www.themoviedb.org/t/p/original${data.logoPath}`}
@@ -315,7 +305,7 @@ const ServiePage = () => {
                                 onError={() => setIsImageError(true)}
                             />
                         ) : (
-                            <h1 className="title" title={data?.title}>
+                            <h1 className={styles1.title} title={data?.title}>
                                 {data?.title}
                             </h1>
                         )}
@@ -387,7 +377,7 @@ const ServiePage = () => {
                                 toggleWatch(childType);
                             }}
                         >
-                            {servieWatchState ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
+                            {servieWatchState ? (<i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
                         </a>
 
                         {/* Overview Section */}
@@ -436,9 +426,7 @@ const ServiePage = () => {
                         {childType === "movie" && (
                             <>
                                 <h4>Cast</h4>
-                                <div className="cast-slider-container">
-                                    <CastListSlider profiles={data?.cast} childType={childType} />
-                                </div>
+                                <CastListSlider profiles={data?.cast} childType={childType} />
                             </>
                         )}
 
@@ -462,14 +450,12 @@ const ServiePage = () => {
                                     </button>
                                 </div>
 
-                                {/* Tab content */}
-                                <div className="cast-slider-container">
-                                    {seriesCastActiveTab === "regulars" ? (
-                                        <CastListSlider profiles={data?.seriesCastRegulars} childType={childType} />
-                                    ) : (
-                                        <CastListSlider profiles={data?.seriesCastGuests} childType={childType} />
-                                    )}
-                                </div>
+                                {/* Cast Tab content */}
+                                {seriesCastActiveTab === "regulars" ? (
+                                    <CastListSlider profiles={data?.seriesCastRegulars} childType={childType} />
+                                ) : (
+                                    <CastListSlider profiles={data?.seriesCastGuests} childType={childType} />
+                                )}
                             </>
                         )}
 
@@ -519,14 +505,6 @@ const ServiePage = () => {
                                     style={{ width: "200px", height: "300px" }}
                                     onClick={() => navigate(`/movie-collection/${data.collectionId}`)}
                                 />
-                                {/* <a href={`servies/movie-collection/${data.collectionId}`}>
-                                    <img
-                                        className="rounded"
-                                        src={`https://www.themoviedb.org/t/p/original${data.colleactionPosterPath}`}
-                                        alt="Poster Unavailable"
-                                        style={{ width: "200px", height: "300px" }}
-                                    />
-                                </a> */}
                             </>
                         )}
 
@@ -543,6 +521,7 @@ const ServiePage = () => {
                                     <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>{data?.totalSeasons} Seasons</h3>
                                     <ProgressBar episodesWatched={totalEpWatched} totalEpisodes={totalEpisodes} />
                                 </div>
+                                
                                 <SeasonsList
                                     seasons={data?.seasons}
                                     tmdbId={tmdbId}
