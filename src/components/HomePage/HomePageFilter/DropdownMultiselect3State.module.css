@@ -1,0 +1,83 @@
+/* DropdownMultiselect3State.module.css */
+
+/* Remove any tick styling as it's already handled by the checkbox checked state */
+.formCheckInputChecked::before {
+  content: "";
+}
+
+/* Cross label styling */
+.formCheckLabelCross {
+  color: red;
+}
+
+/* Grid layout for dropdown */
+.dropdownGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.dropdownGridItem {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.dropdownGridItem:hover:not(.disabled) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* <-- IMPORTANT: this is the wrapper around input + overlay; it must be positioned */
+.formCheck {
+  position: relative;      /* ensure .crossOverlay is positioned relative to this */
+  margin: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Cross overlay that appears on top of the checkbox */
+.crossOverlay {
+  position: absolute;
+  left: 0px;               /* tweak if your checkbox is wider/narrower */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: red;
+  z-index: 5;              /* ensure it's above the checkbox */
+}
+
+.formCheckInput {
+  margin-right: 6px;
+  margin-top: 0;
+}
+
+/* If you want cross label style */
+.formCheckLabel {
+  color: aliceblue;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* Ensure dropdown menu has enough width */
+.dropdownMenu {
+  min-width: auto;
+}

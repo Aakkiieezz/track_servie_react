@@ -1,5 +1,5 @@
 import React from "react";
-import "./DropdownMultiselect3StateCss.css";
+import styles from "./DropdownMultiselect3State.module.css";
 
 interface DropdownMultiselect3StateProps {
    label: string;
@@ -46,33 +46,41 @@ const DropdownMultiselect3State: React.FC<DropdownMultiselect3StateProps> = ({
             {label}
          </button>
 
-         {/* Dropdown menu with grid layout */}
-         <div className="dropdown-menu dropdown-menu-light p-3" aria-labelledby="dropdownMultiselect3StateButton" style={{ minWidth: "400px" }}>
-            <div className="dropdown-grid">
+         {/* Dropdown menu */}
+         <div
+            className={`dropdown-menu dropdown-menu-light p-3 ${styles.dropdownMenu}`}
+            aria-labelledby="dropdownMultiselect3StateButton"
+            style={{ minWidth: "400px" }}
+         >
+            <div className={styles.dropdownGrid}>
                {options.map((option) => {
                   const isDisabled = disabledOptions.includes(option);
                   return (
-                     <div 
-                        key={option} 
-                        className={`dropdown-grid-item ${isDisabled ? "disabled" : ""}`}
+                     <div
+                        key={option}
+                        className={`${styles.dropdownGridItem} ${
+                           isDisabled ? styles.disabled : ""
+                        }`}
                      >
-                        <div className="form-check">
+                        <div className={styles.formCheck}>
                            <input
-                              className="form-check-input"
+                              className={styles.formCheckInput}
                               type="checkbox"
                               id={`checkbox-${option}`}
                               checked={selected[option] === "tick"}
                               onChange={() => !isDisabled && handleCheckboxChange(option)}
                               disabled={isDisabled}
                            />
-                           {/* Cross overlay that appears only in cross state */}
+                           {/* Cross overlay */}
                            {selected[option] === "cross" && (
-                              <div className="form-check-input cross-overlay">
-                                 ✘
-                              </div>
+                              <div className={styles.crossOverlay}>✘</div>
                            )}
                            <label
-                              className={`form-check-label ${selected[option]} ${isDisabled ? "text-muted" : ""}`}
+                              className={`${styles.formCheckLabel} ${
+                                 selected[option] === "cross"
+                                    ? styles.formCheckLabelCross
+                                    : ""
+                              } ${isDisabled ? "text-muted" : ""}`}
                               htmlFor={`checkbox-${option}`}
                            >
                               {option}

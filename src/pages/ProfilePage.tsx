@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from '../utils/axiosInstance';
 
-import styles from "../components/ProfilePage/ProfilePage.module.css";
+import styles from "./ProfilePage.module.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Alert from "../components/Alert";
 import { Link } from "react-router-dom";
