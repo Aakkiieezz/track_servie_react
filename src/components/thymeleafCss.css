@@ -116,12 +116,6 @@ body {
  color: white;
 }
 
-/* Navigation Styling */
-nav {
- align-content: center;
- align-self: center;
-}
-
 /* Image Effects */
 .image-container.still img {
  width: 100%;

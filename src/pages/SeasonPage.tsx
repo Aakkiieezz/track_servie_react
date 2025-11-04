@@ -4,7 +4,7 @@ import axiosInstance from '../utils/axiosInstance';
 import "../components/thymeleafCss.css";
 import Alert from "../components/Alert";
 import CastListSlider from "@/components/CastListSlider";
-import NavigationBar from "@/components/SeasonPage/NavigationBar";
+import SeasonsNavBar from "@/components/SeasonPage/SeasonsNavBar";
 import ProgressBar from '../components/ProgressBar';
 import AppHeader from "@/components/AppHeader";
 
@@ -280,8 +280,8 @@ const SeasonPage = () => {
             <AppHeader />
 
             <div className="container">
-                {/* Render the NavigationBar and pass props */}
-                <NavigationBar
+                
+                <SeasonsNavBar
                     tmdbId={tmdbId!}
                     currentSeasonNo={currentSeasonNo}
                     totalSeasons={totalSeasons}
