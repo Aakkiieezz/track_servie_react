@@ -358,13 +358,11 @@ const SeasonPage = () => {
                 </div>
 
                 {/* Tab content */}
-                <div className="cast-slider-container">
-                    {seasonCastActiveTab === "regulars" ? (
-                        <CastListSlider profiles={season?.seasonCast} childType='movie' />
-                    ) : (
-                        <CastListSlider profiles={season?.seasonCastGuests} childType='tv' />
-                    )}
-                </div>
+                {seasonCastActiveTab === "regulars" ? (
+                    <CastListSlider profiles={season?.seasonCast} childType='movie' />
+                ) : (
+                    <CastListSlider profiles={season?.seasonCastGuests} childType='tv' />
+                )}
 
                 <br />
 

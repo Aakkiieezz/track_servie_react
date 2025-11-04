@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './ProgressBar.module.css'
 
 interface ProgressBarProps {
     episodesWatched: number;
@@ -10,12 +11,12 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ episodesWatched, totalEpisode
     const formattedProgress = progress.toFixed(1);
 
     return (
-        <div className="progress-bar">
+        <div className={styles.progressBar}>
             <div
-                className="progress"
+                className={styles.progress}
                 style={{ width: `${progress}%` }}
             >
-                {progress > 10 && <span className="progress-text">{formattedProgress}%</span>}
+                {progress > 10 && <span className={styles.progressText}>{formattedProgress}%</span>}
             </div>
         </div>
     );

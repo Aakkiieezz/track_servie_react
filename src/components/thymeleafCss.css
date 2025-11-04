@@ -116,39 +116,6 @@ body {
  color: white;
 }
 
-/* Styling for the container of the progress bar */
-.progress-bar {
- width: 100%;
- background-color: #ddd; /* Neutral background */
- border-radius: 8px; /* Curve edges for the bar */
- overflow: hidden; /* Ensures progress stays within the rounded edges */
- height: 12px; /* Adjust height for better visibility */
- box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle inner shadow for depth */
-}
-
-/* Styling for the progress indicator */
-.progress {
- height: 100%;
- background: linear-gradient(
-  to right,
-  #4caf50,
-  #66bb6a
- ); /* Gradient for visual appeal */
- transition: width 0.5s ease-in-out; /* Smooth animation when progress changes */
- display: flex;
- align-items: center;
- justify-content: flex-end; /* Align the percentage text to the right */
- border-radius: 8px; /* Ensures the progress bar itself has rounded edges */
- color: #fff; /* Text color inside the progress bar */
- font-size: 12px; /* Adjust font size for the percentage text */
- padding-right: 4px; /* Add spacing for the percentage text */
-}
-
-/* Optional: Styling for the percentage text (if it's larger or needs emphasis) */
-.progress-text {
- font-weight: bold;
-}
-
 /* Navigation Styling */
 nav {
  align-content: center;
@@ -204,74 +171,6 @@ nav {
 .genre {
  border: 1px solid blue;
  padding: 2px;
-}
-
-/* Cast Slider Styling */
-.cast-slider-container {
- position: relative;
- display: flex;
- align-items: center;
- width: 100%;
- overflow: hidden;
-}
-
-.cast-slider {
- display: flex; /* Align children in a row */
- overflow-x: auto; /* Enable horizontal scrolling */
- white-space: nowrap; /* Prevent wrapping of child elements */
- scroll-behavior: smooth; /* Enable smooth scrolling */
-}
-
-.cast-item {
- display: inline-block; /* Make each item inline and block level */
- margin-right: 100px; /* Space between items */
- text-align: center; /* Center text */
-}
-
-.cast-image img {
- width: 100px; /* Fixed width for images */
- height: 150px; /* Fixed height for images */
- margin: 0 auto; /* Center the image horizontally */
-}
-
-/* Slider Arrows */
-.arrow {
- background-color: #fff;
- border: 1px solid #ccc;
- cursor: pointer;
- padding: 10px;
- position: absolute;
- top: 50%;
- transform: translateY(-50%);
- z-index: 1;
- font-size: 18px; /* Ensure arrows are visible */
- color: #000; /* Arrow color */
-}
-
-.left-arrow {
- left: 0;
-}
-
-.right-arrow {
- right: 0;
-}
-
-/* Custom Scrollbar */
-.custom-scrollbar {
- width: 100%;
- height: 10px;
- background-color: #ccc;
- position: absolute;
- bottom: 0;
- left: 0;
-}
-
-.custom-scrollbar-thumb {
- height: 100%;
- background-color: #888;
- width: 0;
- transform: translateX(0);
- transition: transform 0.1s;
 }
 
 /* Image Poster Styling */
