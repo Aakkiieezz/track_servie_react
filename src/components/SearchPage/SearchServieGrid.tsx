@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
-import "../thymeleafCss.css";
+// import "../thymeleafCss.css";
 import axiosInstance from '../../utils/axiosInstance';
 import ProgressBar from "../ProgressBar";
 import Alert from "../Alert";

@@ -3,7 +3,6 @@
  content: ""; /* No need to explicitly show tick, checkbox handles this */
 }
 
-/* Style for the cross state (add this class to the label when the cross state is active) */
 .form-check-label.cross {
  color: red; /* Optional: to visually indicate the cross state */
 }
@@ -70,6 +69,7 @@
 }
 
 .dropdown-grid-item .form-check-label {
+  color: aliceblue;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

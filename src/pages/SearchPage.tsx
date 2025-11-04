@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useSearchParams } from 'react-router-dom';
-import SearchPageHeader from "../components/SearchPage/SearchPageHeader";
+import SearchPageHeader from "../components/AppHeader";
 import PaginationBar from "../components/PaginationBar";
 import axiosInstance from '../utils/axiosInstance';
 import SearchServieGrid from "../components/SearchPage/SearchServieGrid";

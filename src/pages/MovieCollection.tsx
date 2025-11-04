@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import Alert from '../components/Alert';
 import "../components/thymeleafCss.css";
+import AppHeader from '@/components/AppHeader';
 
 interface MovieDtoMovieCollectionPageDto {
     tmdbId: number;
@@ -171,6 +172,8 @@ const MovieCollection = () => {
                     onClose={() => setAlert(null)}
                 />
             )}
+
+            <AppHeader />
 
             <div className="container-fluid backdrop">
                 <img

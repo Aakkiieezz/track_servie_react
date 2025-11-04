@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
 import ServieGrid from "../components/HomePage/ServieGrid";
+import AppHeader from "@/components/AppHeader";
 
 interface Servie {
   // Servie fields
@@ -32,7 +33,7 @@ interface ListDto {
 }
 
 const ListPage: React.FC = () => {
-    
+
   const { listId } = useParams<{ listId: string }>();
   const parsedListId = listId ? Number(listId) : null;
 
@@ -61,25 +62,29 @@ const ListPage: React.FC = () => {
   }, [listId]);
 
   return (
-    <div className="container mt-4">
-      {alert && (
-        <div className={`alert alert-${alert.type}`} role="alert">
-          {alert.message}
-        </div>
-      )}
+    <>
+      <AppHeader />
 
-      {list ? (
-        <>
-          <h2>{list.name}</h2>
-          {list.description && (
-            <p className="text-muted mb-3">{list.description}</p>
-          )}
-          {loading ? <p>Loading...</p> : <ServieGrid servies={list.servies} />}
-        </>
-      ) : (
-        !loading && <p>No list found.</p>
-      )}
-    </div>
+      <div className="container mt-4">
+        {alert && (
+          <div className={`alert alert-${alert.type}`} role="alert">
+            {alert.message}
+          </div>
+        )}
+
+        {list ? (
+          <>
+            <h2>{list.name}</h2>
+            {list.description && (
+              <p className="text-muted mb-3">{list.description}</p>
+            )}
+            {loading ? <p>Loading...</p> : <ServieGrid servies={list.servies} />}
+          </>
+        ) : (
+          !loading && <p>No list found.</p>
+        )}
+      </div>
+    </>
   );
 };
 

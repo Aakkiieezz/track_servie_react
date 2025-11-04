@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import AppHeader from "@/components/AppHeader";
 
 interface ListDto2 {
   id: number;
@@ -59,9 +60,9 @@ const ListsPage: React.FC = () => {
     try {
       setCreating(true);
       setAlert(null);
-      
+
       console.log("Creating new list...");
-      
+
       const response = await axiosInstance.post(
         `list`,
         null,
@@ -79,7 +80,7 @@ const ListsPage: React.FC = () => {
         setShowModal(false);
         setNewListName("");
         setNewListDescription("");
-        
+
         // Refresh the lists
         fetchLists();
       }
@@ -99,142 +100,146 @@ const ListsPage: React.FC = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>All Lists</h2>
-        <button
-          className="btn btn-success"
-          onClick={() => setShowModal(true)}
-        >
-          <span className="me-1">+</span> Create New List
-        </button>
-      </div>
+    <>
+      <AppHeader />
 
-      {alert && (
-        <div className={`alert alert-${alert.type} alert-dismissible fade show`} role="alert">
-          {alert.message}
+      <div className="container mt-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h2>All Lists</h2>
           <button
-            type="button"
-            className="btn-close"
-            onClick={() => setAlert(null)}
-            aria-label="Close"
-          ></button>
+            className="btn btn-success"
+            onClick={() => setShowModal(true)}
+          >
+            <span className="me-1">+</span> Create New List
+          </button>
         </div>
-      )}
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : lists.length === 0 ? (
-        <p>No lists found.</p>
-      ) : (
-        <div>
-          {lists.map((list, index) => (
-            <div key={list.id}>
-              <div
-                style={{ cursor: "pointer", padding: "1rem 0" }}
-                onClick={() => handleOpenList(list.id)}
-              >
-                <strong style={{ color: "blue", fontSize: "1.1rem" }}>
-                  {list.name}
-                </strong>
-                <div className="text-muted small mt-1">
-                  {list.totalServiesCount} {list.totalServiesCount > 1 ? 'servies' : 'servie'}
+        {alert && (
+          <div className={`alert alert-${alert.type} alert-dismissible fade show`} role="alert">
+            {alert.message}
+            <button
+              type="button"
+              className="btn-close"
+              onClick={() => setAlert(null)}
+              aria-label="Close"
+            ></button>
+          </div>
+        )}
+
+        {loading ? (
+          <p>Loading...</p>
+        ) : lists.length === 0 ? (
+          <p>No lists found.</p>
+        ) : (
+          <div>
+            {lists.map((list, index) => (
+              <div key={list.id}>
+                <div
+                  style={{ cursor: "pointer", padding: "1rem 0" }}
+                  onClick={() => handleOpenList(list.id)}
+                >
+                  <strong style={{ color: "blue", fontSize: "1.1rem" }}>
+                    {list.name}
+                  </strong>
+                  <div className="text-muted small mt-1">
+                    {list.totalServiesCount} {list.totalServiesCount > 1 ? 'servies' : 'servie'}
+                  </div>
+                  {list.description && (
+                    <p
+                      className="text-secondary mb-0 mt-2"
+                      style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 4,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        lineHeight: '2'
+                      }}
+                    >
+                      {list.description}
+                    </p>
+                  )}
                 </div>
-                {list.description && (
-                  <p 
-                    className="text-secondary mb-0 mt-2" 
-                    style={{
-                      display: '-webkit-box',
-                      WebkitLineClamp: 4,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      lineHeight: '2'
-                    }}
-                  >
-                    {list.description}
-                  </p>
+                {index < lists.length - 1 && (
+                  <hr style={{ margin: 0, borderColor: '#aaa' }} />
                 )}
               </div>
-              {index < lists.length - 1 && (
-                <hr style={{ margin: 0, borderColor: '#aaa' }} />
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
-      {/* Modal for creating new list */}
-      {showModal && (
-        <div
-          className="modal show d-block"
-          tabIndex={-1}
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Create New List</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={handleCloseModal}
-                  disabled={creating}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label htmlFor="listName" className="form-label">
-                    Name <span className="text-danger">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="listName"
-                    value={newListName}
-                    onChange={(e) => setNewListName(e.target.value)}
-                    placeholder="Enter list name"
+        {/* Modal for creating new list */}
+        {showModal && (
+          <div
+            className="modal show d-block"
+            tabIndex={-1}
+            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Create New List</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={handleCloseModal}
                     disabled={creating}
-                  />
+                  ></button>
                 </div>
-                <div className="mb-3">
-                  <label htmlFor="listDescription" className="form-label">
-                    Description
-                  </label>
-                  <textarea
-                    className="form-control"
-                    id="listDescription"
-                    rows={3}
-                    value={newListDescription}
-                    onChange={(e) => setNewListDescription(e.target.value)}
-                    placeholder="Enter list description (optional)"
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label htmlFor="listName" className="form-label">
+                      Name <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="listName"
+                      value={newListName}
+                      onChange={(e) => setNewListName(e.target.value)}
+                      placeholder="Enter list name"
+                      disabled={creating}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="listDescription" className="form-label">
+                      Description
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="listDescription"
+                      rows={3}
+                      value={newListDescription}
+                      onChange={(e) => setNewListDescription(e.target.value)}
+                      placeholder="Enter list description (optional)"
+                      disabled={creating}
+                    ></textarea>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleCloseModal}
                     disabled={creating}
-                  ></textarea>
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleCreateList}
+                    disabled={creating}
+                  >
+                    {creating ? "Saving..." : "Save List"}
+                  </button>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={handleCloseModal}
-                  disabled={creating}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleCreateList}
-                  disabled={creating}
-                >
-                  {creating ? "Saving..." : "Save List"}
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 

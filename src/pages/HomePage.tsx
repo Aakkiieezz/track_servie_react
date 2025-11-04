@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import HomePageHeader from "../components/HomePage/HomePageHeader";
 import ServieGrid from "../components/HomePage/ServieGrid";
 import PaginationBar from "../components/PaginationBar";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import axiosInstance from '../utils/axiosInstance';
 import { useFilterStore } from '../store/useFilterStore';
 import { useSearchParams } from 'react-router-dom';
+import AppHeader from "@/components/AppHeader";
 
 interface Servie {
     // Servie fields
@@ -44,6 +44,7 @@ interface Pagination {
 }
 
 const HomePage: React.FC = () => {
+    
     // Get filters from Zustand store
     const filters = useFilterStore();
 
@@ -114,7 +115,7 @@ const HomePage: React.FC = () => {
         fetchServies(currentFilters, currentPage);
     }, [currentPage]); // Re-fetch when URL page param changes
 
-    const handleFilterChange = (newFilters: Filters) => {
+    const handleHomeFilterChange = (newFilters: Filters) => {
         console.log("HomePage -> handleFilterChange -> filter:", newFilters);
         
         // Update Zustand store
@@ -144,8 +145,11 @@ const HomePage: React.FC = () => {
     };
 
     return (
-        <div>
-            <HomePageHeader handleFilterChange={handleFilterChange} />
+        <div className="home-page-container">
+            <AppHeader
+                showHomeFilter={true}
+                handleHomeFilterChange={handleHomeFilterChange}
+            />
 
             {loading ? <p>Loading...</p> : <ServieGrid servies={servies} />}
 

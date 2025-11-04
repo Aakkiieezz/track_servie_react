@@ -137,9 +137,6 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
 
             {/* 🔍 Search Input */}
             <div className="input-group flex-grow-1">
-              {/* <span className="input-group-text bg-light border-end-0">
-                <i className="bi bi-search"></i>
-              </span> */}
               <input
                 type="text"
                 id="query"

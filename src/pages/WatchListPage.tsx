@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import ServieGrid from "../components/HomePage/ServieGrid";
 import PaginationBar from "../components/PaginationBar";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import axiosInstance from "../utils/axiosInstance";
-import SearchPageHeader from "@/components/SearchPage/SearchPageHeader";
+import AppHeader from "@/components/AppHeader";
 
 interface Servie {
     // Servie fields
@@ -41,7 +40,6 @@ interface Pagination {
 }
 
 const WatchListPage: React.FC = () => {
-    const navigate = useNavigate();
 
     const [servies, setServies] = useState<Servie[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -108,14 +106,10 @@ const WatchListPage: React.FC = () => {
         fetchServies();
     }, []); // Empty dependency array ensures it runs only once
 
-    const handleSearchFilterChange = (filters: SearchFilters) => {
-        navigate(`/search?query=${filters.query}&type=${filters.type}`);
-    };
-
     return (
         <div>
 
-            <SearchPageHeader handleSearchFilterChange={handleSearchFilterChange} />
+            <AppHeader />
 
             {loading ? <p>Loading...</p> : <ServieGrid servies={servies} />}
 

@@ -4,6 +4,7 @@ import axiosInstance from '../utils/axiosInstance';
 import { useLocation } from 'react-router-dom';
 import './ImageGalleryPage.css'
 import { Download, Image as ImageIcon } from 'lucide-react'; // ⬅️ Add these icons at the top
+import AppHeader from '@/components/AppHeader';
 
 interface ImageData {
   iso_639_1: string | null;
@@ -219,6 +220,7 @@ const ImageGalleryPage: React.FC = () => {
 
   return (
     <div className="image-gallery-container">
+      <AppHeader />
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
           <Film className="w-8 h-8" />

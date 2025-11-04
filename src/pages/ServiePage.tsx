@@ -11,6 +11,7 @@ import HalfStarRating from '@/components/HalfStarRating';
 // import YouTubePopup from './YoutubePopup';
 import VideoPopup from './VideoPopup';
 import MovieReviewModal from '@/components/MovieReviewModal';
+import AppHeader from '@/components/AppHeader';
 
 interface ReviewData {
     tmdbId: number;
@@ -278,6 +279,8 @@ const ServiePage = () => {
                     onClose={() => setAlert(null)}
                 />
             )}
+
+            <AppHeader />
 
             <div className="container-fluid backdrop">
                 <img

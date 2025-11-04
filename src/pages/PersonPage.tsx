@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import Alert from '../components/Alert';
 import "../components/thymeleafCss.css";
+import AppHeader from '@/components/AppHeader';
 
 interface PersonResponse {
     name: string;
@@ -124,6 +125,7 @@ const PersonPage: React.FC = () => {
 
     return (
         <div className="container">
+            <AppHeader />
             <div className="row">
 
                 {/* Person's image */}

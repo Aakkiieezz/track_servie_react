@@ -6,9 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Alert from "../components/Alert";
 import { Link } from "react-router-dom";
 import NetworkTab from "@/components/NetworkTab";
+import AppHeader from "@/components/AppHeader";
 
 const ProfilePage: React.FC = () => {
-  
+
   const username = localStorage.getItem("username");
   const [activeTab, setActiveTab] = useState("Overview");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -33,7 +34,7 @@ const ProfilePage: React.FC = () => {
   }, []);
 
   const [activeNetworkTab, setActiveNetworkTab] = useState<"Following" | "Followers">("Following");
-  
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -175,97 +176,99 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className={styles.profilePageContainer}>
-      {/* Alert Component */}
-      {alert && (
-        <Alert
-          type={alert.type}
-          message={alert.message}
-          onClose={() => setAlert(null)}
-        />
-      )}
+    <>
+      <AppHeader />
 
-      <nav className="bg-gray-800 p-4">
-        <Link to="/" className="text-white mr-4 hover:underline">Home</Link>
-        <br></br>
-        <Link to="/stats" className="text-white hover:underline">Stats</Link>
-        <br></br>
-        <Link to="/statslangbarlog" className="text-white hover:underline">StatsLangBarLog</Link>
-      </nav>
-
-      <div className={styles.profileHeader}>
-        <div className={styles.profilePicWrapper}>
-
-          <img
-            src={profilePicUrl || "src/assets/defaultProfileImg.jpg"}
-            alt="Profile"
-            className={styles.profilePic}
-            onClick={toggleDropdown}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
-            }}
+      <div className={styles.profilePageContainer}>
+        {/* Alert Component */}
+        {alert && (
+          <Alert
+            type={alert.type}
+            message={alert.message}
+            onClose={() => setAlert(null)}
           />
+        )}
 
-          {isDropdownOpen && (
-            <div className={styles.dropdownMenu}>
-              <label htmlFor="uploadImage" className={styles.dropdownItem}>
-                Upload Image
-                <input
-                  type="file"
-                  id="uploadImage"
-                  className={styles.fileInput}
-                  onChange={uploadImage}
-                />
-              </label>
-              <button className={styles.dropdownItem} onClick={deleteImage}>
-                Delete Image
-              </button>
-            </div>
-          )}
+        <nav className="bg-gray-800 p-4">
+          <Link to="/stats" className="text-white hover:underline">Stats</Link>
+          <br></br>
+          <Link to="/statslangbarlog" className="text-white hover:underline">StatsLangBarLog</Link>
+        </nav>
+
+        <div className={styles.profileHeader}>
+          <div className={styles.profilePicWrapper}>
+
+            <img
+              src={profilePicUrl || "src/assets/defaultProfileImg.jpg"}
+              alt="Profile"
+              className={styles.profilePic}
+              onClick={toggleDropdown}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+              }}
+            />
+
+            {isDropdownOpen && (
+              <div className={styles.dropdownMenu}>
+                <label htmlFor="uploadImage" className={styles.dropdownItem}>
+                  Upload Image
+                  <input
+                    type="file"
+                    id="uploadImage"
+                    className={styles.fileInput}
+                    onChange={uploadImage}
+                  />
+                </label>
+                <button className={styles.dropdownItem} onClick={deleteImage}>
+                  Delete Image
+                </button>
+              </div>
+            )}
+          </div>
+          <h1 className={styles.username}>{username}</h1>
         </div>
-        <h1 className={styles.username}>{username}</h1>
+
+        <div>
+          Movies watched: {watchedCounts.movie} <br />
+          Series watched: {watchedCounts.tv}
+        </div>
+
+        <div className={styles.tabNavigation}>
+          <button
+            className={`${styles.tabButton} ${activeTab === "Profile" ? styles.active : ""
+              }`}
+            onClick={() => handleTabChange("Profile")}
+          >
+            Profile
+          </button>
+
+          <button
+            className={`${styles.tabButton} ${activeTab === "Settings" ? styles.active : ""
+              }`}
+            onClick={() => handleTabChange("Settings")}
+          >
+            Settings
+          </button>
+
+          <button
+            className={`${styles.tabButton} ${activeTab === "Network" ? styles.active : ""
+              }`}
+            onClick={() => handleTabChange("Network")}
+          >
+            Network
+          </button>
+
+          <button
+            className={`${styles.tabButton} ${activeTab === "Data" ? styles.active : ""
+              }`}
+            onClick={() => handleTabChange("Data")}
+          >
+            Data
+          </button>
+        </div>
+        <div className={styles.tabContent}>{renderTabContent()}</div>
       </div>
-
-      <div>
-        Movies watched: {watchedCounts.movie} <br />
-        Series watched: {watchedCounts.tv}
-      </div>
-
-      <div className={styles.tabNavigation}>
-        <button
-          className={`${styles.tabButton} ${activeTab === "Profile" ? styles.active : ""
-            }`}
-          onClick={() => handleTabChange("Profile")}
-        >
-          Profile
-        </button>
-
-        <button
-          className={`${styles.tabButton} ${activeTab === "Settings" ? styles.active : ""
-            }`}
-          onClick={() => handleTabChange("Settings")}
-        >
-          Settings
-        </button>
-
-        <button
-          className={`${styles.tabButton} ${activeTab === "Network" ? styles.active : ""
-            }`}
-          onClick={() => handleTabChange("Network")}
-        >
-          Network
-        </button>
-
-        <button
-          className={`${styles.tabButton} ${activeTab === "Data" ? styles.active : ""
-            }`}
-          onClick={() => handleTabChange("Data")}
-        >
-          Data
-        </button>
-      </div>
-      <div className={styles.tabContent}>{renderTabContent()}</div>
-    </div>
+    </>
   );
 };
 
