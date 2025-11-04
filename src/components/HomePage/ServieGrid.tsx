@@ -215,7 +215,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
 
                       {servie.firstAirDate && (
                         <span>
-                          {new Date(servie.firstAirDate).getFullYear()} -{" "}
+                          {new Date(servie.firstAirDate).getFullYear()} - {" "}
                           {new Date(servie.lastAirDate!).getFullYear() ===
                             new Date().getFullYear()
                             ? "present"
@@ -242,7 +242,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                     {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
                   </a>
 
-                  <Link to='/images' state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}>
+                  <Link to='/images' state={{ childType: servie.childtype, tmdbId: servie.tmdbId, title: servie.title, releaseDate: servie.releaseDate, firstAirDate:servie.firstAirDate, lastAirDate:servie.lastAirDate }}>
                     <i className="bi bi-file-image"></i>
                   </Link>
 

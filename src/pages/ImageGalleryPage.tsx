@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Film, Download, Image as ImageIcon } from 'lucide-react';
+import { Download, Image as ImageIcon } from 'lucide-react';
 import axiosInstance from '../utils/axiosInstance';
 import { useLocation } from 'react-router-dom';
 import styles from './ImageGalleryPage.module.css';
@@ -39,6 +39,10 @@ interface TabConfig {
 interface LocationState {
   childType: string;
   tmdbId: number;
+  title: string;
+  releaseDate?: string;
+  firstAirDate?: string;
+  lastAirDate?: string;
 }
 
 interface CustomImagePayload {
@@ -50,7 +54,7 @@ interface CustomImagePayload {
 
 const ImageGalleryPage: React.FC = () => {
   const location = useLocation();
-  const { childType, tmdbId } = location.state as LocationState;
+  const { childType, tmdbId, title, releaseDate, firstAirDate, lastAirDate } = location.state as LocationState;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [groupedData, setGroupedData] = useState<GroupedData>({});
@@ -85,31 +89,31 @@ const ImageGalleryPage: React.FC = () => {
 
       const response = await axiosInstance.get<BackendResponse>(`/images/${childType}/${tmdbId}`);
       const data = response.data;
-      
+
       // Data is already grouped by type (backdrops, logos, posters)
       // Now group by language within each type
       const grouped: GroupedData = {};
-      
+
       // Map backend keys to display keys
       const typeMapping: { [key: string]: string } = {
         'posters': 'POSTER',
         'backdrops': 'BACKDROP',
         'logos': 'LOGO'
       };
-      
+
       // Process each type
       Object.entries(typeMapping).forEach(([backendKey, displayKey]) => {
         if (data[backendKey as keyof BackendResponse]) {
           grouped[displayKey] = {};
-          
+
           const images = data[backendKey as keyof BackendResponse] as ImageData[];
-          
+
           images.forEach((item) => {
             const language = item.iso_639_1 || 'null';
-            
+
             if (!grouped[displayKey][language])
               grouped[displayKey][language] = [];
-            
+
             grouped[displayKey][language].push(item);
           });
         }
@@ -145,6 +149,26 @@ const ImageGalleryPage: React.FC = () => {
 
   const getImageUrl = (filePath: string): string => {
     return `https://image.tmdb.org/t/p/original${filePath}`;
+  };
+
+  const getDisplayTitle = (): string => {
+    if (childType === "movie" && releaseDate) {
+      const year = new Date(releaseDate).getFullYear();
+      return `${title} (${year})`;
+    } else if (childType === "tv" && firstAirDate) {
+      const startYear = new Date(firstAirDate).getFullYear();
+
+      if (lastAirDate) {
+        const endYear = new Date(lastAirDate).getFullYear();
+        const currentYear = new Date().getFullYear();
+        const displayEndYear = endYear === currentYear ? "present" : endYear;
+        return `${title} (${startYear} - ${displayEndYear})`;
+      }
+
+      return `${title} (${startYear})`;
+    }
+
+    return title || "Image Gallery";
   };
 
   const handleSetCustomImage = async (imageType: "poster" | "backdrop", filePath: string) => {
@@ -219,8 +243,7 @@ const ImageGalleryPage: React.FC = () => {
       <AppHeader />
       <div className={styles.header}>
         <h1 className={styles.headerTitle}>
-          <Film className="w-8 h-8" />
-          Image Gallery
+          {getDisplayTitle()}
         </h1>
       </div>
 
@@ -270,7 +293,7 @@ const ImageGalleryPage: React.FC = () => {
           ) : (
             <div className={`${styles.grid} ${currentTabConfig.gridClass}`}>
               {currentImages.map((image, idx) => (
-                <div 
+                <div
                   key={idx}
                   className={`${styles.imageContainer} ${currentTabConfig.imageClass}`}
                 >
