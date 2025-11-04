@@ -106,8 +106,6 @@ const PersonPage: React.FC = () => {
     if (loading) return <div>Loading...</div>;
     if (!personData) return <div>Person data not found</div>;
 
-
-
     const handleBlurToggle = () => {
         setBlurCompleted(!blurCompleted);
     };
@@ -118,14 +116,15 @@ const PersonPage: React.FC = () => {
         return a.title.localeCompare(b.title);
     });
 
-
     const filteredServies = sortedServies.filter(servie =>
         filterType === "Servie" || servie.childtype === filterType.toLowerCase()
     );
 
     return (
         <div className="container">
+            
             <AppHeader />
+            
             <div className="row">
 
                 {/* Person's image */}
@@ -206,15 +205,6 @@ const PersonPage: React.FC = () => {
                     return (
                         <div key={key} className="col-xxl-1 custom-col-10 col-sm-2 col-3 image-container poster">
 
-                            {/* Alert Component */}
-                            {alert && (
-                                <Alert
-                                    type={alert.type}
-                                    message={alert.message}
-                                    onClose={() => setAlert(null)}
-                                />
-                            )}
-
                             <div>
                                 <img
                                     className={`rounded image-border ${blurCompleted && isCompleted ? 'blurred' : ''}`}
@@ -229,9 +219,13 @@ const PersonPage: React.FC = () => {
                                     <Link to='/servie' state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}>
                                         <strong>{servie.title}</strong>
                                     </Link>
+                                    
                                     <br />
+                                    
                                     <span>Popularity: {servie.popularity}</span>
+                                    
                                     <br />
+                                    
                                     {servie.childtype === 'movie' ? (
                                         <span>{new Date(servie.releaseDate).getFullYear()}</span>
                                     ) : (
@@ -258,6 +252,15 @@ const PersonPage: React.FC = () => {
                         </div>);
                 })}
             </div>
+
+            {/* Alert Component */}
+            {alert && (
+                <Alert
+                    type={alert.type}
+                    message={alert.message}
+                    onClose={() => setAlert(null)}
+                />
+            )}
         </div>
     );
 };
