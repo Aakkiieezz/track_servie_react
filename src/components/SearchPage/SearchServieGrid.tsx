@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
-// import "../thymeleafCss.css";
 import axiosInstance from '../../utils/axiosInstance';
 import ProgressBar from "../ProgressBar";
 import Alert from "../Alert";
@@ -38,7 +37,7 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
     }, {} as { [key: string]: boolean })
   );
 
-  const toggleWatch = async (tmdbId: number, childtype: string) => {
+  const toggleWatch = async (childtype: string, tmdbId: number) => {
 
     const key = `${childtype}-${tmdbId}`;
     const currentCompletedState = servieWatchState[key];
@@ -100,141 +99,87 @@ const SearchServieGrid: React.FC<ServieGridProps> = ({ servies }) => {
   }
 
   return (
-    <div className="row">
-      {servies.map((servie) => {
-        const key = `${servie.childtype}-${servie.tmdbId}`;
-        const isCompleted = servieWatchState[key];
+    <>
 
-        return (
-          <div
-            key={key}
-            className="col-xxl-1 custom-col-10 col-sm-2 col-3 image-container poster"
-          >
+      <div className="row">
+        {servies.map((servie) => {
+          const key = `${servie.childtype}-${servie.tmdbId}`;
+          const watchStateRender = servieWatchState[key];
 
-            {/* Alert Component */}
-            {alert && (
-              <Alert
-                type={alert.type}
-                message={alert.message}
-                onClose={() => setAlert(null)}
-              />
-            )}
+          return (
+            <div className="col-xxl-1 custom-col-10 col-sm-2 col-3 image-container poster"
+              key={key} >
 
-            <div>
+              <div>
 
-              {/* Movie Card */}
-              {servie.childtype === "movie" && (
-                <>
-                  <img
-                    className="rounded image-border"
-                    src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
-                    alt={servie.title}
-                    onError={(e) => {
-                      e.currentTarget.src = '/src/assets/defaultPoster.png';
-                    }}
-                  />
-                  <div className="buttons-container rounded">
-                    <Link to="/servie" state={{ childType: "movie", tmdbId: servie.tmdbId }}>
-                      <strong>{servie.title}</strong>
-                    </Link>
-                    <br />
+                <img
+                  className="rounded image-border"
+                  src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
+                  alt={servie.title}
+                  onError={(e) => {
+                    e.currentTarget.src = '/src/assets/defaultPoster.png';
+                  }}
+                />
 
-                    {servie.releaseDate && (
-                      <span>{new Date(servie.releaseDate).getFullYear()}</span>
-                    )}
-                    <br />
+                <div className="buttons-container rounded">
 
-                    {/* {toggle completed} */}
-                    <a
-                      href="#"
-                      onClick={() => toggleWatch(servie.tmdbId, servie.childtype)}
-                    >
-                      {isCompleted ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
-                    </a>
+                  <Link to='/servie' state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}>
+                    <strong>{servie.title}</strong>
+                  </Link>
 
-                    <a
-                      href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
-                    >
-                      <i className="bi bi-file-image"></i>
-                    </a>
-                    {/* <a
-                      href={`list/${servie.tmdbId}?childtype=${servie.childtype}`}
-                    >
-                      <i className="bi bi-clock-fill"></i>
-                    </a> */}
-                    <a
-                      href="#"
-                      onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
-                    >
-                      <i className="bi bi-clock-fill"></i>
-                    </a>
-                  </div>
-                </>
-              )}
+                  <br />
 
-              {/* TV Show Card */}
-              {servie.childtype === "tv" && (
-                <>
-                  <img
-                    className="rounded image-border"
-                    src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
-                    alt={servie.title}
-                    onError={(e) => {
-                      e.currentTarget.src = '/src/assets/defaultPoster.png';
-                    }}
-                  />
-                  <div className="buttons-container rounded">
-                    <Link to="/servie" state={{ childType: "tv", tmdbId: servie.tmdbId }}>
-                      <strong>{servie.title}</strong>
-                    </Link>
-                    <br />
-                    {servie.releaseDate && (
-                      <span>{new Date(servie.releaseDate).getFullYear()}</span>
-                    )}
-                    <br />
-                    {servie.found && servie.episodesWatched && servie.totalEpisodes && (
-                      <span>
-                        {servie.episodesWatched}/{servie.totalEpisodes}
-                      </span>
-                    )}
+                  {/* only Movie */}
+                  {servie.releaseDate && (
+                    <span>{new Date(servie.releaseDate).getFullYear()}</span>
+                  )}
 
-                    {/* {toggle completed} */}
-                    <a
-                      href="#"
-                      onClick={() => toggleWatch(servie.tmdbId, servie.childtype)}
-                    >
-                      {isCompleted ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
-                    </a>
+                  {/* only TV */}
+                  {servie.childtype === "tv" && (
+                    <>
+                      {/* Progress bar */}
+                      {servie.found && servie.episodesWatched && servie.totalEpisodes && (
+                        <ProgressBar episodesWatched={servie.episodesWatched} totalEpisodes={servie.totalEpisodes} />
+                      )}
+                    </>
+                  )}
 
-                    <a
-                      href={`servies/${servie.tmdbId}/posters?type=${servie.childtype}`}
-                    >
-                      <i className="bi bi-file-image"></i>
-                    </a>
-                    {/* <a
-                      href={`list/${servie.tmdbId}?childtype=${servie.childtype}`}
-                    >
-                      <i className="bi bi-clock-fill"></i>
-                    </a> */}
-                    <a
-                      href="#"
-                      onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
-                    >
-                      <i className="bi bi-clock-fill"></i>
-                    </a>
+                  {servie.found && servie.episodesWatched && servie.totalEpisodes && (
+                    <span>
+                      {servie.episodesWatched}/{servie.totalEpisodes}
+                    </span>
+                  )}
 
-                    {/* Progress bar */}
-                    {servie.found && servie.episodesWatched && servie.totalEpisodes &&
-                      (<ProgressBar episodesWatched={servie.episodesWatched} totalEpisodes={servie.totalEpisodes} />)
-                    }
-                  </div>
-                </>
-              )}
+                  <a href="#" onClick={() => toggleWatch(servie.childtype, servie.tmdbId)}>
+                    {watchStateRender ? (<i className="bi bi-eye-fill"></i>) : (<i className="bi bi-eye-slash-fill"></i>)}
+                  </a>
+
+                  <Link to='/images' state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}>
+                    <i className="bi bi-file-image"></i>
+                  </Link>
+
+                  <a href="#" onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}>
+                    <i className="bi bi-clock-fill"></i>
+                  </a>
+
+                </div>
+              </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+
+      {/* Alert Component */}
+      {alert && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
+
+    </>
+
   );
 };
 
