@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Film } from 'lucide-react';
+import { Film, Download, Image as ImageIcon } from 'lucide-react';
 import axiosInstance from '../utils/axiosInstance';
 import { useLocation } from 'react-router-dom';
-import './ImageGalleryPage.css'
-import { Download, Image as ImageIcon } from 'lucide-react'; // ⬅️ Add these icons at the top
+import styles from './ImageGalleryPage.module.css';
 import AppHeader from '@/components/AppHeader';
 
 interface ImageData {
@@ -43,10 +42,10 @@ interface LocationState {
 }
 
 interface CustomImagePayload {
-  childType: string;   // e.g. "movie" or "tv"
+  childType: string;
   tmdbId: number;
   imageType: "poster" | "backdrop";
-  filePath: string;    // full or relative file path
+  filePath: string;
 }
 
 const ImageGalleryPage: React.FC = () => {
@@ -59,9 +58,9 @@ const ImageGalleryPage: React.FC = () => {
   const [activeLanguage, setActiveLanguage] = useState<string>('');
 
   const tabConfigs: TabConfig[] = [
-    { label: 'POSTERS', value: 'POSTER', gridClass: 'poster-grid', imageClass: 'poster' },
-    { label: 'BACKDROPS', value: 'BACKDROP', gridClass: 'backdrop-grid', imageClass: 'backdrop' },
-    { label: 'LOGOS', value: 'LOGO', gridClass: 'logo-grid', imageClass: 'logo' }
+    { label: 'POSTERS', value: 'POSTER', gridClass: styles.posterGrid, imageClass: styles.poster },
+    { label: 'BACKDROPS', value: 'BACKDROP', gridClass: styles.backdropGrid, imageClass: styles.backdrop },
+    { label: 'LOGOS', value: 'LOGO', gridClass: styles.logoGrid, imageClass: styles.logo }
   ];
 
   useEffect(() => {
@@ -148,38 +147,11 @@ const ImageGalleryPage: React.FC = () => {
     return `https://image.tmdb.org/t/p/original${filePath}`;
   };
 
-  if (loading) {
-    return (
-      <div className="gallery-loading">
-        <div className="gallery-loading-content">
-          <div className="gallery-spinner"></div>
-          <p className="gallery-loading-text">Loading images...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="gallery-error">
-        <div className="gallery-error-content">
-          <p className="gallery-error-title">Error loading images</p>
-          <p className="gallery-error-message">{error}</p>
-          <button onClick={fetchImages} className="gallery-retry-button">
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 🟢 Add API call for setting custom image
   const handleSetCustomImage = async (imageType: "poster" | "backdrop", filePath: string) => {
     try {
-
       const payload: CustomImagePayload = {
-        childType,   // variable already available in your component
-        tmdbId,      // same
+        childType,
+        tmdbId,
         imageType,
         filePath,
       };
@@ -203,7 +175,6 @@ const ImageGalleryPage: React.FC = () => {
     }
   };
 
-  // 🟢 Add image download handler
   const handleDownload = (filePath: string) => {
     const url = getImageUrl(filePath);
     const link = document.createElement('a');
@@ -214,30 +185,55 @@ const ImageGalleryPage: React.FC = () => {
     document.body.removeChild(link);
   };
 
+  if (loading) {
+    return (
+      <div className={styles.loading}>
+        <div className={styles.loadingContent}>
+          <div className={styles.spinner}></div>
+          <p className={styles.loadingText}>Loading images...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.error}>
+        <div className={styles.errorContent}>
+          <p className={styles.errorTitle}>Error loading images</p>
+          <p className={styles.errorMessage}>{error}</p>
+          <button onClick={fetchImages} className={styles.retryButton}>
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const currentTabConfig = getCurrentTabConfig();
   const availableLanguages = getAvailableLanguages(activeTab);
   const currentImages = getCurrentImages();
 
   return (
-    <div className="image-gallery-container">
+    <div className={styles.container}>
       <AppHeader />
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+      <div className={styles.header}>
+        <h1 className={styles.headerTitle}>
           <Film className="w-8 h-8" />
           Image Gallery
         </h1>
       </div>
 
-      <div className="gallery-tabs">
+      <div className={styles.tabs}>
         {tabConfigs.map((tab) => (
           <button
             key={tab.value}
             onClick={() => setActiveTab(tab.value)}
-            className={`gallery-tab ${activeTab === tab.value ? 'active' : ''}`}
+            className={`${styles.tab} ${activeTab === tab.value ? styles.active : ''}`}
           >
             {tab.label}
             {groupedData[tab.value] && (
-              <span className="gallery-tab-count">
+              <span className={styles.tabCount}>
                 ({Object.values(groupedData[tab.value]).flat().length})
               </span>
             )}
@@ -245,19 +241,19 @@ const ImageGalleryPage: React.FC = () => {
         ))}
       </div>
 
-      <div className="gallery-content">
+      <div className={styles.content}>
         {availableLanguages.length > 0 && (
-          <div className="language-sidebar">
-            <div className="language-sidebar-inner">
-              <p className="language-sidebar-title">Language</p>
+          <div className={styles.languageSidebar}>
+            <div className={styles.languageSidebarInner}>
+              <p className={styles.languageSidebarTitle}>Language</p>
               {availableLanguages.map((lang) => (
                 <button
                   key={lang}
                   onClick={() => setActiveLanguage(lang)}
-                  className={`language-button ${activeLanguage === lang ? 'active' : ''}`}
+                  className={`${styles.languageButton} ${activeLanguage === lang ? styles.active : ''}`}
                 >
                   {lang.toUpperCase()}
-                  <span className="language-count">
+                  <span className={styles.languageCount}>
                     ({groupedData[activeTab][lang].length})
                   </span>
                 </button>
@@ -266,34 +262,33 @@ const ImageGalleryPage: React.FC = () => {
           </div>
         )}
 
-        <div className="gallery-grid-container">
+        <div className={styles.gridContainer}>
           {currentImages.length === 0 ? (
-            <div className="gallery-empty">
+            <div className={styles.empty}>
               No images available for this selection
             </div>
           ) : (
-            <div className={`gallery-grid ${currentTabConfig.gridClass}`}>
+            <div className={`${styles.grid} ${currentTabConfig.gridClass}`}>
               {currentImages.map((image, idx) => (
                 <div 
                   key={idx}
-                  className={`gallery-image-container ${currentTabConfig.imageClass}`}
+                  className={`${styles.imageContainer} ${currentTabConfig.imageClass}`}
                 >
                   <img
                     src={getImageUrl(image.file_path)}
                     alt={`${activeTab} ${idx + 1}`}
                     loading="lazy"
                   />
-                  {/* 🟢 Overlay Buttons Container */}
-                  <div className="image-buttons-overlay">
+                  <div className={styles.imageButtonsOverlay}>
                     <button
-                      className="overlay-btn"
+                      className={styles.overlayBtn}
                       title="Download image"
                       onClick={() => handleDownload(image.file_path)}
                     >
                       <Download className="w-4 h-4" />
                     </button>
                     <button
-                      className="overlay-btn"
+                      className={styles.overlayBtn}
                       title="Set as custom"
                       onClick={() =>
                         handleSetCustomImage(activeTab.toLowerCase() as "poster" | "backdrop", image.file_path)
