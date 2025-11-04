@@ -1,12 +1,12 @@
 /* Scroll container with horizontal scrolling enabled */
-.scroll-container {
+.scrollContainer {
  display: flex; /* Ensures items are aligned horizontally */
  overflow-x: auto; /* Enables horizontal scrolling */
  overflow-y: visible; /* Allow vertical overflow for expanded text */
  padding: 10px; /* Optional padding */
 }
 
-.profile-item {
+.profileItem {
  display: flex; /* Ensures items stay inline */
  flex-direction: column;
  align-items: center;
@@ -17,7 +17,7 @@
  overflow: visible; /* Allow overflow from children */
 }
 
-.profile-item img {
+.profileItem img {
  width: 100px; /* Adjust width to fit your design */
  height: 150px; /* Adjust height */
  border-radius: 50%; /* Makes images circular */
@@ -26,7 +26,7 @@
 }
 
 /* Style for name and character with ellipsis and centered text */
-.profile-item p {
+.profileItem p {
  margin: 0px 0; /* Reduced from 5px to 2px */
  width: 100%; /* Take the full width of the container */
  white-space: nowrap; /* Prevent text from wrapping */
@@ -38,16 +38,16 @@
 }
 
 /* Style for profile name - make it bold */
-.profile-item p:first-of-type {
+.profileItem p:first-of-type {
  font-weight: 600;
 }
 
 /* Style for character name - make it italic */
-.profile-item p:nth-of-type(2) {
+.profileItem p:nth-of-type(2) {
  font-style: italic;
 }
 
-.profile-item p.expanded {
+.profileItem p.expanded {
  width: auto; /* Allow width to expand */
  min-width: 100px; /* Maintain minimum width */
  white-space: nowrap; /* Keep text in one line */
@@ -59,38 +59,7 @@
  z-index: 10; /* Ensure it appears above other elements */
 }
 
-.cast-slider-container {
- position: relative;
- display: flex;
- align-items: center;
- width: 100%;
- overflow: hidden;
-}
-
-.cast-slider {
- display: flex; /* Align children in a row */
- overflow-x: auto; /* Enable horizontal scrolling */
- white-space: nowrap; /* Prevent wrapping of child elements */
- scroll-behavior: smooth; /* Enable smooth scrolling */
-}
-
-.cast-item {
- display: inline-block; /* Make each item inline and block level */
- flex-direction: column; /* Arrange children vertically */
- align-items: center; /* Center items horizontally */
- justify-content: center; /* Center items vertically */
- margin-right: 100px; /* Space between items */
- text-align: center; /* Center text */
-}
-
-.cast-image img {
- display: block; /* Remove bottom space */
- width: 100px; /* Fixed width for images */
- height: 150px; /* Fixed height for images */
- margin: 0 auto; /* Center the image horizontally */
-}
-
 .blur {
  filter: blur(2px) brightness(40%);
- transition: 0.6s ease; /* Smooth transition for height change */
+ transition: 0.6s ease;
 }

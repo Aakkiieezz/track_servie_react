@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import "./CastListSlider.css";
+import styles from "./CastListSlider.module.css"
 
 type Cast = {
     personId: number;
@@ -36,14 +36,14 @@ const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childTyp
     }
 
     return (
-        <div className="scroll-container">
+        <div className={styles.scrollContainer}>
             {profiles.map(profile => (
                 <div key={profile.personId}
-                    className={hoveredProfileId && hoveredProfileId !== profile.personId ? 'blur' : ''}
+                    className={hoveredProfileId && hoveredProfileId !== profile.personId ? styles.blur : ''}
                     onMouseEnter={() => setHoveredProfileId(profile.personId)}
                     onMouseLeave={() => setHoveredProfileId(null)}
                 >
-                    <div className="profile-item">
+                    <div className={styles.profileItem}>
                         <img className="rounded"
                             src={getProfileImage(profile)}
                             alt={profile.name}
@@ -57,11 +57,11 @@ const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childTyp
                         />
 
                         {/* Profile Name */}
-                        <p title={profile.name} className={hoveredProfileId === profile.personId ? 'expanded' : ''}>
+                        <p title={profile.name} className={hoveredProfileId === profile.personId ? styles.expanded : ''}>
                             {hoveredProfileId === profile.personId ? profile.name : profile.name.slice(0, 10) + '...'}
                         </p>
                         {/* Character Name */}
-                        <p title={profile.character} className={hoveredProfileId === profile.personId ? 'expanded' : ''}>
+                        <p title={profile.character} className={hoveredProfileId === profile.personId ? styles.expanded : ''}>
                             {hoveredProfileId === profile.personId ? `as ${profile.character}` : profile.character.slice(0, 10) + '...'}
                         </p>
 
@@ -69,7 +69,7 @@ const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childTyp
                         {childType === "tv" && (
                         <p 
                             title={`${profile.totalEpisodes} eps`} 
-                            className={hoveredProfileId === profile.personId ? 'expanded' : ''}
+                            className={hoveredProfileId === profile.personId ? styles.expanded : ''}
                         >
                             {hoveredProfileId === profile.personId 
                             ? `${profile.totalEpisodes} episodes` 
