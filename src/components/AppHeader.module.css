@@ -204,41 +204,54 @@ body {
 ============================================================================ */
 
 :global(body:not(.dark)) .appHeader .dropdownMenu {
-  --dd-bg: rgba(255, 255, 255, 0.75); /* Back to transparent for blur */
+  --dd-bg: rgba(255, 255, 255, 0.75);
   --dd-text: #222;
-  --dd-border: rgba(0, 0, 0, 0.1);
+  --dd-border: rgba(0, 0, 0, 0.12);
+  --dd-hover-bg: rgba(0, 0, 0, 0.08);
+  --dd-text-hover: #111;
 }
 
 :global(body.dark) .appHeader .dropdownMenu {
-  --dd-bg: rgba(0, 0, 0, 0.88); /* Back to transparent for blur */
+  --dd-bg: rgba(8, 8, 8, 0.92);
   --dd-text: #eee;
-  --dd-border: rgba(255, 255, 255, 0.12);
+  --dd-border: rgba(255, 255, 255, 0.14);
+  --dd-hover-bg: rgba(255, 255, 255, 0.12);
+  --dd-text-hover: #fff;
 }
 
 .dropdownMenu {
   position: absolute !important;
   left: 0 !important;
   margin-top: 0.25rem !important;
+
   background: var(--dd-bg) !important;
   color: var(--dd-text) !important;
   border: 1px solid var(--dd-border) !important;
+
   backdrop-filter: blur(14px) !important;
   -webkit-backdrop-filter: blur(14px) !important;
+
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
-  border-radius: 0.375rem;
-  padding: 0.5rem 0;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0;
 }
 
 /* Items */
-.appHeader .dropdownItem {
+.dropdownItem {
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.9rem;
+  background: transparent;
   color: var(--dd-text);
+  border: none;
+  cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease;
 }
 
-.appHeader .dropdownItem:hover,
-.appHeader .dropdownItem:focus {
-  background: var(--dd-hover-bg);
-  color: var(--dd-text-hover);
+.dropdownItem:hover,
+.dropdownItem:focus {
+  background: var(--dd-hover-bg) !important;
+  color: var(--dd-text-hover) !important;
 }
 
 /* Section Headers */
