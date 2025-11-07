@@ -1,43 +1,102 @@
+.paginationNav {
+  margin-top: 14px;
+}
+
+.pagination {
+  gap: 4px;
+}
+
+/* Base page button */
 .pageLink {
-  border-radius: 6px !important;
-  padding: 6px 12px !important;
-  transition: all 0.2s ease !important;
+  background: var(--btnOutlinePrimary-bg);
+  border: 1px solid var(--btnOutlinePrimary-border);
+  color: var(--btnOutlinePrimary-text);
+  padding: 6px 12px;
+  border-radius: 6px;
+  min-width: 36px;
+  text-align: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(6px);
 }
 
-/* ------------------------------------------------
-   🌙 DARK MODE
------------------------------------------------- */
-
-:global(body.dark #paginationNav .pagination .page-item .page-link) {
-  background-color: rgba(30, 30, 30, 0.85) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  color: #eaeaea !important;
-  backdrop-filter: blur(12px);
+/* Hover */
+.pageLink:hover:not(.disabled):not(.active) {
+  background: var(--btnOutlinePrimary-bg-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
 }
 
-/* Hover (match real class name: .page-link) */
-:global(body.dark #paginationNav .pagination .page-item .page-link:hover:not(.disabled)) {
-  background-color: rgba(255, 255, 255, 0.18) !important;
-  color: #ffffff !important;
+/* Disabled state */
+.pageLink:disabled,
+.disabled .pageLink {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ACTIVE (selected page) */
+.active > .pageLink {
+  background: var(--btn-primary-bg);
+  color: #fff;
+  border-color: var(--btn-primary-border);
+  box-shadow: 0 0 10px var(--btn-primary-glow);
+}
+
+/* Ellipsis */
+.ellipsis {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* --- SPECIAL STYLING FOR PREVIOUS + NEXT BUTTONS (DARK MODE defaults) --- */
+.prevNext {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: #fff;
+  backdrop-filter: blur(6px);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect for prev/next */
+.prevNext:hover:not(:disabled):not(.disabled) {
+  background: rgba(255,255,255,0.12);
+  border-color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255,255,255,0.25);
+}
+
+/* Disabled prev/next */
+.prevNext:disabled,
+.disabled .prevNext {
+  opacity: 0.35;
+  border-color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.35);
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ================================================
+   LIGHT THEME FIX FOR PREVIOUS + NEXT BUTTONS
+   ================================================ */
+:global(body:not(.dark)) .prevNext {
+  background: rgba(0, 0, 0, 0.05);       /* Slight gray visible on white */
+  border: 1px solid rgba(0, 0, 0, 0.55); /* Dark outline */
+  color: rgba(0, 0, 0, 0.85);
+}
+
+:global(body:not(.dark)) .prevNext:hover:not(:disabled):not(.disabled) {
+  background: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.75);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   transform: translateY(-1px);
 }
 
-/* Active (current page) */
-:global(body.dark #paginationNav .pagination .page-item.active .page-link) {
-  background-color: rgb(34, 145, 255) !important;
-  border-color: rgb(34, 145, 255) !important;
-  color: white !important;
-  font-weight: 600;
-}
-
-/* Disabled */
-:global(body.dark #paginationNav .pagination .page-item.disabled .page-link) {
-  opacity: 0.45 !important;
-  cursor: not-allowed !important;
-}
-
-/* Remove outline */
-:global(body.dark #paginationNav .pagination .page-link:focus) {
-  outline: none !important;
-  box-shadow: none !important;
+:global(body:not(.dark)) .prevNext:disabled,
+:global(body:not(.dark)) .disabled .prevNext {
+  opacity: 0.35;
+  border-color: rgba(0, 0, 0, 0.25);
+  color: rgba(0, 0, 0, 0.35);
 }
