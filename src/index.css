@@ -19,3 +19,211 @@
   - src/lib/utils.ts
 Success! Project initialization completed.
 You may now add components */
+
+/* 🌞 LIGHT MODE (default) */
+body {
+  background-color: #f5f5f7;
+  background-image: none; /* Light theme looks cleaner without texture */
+  color: #222;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* Card / Section contrast adjustment (optional) */
+.light-surface {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0px 2px 12px rgba(0,0,0,0.08);
+}
+
+
+/* 🌙 DARK MODE */
+body.dark {
+  background-color: #1c1c1c;
+  background-image: url('../src/assets/abstract-luxury-blur-dark-grey-black-gradient-used-as-background-studio-wall-display-your-pr.jpg');
+  color: #eee;
+  background-size: cover;
+  background-attachment: fixed;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* Optional dark surfaces for cards / lists */
+body.dark .light-surface {
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0px 2px 14px rgba(0,0,0,0.4);
+}
+
+
+
+
+/* General Styling */
+html,
+body {
+ margin: 0; /* Removes any default margins */
+ padding: 0; /* Removes any default padding */
+ width: 100%; /* Ensures the page takes up the full viewport width */
+ overflow-x: hidden; /* Disables horizontal scrolling */
+}
+
+.container,
+.container-fluid {
+ padding: 5px;
+}
+
+.container-fluid.backdrop {
+ position: relative; /* To position child elements */
+ width: 100vw; /* Full viewport width */
+ min-height: 100vh; /* Use min-height instead of height for scrolling */
+ margin: 0; /* Remove default margins */
+ padding: 0; /* Remove default padding */
+ overflow-x: hidden; /* Only hide horizontal overflow, allow vertical scrolling */
+}
+
+.content-overlay {
+ position: relative; /* Stays above the background image */
+ z-index: 1;
+ width: 100%;
+ min-height: 100%; /* Ensure content stretches if shorter */
+ padding: 20px;
+ color: white;
+ overflow-y: auto; /* Enables scrolling if content overflows */
+}
+
+.container,
+.container-fluid,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl,
+.container-xxl {
+ --bs-gutter-x: 0;
+}
+
+.row {
+ padding: 5px;
+ --bs-gutter-x: 0;
+}
+
+.row.center {
+ justify-content: center;
+}
+
+.row.left {
+ justify-content: left;
+}
+
+:root {
+  --appHeader-height: 80px;  /* set your header height */
+}
+
+
+/* Default (Light Theme) */
+:root {
+
+  --header-bg: rgba(212, 212, 212, 0.2);
+  --header-border: rgba(0, 0, 0, 0.08);
+  --header-text: #222;
+
+  --input-bg: rgba(0, 0, 0, 0.06);
+  --input-border: rgba(0, 0, 0, 0.2);
+  --input-placeholder: rgba(0, 0, 0, 0.45);
+
+  --profile-img-border: rgba(0, 0, 0, 0.2);
+  --profile-img-border-hover: rgba(0, 0, 0, 0.5);
+
+  /* ----------------------------- */
+
+  --btn-text: #222;
+  --btn-text-muted: #555;
+
+  --btn-outline-primary-text: #1a73e8;
+  --btn-outline-primary-border: rgba(26, 115, 232, 0.45);
+  --btn-outline-primary-bg: rgba(26, 115, 232, 0.08);
+  --btn-outline-primary-bg-hover: rgba(26, 115, 232, 0.15);
+
+  --btn-outline-danger-text: #d9534f;
+  --btn-outline-danger-border: rgba(217, 83, 79, 0.45);
+  --btn-outline-danger-bg: rgba(217, 83, 79, 0.08);
+  --btn-outline-danger-bg-hover: rgba(217, 83, 79, 0.16);
+
+  --btn-primary-bg: rgba(76, 175, 80, 0.92);
+  --btn-primary-border: rgba(76, 175, 80, 1);
+  --btn-primary-bg-hover: rgba(76, 175, 80, 1);
+  --btn-primary-glow: rgba(76, 175, 80, 0.35);
+
+  --btn-link-text: #1a73e8;
+
+  /* FORM CONTROLS (SearchPageFilter.tsx) */
+  --form-bg: rgba(255, 255, 255, 0.85);
+  --form-bg-focus: rgba(255, 255, 255, 1);
+  --form-border: rgba(0, 0, 0, 0.25);
+  --form-border-focus: rgba(0, 0, 0, 0.45);
+  --form-text: #111;
+  --form-placeholder: rgba(0, 0, 0, 0.45);
+  --form-focus-ring: rgba(0, 0, 0, 0.12);
+
+  /* DROPDOWN MENUS */
+  /* --dd-bg: rgba(255, 255, 255, 0.700);
+  --dd-border: rgba(0, 0, 0, 0.14);
+  --dd-text: #222; */
+  --dd-text-hover: #000;
+  --dd-hover-bg: rgba(0, 0, 0, 0.05);
+  --dd-header-text: rgba(0, 0, 0, 0.55);
+  --dd-divider: rgba(0, 0, 0, 0.12);
+}
+
+/* 🌙 Dark Theme */
+body.dark {
+
+  --header-bg: rgba(15, 15, 15, 0.65);
+  --header-border: rgba(255, 255, 255, 0.12);
+  --header-text: #fff;
+
+  --input-bg: rgba(255, 255, 255, 0.08);
+  --input-border: rgba(255, 255, 255, 0.25);
+  --input-placeholder: rgba(255, 255, 255, 0.6);
+
+  --profile-img-border: rgba(255, 255, 255, 0.2);
+  --profile-img-border-hover: rgba(255, 255, 255, 0.4);
+
+  /* ---------------------------------------- */
+
+  --btn-text: #eee;
+  --btn-text-muted: #aaa;
+
+  --btn-outline-primary-text: rgba(255, 255, 255, 0.9);
+  --btn-outline-primary-border: rgba(255, 255, 255, 0.25);
+  --btn-outline-primary-bg: rgba(255, 255, 255, 0.05);
+  --btn-outline-primary-bg-hover: rgba(255, 255, 255, 0.15);
+
+  --btn-outline-danger-text: #ff6b6b;
+  --btn-outline-danger-border: rgba(255, 107, 107, 0.3);
+  --btn-outline-danger-bg: rgba(255, 107, 107, 0.05);
+  --btn-outline-danger-bg-hover: rgba(255, 107, 107, 0.20);
+
+  --btn-primary-bg: rgba(76, 175, 80, 0.75);
+  --btn-primary-border: rgba(76, 175, 80, 0.9);
+  --btn-primary-bg-hover: rgba(76, 175, 80, 0.95);
+  --btn-primary-glow: rgba(76, 175, 80, 0.5);
+
+  --btn-link-text: rgba(255, 255, 255, 0.85);
+
+  /* FORM CONTROLS (SearchPageFilter.tsx) */
+  --form-bg: rgba(39, 39, 39, 0.774);
+  --form-bg-focus: rgba(255, 255, 255, 0.13);
+  --form-border: rgba(255, 255, 255, 0.20);
+  --form-border-focus: rgba(255, 255, 255, 0.35);
+  --form-text: #fff;
+  --form-placeholder: rgba(255, 255, 255, 0.50);
+  --form-focus-ring: rgba(255, 255, 255, 0.10);
+
+  /* DROPDOWN MENUS */
+  /* --dd-bg: rgba(255, 2, 2, 0.8);
+  --dd-border: rgba(255, 255, 255, 0.18);
+  --dd-text: rgba(255, 255, 255, 0.85); */
+  --dd-text-hover: #fff;
+  --dd-hover-bg: rgba(255, 255, 255, 0.10);
+  --dd-header-text: rgba(255, 255, 255, 0.6);
+  --dd-divider: rgba(255, 255, 255, 0.12);
+}

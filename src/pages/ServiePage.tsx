@@ -6,7 +6,6 @@ import CastListSlider from '../components/CastListSlider';
 import SeasonsList from '../components/ServiePage/SeasonsList';
 import { format } from 'date-fns';
 import Alert from '../components/Alert';
-import "../components/thymeleafCss.css";
 import styles from "../components/ImageModules/Image.module.css";
 import styles1 from "./ServiePage.module.css";
 import HalfStarRating from '@/components/HalfStarRating';

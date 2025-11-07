@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import ProgressBar from "../ProgressBar";
 import axiosInstance from '../../utils/axiosInstance';
 import Alert from '../Alert';
-import "../thymeleafCss.css";
 import ServieOptionsModal from "../ServieOptionsModal";
 import styles from "../ImageModules/Image.module.css";
 

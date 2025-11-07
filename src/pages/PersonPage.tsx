@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import Alert from '../components/Alert';
-import "../components/thymeleafCss.css";
 import AppHeader from '@/components/AppHeader';
 import styles from "../components/ImageModules/Image.module.css";
 

@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap/dist/css/bootstrap.css";
+import './index.css';
 
 import HomePage from "./pages/HomePage.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
@@ -21,6 +22,7 @@ import WatchListPage from "./pages/WatchListPage.tsx";
 import ListsPage from "./pages/ListsPage.tsx";
 import ListPage from "./pages/ListPage.tsx";
 import ImageGalleryPage from "./pages/ImageGalleryPage.tsx";
+import "./index.css";
 
 const processToken = () => {
     const params = new URLSearchParams(window.location.search);

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useFilterStore } from "../../store/useFilterStore";
 import DropdownMultiselect from "./HomePageFilter/DropdownMultiselect";
-import DropdownMenu3States from "./HomePageFilter/DropdownMultiselect3State";
+import DropdownMultiselect3State from "./HomePageFilter/DropdownMultiselect3State";
+import styles from "../AppHeader.module.css";
 
 interface HomePageFilterProps {
     handleFilterChange: (filters: any) => void;
@@ -17,7 +18,6 @@ const genreOptions = [
     "Soap", "Talk", "TV Movie", "Thriller", "War", "Western",
 ];
 
-// Genres to disable for each type
 const disabledGenresForMovie = ["Kids", "News", "Politics", "Reality", "Soap", "Talk"];
 const disabledGenresForSeries = ["History", "Horror", "Music", "Romance", "TV Movie", "Thriller"];
 
@@ -158,7 +158,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
         return [];
     };
 
-    // UI label map for preview
+    // UI label map for sorting
     const sortingOptionsPreviewLabel = () => {
         const map: Record<string, string> = {
             "title_asc": "Sort By : Title (A → Z)",
@@ -178,7 +178,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
     if (!expanded) {
         return (
             <button
-                className="btn btn-outline-primary"
+                className={`btn ${styles.btnOutlinePrimary}`}
                 onClick={onExpand}
                 style={{ minWidth: 120 }}
                 title="Expand filters"
@@ -193,10 +193,9 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
             {/* Collapse */}
             <button
                 type="button"
-                className="btn btn-link p-0 me-2"
+                className={`btn ${styles.btnLink} p-0 me-2`}
                 onClick={onCollapse}
                 title="Collapse filters"
-                style={{ fontSize: "1.2rem" }}
             >
                 <i className="bi bi-funnel"></i>
             </button>
@@ -204,7 +203,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
             {/* Clear Button */}
             <button
                 type="button"
-                className="btn btn-outline-danger d-flex align-items-center"
+                className={`btn ${styles.btnOutlineDanger} d-flex align-items-center`}
                 onClick={handleReset}
                 title="Clear all filters"
             >
@@ -214,26 +213,25 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
             {/* Type Dropdown (updates tempType only) */}
             <div className="dropdown position-relative">
                 <button
-                    className="btn btn-outline-primary dropdown-toggle w-100"
+                    className={`btn ${styles.btnOutlinePrimary} dropdown-toggle w-100`}
                     type="button"
                     id="typeDropdown"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
-                    style={{ paddingTop: "0.5rem" }}
                 >
                     {tempType === "" ? "Type : Servies" : tempType === "movie" ? "Type : Movies" : "Type : Series"}
                 </button>
-                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="typeDropdown">
-                    <li><button className="dropdown-item" type="button" onClick={() => setTempType("")}>Servies</button></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => setTempType("movie")}>Movies</button></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => setTempType("tv")}>Series</button></li>
+                <ul className={`dropdown-menu ${styles.dropdownMenu}`} aria-labelledby="typeDropdown">
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => setTempType("")}>Servies</button></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => setTempType("movie")}>Movies</button></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => setTempType("tv")}>Series</button></li>
                 </ul>
             </div>
 
             {/* Combined Sort Dropdown (updates only tempSortBy & tempSortDir) */}
             <div className="dropdown">
                 <button
-                    className="btn btn-outline-primary dropdown-toggle"
+                    className={`btn ${styles.btnOutlinePrimary} dropdown-toggle`}
                     type="button"
                     id="sortDropdown"
                     data-bs-toggle="dropdown"
@@ -242,35 +240,35 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
                     {sortingOptionsPreviewLabel()}
                 </button>
 
-                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="sortDropdown">
-                    <li><h6 className="dropdown-header">Title</h6></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("title"); setTempSortDir("asc"); }}>A → Z</button></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("title"); setTempSortDir("desc"); }}>Z → A</button></li>
+                <ul className={`dropdown-menu ${styles.dropdownMenu}`} aria-labelledby="sortDropdown">
+                    <li><h6 className={styles.dropdownHeader}>Title</h6></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("title"); setTempSortDir("asc"); }}>A → Z</button></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("title"); setTempSortDir("desc"); }}>Z → A</button></li>
 
-                    <li><hr className="dropdown-divider" /></li>
-                    <li><h6 className="dropdown-header">Popularity</h6></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("popularity"); setTempSortDir("desc"); }}>High → Low</button></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("popularity"); setTempSortDir("asc"); }}>Low → High</button></li>
+                    <li><hr className={styles.dropdownDivider} /></li>
+                    <li><h6 className={styles.dropdownHeader}>Popularity</h6></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("popularity"); setTempSortDir("desc"); }}>High → Low</button></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("popularity"); setTempSortDir("asc"); }}>Low → High</button></li>
 
-                    <li><hr className="dropdown-divider" /></li>
-                    <li><h6 className="dropdown-header">Rating</h6></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("voteAverage"); setTempSortDir("desc"); }}>High → Low</button></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("voteAverage"); setTempSortDir("asc"); }}>Low → High</button></li>
+                    <li><hr className={styles.dropdownDivider} /></li>
+                    <li><h6 className={styles.dropdownHeader}>Rating</h6></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("voteAverage"); setTempSortDir("desc"); }}>High → Low</button></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("voteAverage"); setTempSortDir("asc"); }}>Low → High</button></li>
 
-                    <li><hr className="dropdown-divider" /></li>
-                    <li><h6 className="dropdown-header">When Added</h6></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("recent"); setTempSortDir("desc"); }}>Newest First</button></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("recent"); setTempSortDir("asc"); }}>Earliest First</button></li>
+                    <li><hr className={styles.dropdownDivider} /></li>
+                    <li><h6 className={styles.dropdownHeader}>When Added</h6></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("recent"); setTempSortDir("desc"); }}>Newest First</button></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("recent"); setTempSortDir("asc"); }}>Earliest First</button></li>
 
-                    <li><hr className="dropdown-divider" /></li>
-                    <li><h6 className="dropdown-header">Release Date</h6></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("date"); setTempSortDir("desc"); }}>Newest First</button></li>
-                    <li><button className="dropdown-item" type="button" onClick={() => { setTempSortBy("date"); setTempSortDir("asc"); }}>Oldest First</button></li>
+                    <li><hr className={styles.dropdownDivider} /></li>
+                    <li><h6 className={styles.dropdownHeader}>Release Date</h6></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("date"); setTempSortDir("desc"); }}>Newest First</button></li>
+                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("date"); setTempSortDir("asc"); }}>Oldest First</button></li>
                 </ul>
             </div>
 
             {/* Genres (3-state): pass tempSelected and updater */}
-            <DropdownMenu3States
+            <DropdownMultiselect3State
                 label="Genres"
                 options={genreOptions}
                 selected={tempGenresSelected}
@@ -295,7 +293,7 @@ const HomePageFilter: React.FC<HomePageFilterProps> = ({ handleFilterChange, exp
             />
 
             {/* Form-level Apply: commit temp => persisted + notify parent */}
-            <button type="submit" className="btn btn-primary d-flex align-items-center">
+            <button type="submit" className={`btn ${styles.btnPrimary} d-flex align-items-center`}>
                 Apply
             </button>
         </form>

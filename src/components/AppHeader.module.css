@@ -1,0 +1,307 @@
+/* ===========================================================
+   🌞 APP HEADER
+   =========================================================== */
+
+.appHeader {
+
+  height: var(--appHeader-height);
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0.75rem 2rem;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  color: var(--header-text);
+  backdrop-filter: blur(12px);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.appHeader .headerProfile img {
+  border: 2px solid var(--profile-img-border);
+}
+.appHeader .headerProfile img:hover {
+  border-color: var(--profile-img-border-hover);
+}
+
+.appHeader .formControl {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--header-text);
+}
+.appHeader .formControl::placeholder {
+  color: var(--input-placeholder);
+}
+
+/* Body spacing to prevent content overlap with fixed header */
+body {
+  padding-top: var(--appHeader-height);
+}
+
+/* ============================================================================
+   🎯 LOGO SECTION (AppHeader.tsx)
+   ============================================================================
+   Left-aligned brand logo with hover animation
+============================================================================ */
+
+.appHeader .logo {
+  display: flex;
+  align-items: center;
+  margin-right: 1.5rem;
+  flex: 0 0 auto;                           /* Don't grow or shrink */
+}
+
+.appHeader .logo img {
+  width: 180px;
+  height: auto;
+  transition: transform 0.2s ease;
+}
+
+.appHeader .logo img:hover {
+  transform: scale(1.03);                   /* Subtle zoom on hover */
+}
+
+/* ============================================================================
+   📍 CENTER SECTION (AppHeader.tsx)
+   ============================================================================
+   Contains HomePageFilter and SearchPageFilter components
+   Flexbox layout for centered positioning
+============================================================================ */
+
+.appHeader .headerCenter {
+  flex: 1 1 auto;                           /* Grow to fill available space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rem;
+  min-width: 0;                             /* Allow flex items to shrink */
+}
+
+/* HomePageFilter wrapper */
+.appHeader .homePageFilter {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin-right: 0.15rem;
+}
+
+/* SearchPageFilter wrapper */
+.appHeader .headerSearch > * {
+  width: auto;
+  min-width: 0;
+}
+
+/* ============================================================================
+   👤 PROFILE SECTION (AppHeader.tsx)
+   ============================================================================
+   Right-aligned user profile picture with border styling
+============================================================================ */
+
+.appHeader .headerProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.appHeader .headerProfile img {
+  border-radius: 50%;                       /* Circular profile picture */
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: border-color 0.2s ease;
+}
+
+.appHeader .headerProfile img:hover {
+  border-color: rgba(255, 255, 255, 0.4);   /* Brighter border on hover */
+}
+
+/* ============================================================================
+   🎨 BUTTON STYLES - Dark Theme Overrides
+   ============================================================================
+   Custom styling for Bootstrap buttons to work with dark header background
+   All buttons use semi-transparent white colors for consistency
+============================================================================ */
+
+/* --- Outline Primary Buttons --- */
+.appHeader .btnOutlinePrimary {
+  color: var(--btnOutlinePrimary-text);
+  border-color: var(--btnOutlinePrimary-border);
+  background: var(--btnOutlinePrimary-bg);
+  transition: all 0.2s ease;
+}
+
+.appHeader .btnOutlinePrimary:hover {
+  background: var(--btnOutlinePrimary-bg-hover);
+  border-color: var(--btnOutlinePrimary-border);
+}
+
+/* --- Outline Danger Button --- */
+.appHeader .btnOutlineDanger {
+  color: var(--btn-outline-danger-text);
+  border-color: var(--btn-outline-danger-border);
+  background: var(--btn-outline-danger-bg);
+}
+
+.appHeader .btnOutlineDanger:hover {
+  background: var(--btn-outline-danger-bg-hover);
+  border-color: var(--btn-outline-danger-border);
+  color: #fff;
+}
+
+/* --- Primary (Apply) Button --- */
+.appHeader .btnPrimary {
+  color: #fff;
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
+  box-shadow: 0 0 10px var(--btn-primary-glow);
+}
+.appHeader .btnPrimary:hover {
+  background: var(--btn-primary-bg-hover);
+  border-color: var(--btn-primary-border);
+  box-shadow: 0 0 14px var(--btn-primary-glow);
+}
+
+/* --- Link Buttons --- */
+.appHeader .btnLink {
+  color: var(--btn-link-text);
+  text-decoration: none;
+}
+.appHeader .btnLink:hover {
+  opacity: 1;
+  filter: brightness(1.15);
+}
+
+/* --- Expand Buttons --- */
+.appHeader button[title*="Expand"] {
+  min-width: 100px;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.appHeader button[title*="Expand"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+
+/* --- Collapse Buttons --- */
+.appHeader button[title*="Collapse"] {
+  background: var(--btnOutlinePrimary-bg);
+  border-radius: 4px;
+}
+.appHeader button[title*="Collapse"]:hover {
+  background: var(--btnOutlinePrimary-bg-hover);
+}
+
+/* ============================================================================
+   📋 DROPDOWN MENUS (HomePageFilter.tsx & SearchPageFilter.tsx)
+============================================================================ */
+
+:global(body:not(.dark)) .appHeader .dropdownMenu {
+  --dd-bg: rgba(255, 255, 255, 0.75); /* Back to transparent for blur */
+  --dd-text: #222;
+  --dd-border: rgba(0, 0, 0, 0.1);
+}
+
+:global(body.dark) .appHeader .dropdownMenu {
+  --dd-bg: rgba(0, 0, 0, 0.88); /* Back to transparent for blur */
+  --dd-text: #eee;
+  --dd-border: rgba(255, 255, 255, 0.12);
+}
+
+.dropdownMenu {
+  position: absolute !important;
+  left: 0 !important;
+  margin-top: 0.25rem !important;
+  background: var(--dd-bg) !important;
+  color: var(--dd-text) !important;
+  border: 1px solid var(--dd-border) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0;
+}
+
+/* Items */
+.appHeader .dropdownItem {
+  color: var(--dd-text);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.appHeader .dropdownItem:hover,
+.appHeader .dropdownItem:focus {
+  background: var(--dd-hover-bg);
+  color: var(--dd-text-hover);
+}
+
+/* Section Headers */
+.appHeader .dropdownHeader {
+  color: var(--dd-header-text);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.45px;
+}
+
+/* Divider */
+.appHeader .dropdownDivider {
+  border-color: var(--dd-divider);
+}
+
+
+/* ============================================================================
+   🔍 SEARCH RESULTS DROPDOWN (SearchPageFilter.tsx)
+   ============================================================================
+   Auto-complete style dropdown showing search results as user types
+============================================================================ */
+
+.appHeader .hoverBgLight:hover {
+  background: rgba(255, 255, 255, 0.08) !important; /* Highlight on hover */
+}
+
+/* ============================================================================
+   ✨ ICON ENHANCEMENTS
+   ============================================================================
+   Better visibility for Bootstrap icons on dark background
+============================================================================ */
+
+.appHeader .bi {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3)); /* Text shadow for icons */
+}
+
+/* ============================================================================
+   📱 RESPONSIVE DESIGN
+   ============================================================================
+   Mobile-friendly adjustments for smaller screens
+============================================================================ */
+
+@media (max-width: 720px) {
+  .appHeader {
+    padding: 0.5rem 1rem;                   /* Reduced padding on mobile */
+  }
+
+  .appHeader .logo img {
+    width: 140px;                            /* Smaller logo on mobile */
+  }
+
+  .appHeader .headerCenter {
+    gap: 0.5rem;                             /* Tighter spacing */
+  }
+
+  .appHeader .headerSearch {
+    flex: 1 1 auto;
+    min-width: 140px;
+  }
+  
+  .appHeader button[title*="Expand"] {
+    min-width: 80px;                         /* Smaller buttons on mobile */
+    font-size: 0.9rem;
+  }
+}

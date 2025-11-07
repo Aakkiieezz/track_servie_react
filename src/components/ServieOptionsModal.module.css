@@ -1,0 +1,119 @@
+/* --- Backdrop --- */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-backdrop);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* --- Modal Container --- */
+.modal {
+  background: var(--modal-bg);
+  color: var(--modal-text);
+  width: clamp(260px, 90vw, 420px);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
+  animation: fadeIn 0.25s ease;
+  border: 1px solid var(--modal-border);
+}
+
+.header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--modal-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--modal-text);
+  cursor: pointer;
+  opacity: 0.75;
+}
+.closeBtn:hover {
+  opacity: 1;
+}
+
+/* --- Body --- */
+.body {
+  padding: 0;
+}
+
+/* --- List Buttons --- */
+.listItem {
+  width: 100%;
+  background: transparent;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  color: var(--modal-text);
+  border-bottom: 1px solid var(--modal-border);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: background 0.2s ease;
+}
+.listItem:hover {
+  background: var(--modal-hover);
+}
+
+/* ✅ Light Mode (default when body does NOT have .dark) */
+:global(body:not(.dark)) .backdrop {
+  --modal-bg: rgba(255, 255, 255, 0.700);   /* slightly whiter / less transparent */
+  --modal-text: #222;
+  --modal-border: rgba(0, 0, 0, 0.12);
+  --modal-hover: rgba(0, 0, 0, 0.05);       /* darken the selection */
+  /* --modal-backdrop: rgba(0, 0, 0, 0.45);   soft dim behind modal */
+  background: var(--modal-backdrop);
+}
+
+/* 🌙 Dark Mode */
+:global(body.dark) .backdrop {
+  --modal-bg: rgba(20, 20, 20, 0.800);      /* darker + nicer contrast */
+  --modal-text: #ededed;
+  --modal-border: rgba(255, 255, 255, 0.14);
+  --modal-hover: rgba(255, 255, 255, 0.08); /* brighten the selection */
+  /* --modal-backdrop: rgba(0, 0, 0, 0.55); */
+  background: var(--modal-backdrop);
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Highlight selected list item */
+.activeItem {
+  font-weight: 600;
+  border-left: 4px solid var(--list-active-accent);
+  background: var(--list-active-bg);
+}
+
+/* ✅ Light Mode Accent */
+:global(body:not(.dark)) .backdrop {
+  --list-active-accent: #2979ff;      /* Vibrant clean blue */
+  --list-active-bg: rgba(41, 121, 255, 0.12);
+}
+
+/* 🌙 Dark Mode Accent */
+:global(body.dark) .backdrop {
+  --list-active-accent: #82b1ff;      /* Softer bluish-glow */
+  --list-active-bg: rgba(130, 177, 255, 0.10);
+}

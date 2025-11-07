@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import styles from "./SearchPageFilter.module.css";
+import stylesAppHeader from "../AppHeader.module.css";
 
 type SearchType = 'movie' | 'tv' | 'servie' | 'person' | 'collection';
 
@@ -102,8 +104,8 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
   return (
     <div
       ref={containerRef} // 👈 attach ref for outside click detection
+      className={styles.searchContainer}
       style={{
-        ...styles.searchContainer,
         width: expanded ? '300px' : '40px',
       }}
     >
@@ -111,7 +113,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
       {!expanded && (
         <button
           type="button"
-          className="btn btn-outline-primary me-2"
+          className={`btn ${stylesAppHeader.btnOutlinePrimary} me-2`}
           onClick={onExpand}
           style={{ minWidth: 120 }}
           title="Expand search"
@@ -123,14 +125,13 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
       {/* Search Form */}
       {expanded && (
         <>
-          <form onSubmit={handleSearchSubmit} className="d-flex flex-row align-items-center gap-1">
+          <form onSubmit={handleSearchSubmit} className={` ${styles.form} d-flex flex-row align-items-center gap-1 `}>
 
             <button
             type="button"
-            className="btn btn-link p-0 me-2"
+            className={`btn ${stylesAppHeader.btnOutlinePrimary} d-flex align-items-center`}
             onClick={onCollapse}
             title="Collapse search"
-            style={{ fontSize: '1.2rem' }}
           >
             <i className="bi bi-search"></i>
           </button>
@@ -138,6 +139,8 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
             {/* 🔍 Search Input */}
             <div className="input-group flex-grow-1">
               <input
+                className={`${styles.formControl} form-control border-start-0`}
+                style={{ boxShadow: 'none' }}
                 type="text"
                 id="query"
                 name="query"
@@ -147,15 +150,13 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
                   if (searchResults.length > 0) setShowDropdown(true);
                 }}
                 placeholder="Search..."
-                className="form-control border-start-0"
-                style={{ boxShadow: 'none' }}
               />
             </div>
 
             {/* 🔽 Type Dropdown */}
             <div className="dropdown">
               <button
-                className="btn btn-outline-primary dropdown-toggle"
+                className={`btn ${stylesAppHeader.btnOutlinePrimary} dropdown-toggle`}
                 type="button"
                 id="typeDropdown"
                 data-bs-toggle="dropdown"
@@ -169,20 +170,20 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
                   collection: 'Collections',
                 }[type] || 'Select Type'}
               </button>
-              <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="typeDropdown">
-                <li><button className="dropdown-item" type="button" onClick={() => setType('movie')}>Movies</button></li>
-                <li><button className="dropdown-item" type="button" onClick={() => setType('tv')}>Series</button></li>
-                <li><button className="dropdown-item" type="button" onClick={() => setType('servie')}>Servies</button></li>
-                <li><button className="dropdown-item" type="button" onClick={() => setType('person')}>Persons</button></li>
-                <li><button className="dropdown-item" type="button" onClick={() => setType('collection')}>Collections</button></li>
+              <ul className={`dropdown-menu ${stylesAppHeader.dropdownMenu}`} aria-labelledby="typeDropdown">
+                <li><button className={stylesAppHeader.dropdownItem} type="button" onClick={() => setType('movie')}>Movies</button></li>
+                <li><button className={stylesAppHeader.dropdownItem} type="button" onClick={() => setType('tv')}>Series</button></li>
+                <li><button className={stylesAppHeader.dropdownItem} type="button" onClick={() => setType('servie')}>Servies</button></li>
+                <li><button className={stylesAppHeader.dropdownItem} type="button" onClick={() => setType('person')}>Persons</button></li>
+                <li><button className={stylesAppHeader.dropdownItem} type="button" onClick={() => setType('collection')}>Collections</button></li>
               </ul>
             </div>
           </form>
 
           {/* 🔽 Animated dropdown */}
           <div
+            className={styles.dropdownContainer}
             style={{
-              ...styles.dropdownContainer,
               opacity: showDropdown && searchResults.length > 0 ? 1 : 0,
               transform: showDropdown ? 'translateY(0)' : 'translateY(-5px)',
               pointerEvents:
@@ -210,7 +211,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
                   onClick={() => setShowDropdown(false)} // 👈 hide on select
                 >
                   <div
-                    className="d-flex align-items-center p-2 border-bottom hover-bg-light"
+                    className={`d-flex align-items-center p-2 border-bottom ${styles.hoverBgLight}`}
                     style={{ cursor: 'pointer' }}
                   >
                     {result.posterPath ? (
@@ -257,55 +258,6 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
       )}
     </div>
   );
-};
-
-const styles: { [key: string]: React.CSSProperties } = {
-  searchContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  searchIcon: {
-    cursor: 'pointer',
-    fontSize: '1.5rem',
-    color: '#666',
-    transition: 'margin-right 0.3s ease-in-out',
-  },
-  form: {
-    display: 'flex',
-    alignItems: 'center',
-    flexGrow: 1,
-    transition: 'opacity 0.3s ease-in-out',
-  },
-  input: {
-    flexGrow: 1,
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    outline: 'none',
-    padding: '0.5rem',
-    fontSize: '1rem',
-  },
-  select: {
-    border: 'none',
-    borderRadius: '4px',
-    padding: '0.5rem',
-    fontSize: '1rem',
-    margin: '0 0.5rem',
-  },
-  dropdownContainer: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    zIndex: 10,
-    maxHeight: 300,
-    overflowY: 'auto',
-    background: 'white',
-    borderRadius: 8,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-    marginTop: 4,
-    transition: 'opacity 0.25s ease, transform 0.25s ease',
-  },
 };
 
 export default SearchPageFilter;

@@ -3,15 +3,12 @@ import { useNavigate, Link } from "react-router-dom";
 import HomePageFilter from "./HomePage/HomePageFilter";
 import SearchPageFilter from "./SearchPage/SearchPageFilter";
 import ProfilePic from "./ProfilePage/ProfilePic";
-import "./AppHeader.css";
+import styles from "./AppHeader.module.css";
 
 type SearchType = "movie" | "tv" | "servie" | "person" | "collection";
 
 interface AppHeaderProps {
-  /** Optional HomePage filter, only visible on home page */
   showHomeFilter?: boolean;
-
-  /** Called when HomePageFilter changes (only if showHomeFilter is true) */
   handleHomeFilterChange?: (filters: any) => void;
 }
 
@@ -47,19 +44,19 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   };
 
   return (
-    <header className="app-header">
+    <header className={styles.appHeader}>
 
       {/* Logo */}
-      <div className="logo">
+      <div className={styles.logo}>
         <Link to="/">
           <img src="/src/assets/logo.png" alt="Logo" style={{ width: "200px", borderRadius: "6px" }} />
         </Link>
       </div>
 
       {/* CENTER: HomePageFilter (optional) + SearchPageFilter (always) */}
-      <div className="header-center">
+      <div className={styles.headerCenter}>
         {showHomeFilter && handleHomeFilterChange && (
-          <div className="home-page-filter">
+          <div className={styles.homePageFilter}>
             <HomePageFilter
               handleFilterChange={handleHomeFilterChange}
               expanded={isHomeFilterExpanded}
@@ -69,7 +66,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           </div>
         )}
 
-        <div className="header-search">
+        <div className={styles.headerSearch}>
           <SearchPageFilter
             handleFilterChange={handleSearchFilterChange}
             expanded={isSearchFilterExpanded}
@@ -80,7 +77,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
       </div>
 
       {/* Profile Picture */}
-      <div className="header-profile">
+      <div className={styles.headerProfile}>
         <ProfilePic />
       </div>
     </header>

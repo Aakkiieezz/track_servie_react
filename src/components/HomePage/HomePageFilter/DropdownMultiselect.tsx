@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "../../AppHeader.module.css";
 
 interface KeyValuePair {
   id: string;
@@ -33,7 +34,7 @@ const DropdownMultiselect: React.FC<DropdownMultiselectProps> = ({
   return (
     <div className="dropdown">
       <button
-        className="btn btn-outline-primary dropdown-toggle"
+        className={`btn ${styles.btnOutlinePrimary} dropdown-toggle`}
         type="button"
         id="dropdownMultiselectButton"
         data-bs-toggle="dropdown"
@@ -41,13 +42,13 @@ const DropdownMultiselect: React.FC<DropdownMultiselectProps> = ({
       >
         {label}
       </button>
-      <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownMultiselectButton">
+      <ul className={`dropdown-menu ${styles.dropdownMenu}`} aria-labelledby="dropdownMultiselectButton">
         {options.map((option) => {
           const id = isOptionObject(option) ? option.id : option;
           const displayLabel = isOptionObject(option) ? option.label : option;
 
           return (
-            <li key={id} className="dropdown-item">
+            <li key={id} className={styles.dropdownItem}>
               <div className="form-check d-flex align-items-center">
                 <input
                   className="form-check-input me-2"

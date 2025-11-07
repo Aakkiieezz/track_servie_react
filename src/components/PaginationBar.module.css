@@ -1,5 +1,43 @@
-.pageink:hover {
- background-color: #f50000; /* light gray background */
- color: #007bff; /* Bootstrap blue text */
- border-color: #007efd; /* subtle border */
+.pageLink {
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* ------------------------------------------------
+   🌙 DARK MODE
+------------------------------------------------ */
+
+:global(body.dark #paginationNav .pagination .page-item .page-link) {
+  background-color: rgba(30, 30, 30, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #eaeaea !important;
+  backdrop-filter: blur(12px);
+}
+
+/* Hover (match real class name: .page-link) */
+:global(body.dark #paginationNav .pagination .page-item .page-link:hover:not(.disabled)) {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+/* Active (current page) */
+:global(body.dark #paginationNav .pagination .page-item.active .page-link) {
+  background-color: rgb(34, 145, 255) !important;
+  border-color: rgb(34, 145, 255) !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+/* Disabled */
+:global(body.dark #paginationNav .pagination .page-item.disabled .page-link) {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+}
+
+/* Remove outline */
+:global(body.dark #paginationNav .pagination .page-link:focus) {
+  outline: none !important;
+  box-shadow: none !important;
 }

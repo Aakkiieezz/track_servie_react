@@ -16,30 +16,8 @@
  cursor: pointer;
 }
 
-.dropdownToggle {
- background: none;
- border: none;
- cursor: pointer;
- font-size: 1rem;
-}
-
 .dropdownMenu {
- position: absolute;
- top: 100%;
- right: 0;
- background-color: white;
- border: 1px solid #ccc;
- list-style: none;
- padding: 10px;
- box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
- z-index: 999; /* Ensure it appears above other content */
-}
-
-.dropdownMenu li {
- padding: 8px;
- cursor: pointer;
-}
-
-.dropdownMenu li:hover {
- background-color: #f0f0f0;
+    right: auto !important;
+    left: auto !important;
+    margin-left: -95px !important; /* Adjust this value */
 }

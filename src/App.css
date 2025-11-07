@@ -9,6 +9,13 @@
  visibility: visible !important;
 }
 
+body {
+  background: #111;
+  color: #eee;
+  background-attachment: fixed;
+}
+
+
 @layer base {
   :root {
   --background: 0 0% 100%;

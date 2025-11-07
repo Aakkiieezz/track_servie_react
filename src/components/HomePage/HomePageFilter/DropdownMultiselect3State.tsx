@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./DropdownMultiselect3State.module.css";
+import stylesAppHeader from "../../AppHeader.module.css";
 
 interface DropdownMultiselect3StateProps {
    label: string;
@@ -37,7 +38,7 @@ const DropdownMultiselect3State: React.FC<DropdownMultiselect3StateProps> = ({
       <div className="dropdown">
          {/* Dropdown toggle button */}
          <button
-            className="btn btn-outline-primary dropdown-toggle"
+            className={`btn ${stylesAppHeader.btnOutlinePrimary} dropdown-toggle`}
             type="button"
             id="dropdownMultiselect3StateButton"
             data-bs-toggle="dropdown"
@@ -48,7 +49,7 @@ const DropdownMultiselect3State: React.FC<DropdownMultiselect3StateProps> = ({
 
          {/* Dropdown menu */}
          <div
-            className={`dropdown-menu dropdown-menu-light p-3 ${styles.dropdownMenu}`}
+            className={`dropdown-menu ${stylesAppHeader.dropdownMenu} p-3 ${styles.dropdownMenu}`}
             aria-labelledby="dropdownMultiselect3StateButton"
             style={{ minWidth: "400px" }}
          >
@@ -58,9 +59,7 @@ const DropdownMultiselect3State: React.FC<DropdownMultiselect3StateProps> = ({
                   return (
                      <div
                         key={option}
-                        className={`${styles.dropdownGridItem} ${
-                           isDisabled ? styles.disabled : ""
-                        }`}
+                        className={`${styles.dropdownGridItem} ${isDisabled ? styles.disabled : "" }`}
                      >
                         <div className={styles.formCheck}>
                            <input
@@ -76,11 +75,7 @@ const DropdownMultiselect3State: React.FC<DropdownMultiselect3StateProps> = ({
                               <div className={styles.crossOverlay}>✘</div>
                            )}
                            <label
-                              className={`${styles.formCheckLabel} ${
-                                 selected[option] === "cross"
-                                    ? styles.formCheckLabelCross
-                                    : ""
-                              } ${isDisabled ? "text-muted" : ""}`}
+                              className={`${styles.formCheckLabel} ${ selected[option] === "cross" ? styles.formCheckLabelCross : "" } ${isDisabled ? "text-muted" : ""}`}
                               htmlFor={`checkbox-${option}`}
                            >
                               {option}

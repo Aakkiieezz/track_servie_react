@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from '../utils/axiosInstance';
-import "../components/thymeleafCss.css";
 import styles from "../components/ImageModules/Image.module.css";
 import Alert from "../components/Alert";
 import CastListSlider from "@/components/CastListSlider";
