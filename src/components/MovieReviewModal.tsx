@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import styles from './MovieReviewModal.module.css';
 
 interface ReviewData {
   tmdbId: number;
@@ -103,85 +103,23 @@ const MovieReviewModal: React.FC<MovieReviewModalProps> = ({
   };
 
   return (
-    <div 
-      className="modal-overlay"
-      onClick={handleOverlayClick}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1050,
-        padding: '20px'
-      }}
-    >
-      <div 
-        className="modal-content"
-        style={{
-          backgroundColor: '#556b7d',
-          borderRadius: '12px',
-          maxWidth: '800px',
-          width: '100%',
-          maxHeight: '90vh',
-          overflow: 'auto',
-          position: 'relative',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
-        }}
-      >
-        {/* Header */}
-        <div style={{
-          padding: '24px 32px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <h2 style={{ 
-            margin: 0, 
-            color: '#fff',
-            fontSize: '24px',
-            fontWeight: 600
-          }}>
-            I watched...
-          </h2>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#fff',
-              cursor: 'pointer',
-              padding: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              opacity: 0.8,
-              transition: 'opacity 0.2s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
-          >
-            <X size={24} />
-          </button>
-        </div>
+  <div className={styles.backdrop} onClick={handleOverlayClick}>
+    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      {/* Header */}
+      <div className={styles.header}>
+        <h5 className={styles.title}>I watched...</h5>
+        <button className={styles.closeBtn} onClick={onClose}>×</button>
+      </div>
 
-        {/* Content */}
-        <div style={{ padding: '32px', display: 'flex', gap: '32px' }}>
+      {/* Content */}
+      <div className={styles.body}>
+        <div className={styles.content}>
           {/* Poster */}
-          <div style={{ flexShrink: 0 }}>
+          <div className={styles.posterContainer}>
             <img
               src={posterPath}
               alt={title}
-              style={{
-                width: '150px',
-                height: '225px',
-                borderRadius: '8px',
-                objectFit: 'cover'
-              }}
+              className={styles.poster}
               onError={(e) => {
                 e.currentTarget.src = '/src/assets/defaultPoster.png';
               }}
@@ -189,83 +127,39 @@ const MovieReviewModal: React.FC<MovieReviewModalProps> = ({
           </div>
 
           {/* Form */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className={styles.formSection}>
             {/* Title and Year */}
             <div>
-              <h3 style={{ 
-                margin: '0 0 4px 0', 
-                color: '#fff',
-                fontSize: '28px',
-                fontWeight: 700
-              }}>
-                {title}
-              </h3>
-              <p style={{ 
-                margin: 0, 
-                color: 'rgba(255, 255, 255, 0.6)',
-                fontSize: '18px'
-              }}>
-                {year}
-              </p>
+              <h3 className={styles.movieTitle}>{title}</h3>
+              <p className={styles.movieYear}>{year}</p>
             </div>
 
             {/* Watched On Checkboxes */}
-            <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-              <label style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px',
-                color: '#fff',
-                cursor: 'pointer',
-                fontSize: '14px'
-              }}>
+            <div className={styles.checkboxGroup}>
+              <label className={styles.checkboxLabel}>
                 <input
                   type="checkbox"
                   checked={!watchedBefore}
                   onChange={(e) => {
                     if (e.target.checked) setWatchedBefore(false);
                   }}
-                  style={{
-                    width: '18px',
-                    height: '18px',
-                    cursor: 'pointer',
-                    accentColor: '#4a90e2'
-                  }}
+                  className={styles.checkbox}
                 />
                 Watched on{' '}
                 <input
                   type="date"
                   value={watchedOn}
                   onChange={(e) => setWatchedOn(e.target.value)}
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    borderRadius: '4px',
-                    padding: '4px 8px',
-                    color: '#fff',
-                    fontSize: '14px'
-                  }}
+                  className={styles.dateInput}
                 />
               </label>
 
-              <label style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px',
-                color: '#fff',
-                cursor: 'pointer',
-                fontSize: '14px'
-              }}>
+              <label className={styles.checkboxLabel}>
                 <input
                   type="checkbox"
                   checked={watchedBefore}
                   onChange={(e) => setWatchedBefore(e.target.checked)}
-                  style={{
-                    width: '18px',
-                    height: '18px',
-                    cursor: 'pointer',
-                    accentColor: '#4a90e2'
-                  }}
+                  className={styles.checkbox}
                 />
                 I've watched this before
               </label>
@@ -276,72 +170,21 @@ const MovieReviewModal: React.FC<MovieReviewModalProps> = ({
               placeholder="Add a review..."
               value={review}
               onChange={(e) => setReview(e.target.value)}
-              style={{
-                backgroundColor: 'rgba(189, 211, 227, 0.8)',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '16px',
-                color: '#2c3e50',
-                fontSize: '14px',
-                minHeight: '120px',
-                resize: 'vertical',
-                fontFamily: 'inherit'
-              }}
+              className={styles.reviewTextarea}
             />
 
             {/* Bottom Section */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '1fr auto auto',
-              gap: '16px',
-              alignItems: 'start'
-            }}>
+            <div className={styles.bottomGrid}>
               {/* Tags */}
               <div>
-                <label style={{ 
-                  display: 'block', 
-                  color: '#fff', 
-                  marginBottom: '8px',
-                  fontSize: '14px',
-                  fontWeight: 500
-                }}>
-                  Tags
-                </label>
-                <div style={{
-                  backgroundColor: 'rgba(189, 211, 227, 0.8)',
-                  borderRadius: '8px',
-                  padding: '8px',
-                  minHeight: '42px',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '6px'
-                }}>
+                <label className={styles.fieldLabel}>Tags</label>
+                <div className={styles.tagsContainer}>
                   {tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        color: '#2c3e50',
-                        padding: '4px 10px',
-                        borderRadius: '16px',
-                        fontSize: '13px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px'
-                      }}
-                    >
+                    <span key={index} className={styles.tag}>
                       {tag}
                       <button
                         onClick={() => removeTag(tag)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#666',
-                          cursor: 'pointer',
-                          padding: 0,
-                          fontSize: '16px',
-                          lineHeight: 1
-                        }}
+                        className={styles.tagRemoveBtn}
                       >
                         ×
                       </button>
@@ -353,54 +196,27 @@ const MovieReviewModal: React.FC<MovieReviewModalProps> = ({
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={handleTagKeyDown}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      outline: 'none',
-                      color: '#2c3e50',
-                      fontSize: '13px',
-                      flex: 1,
-                      minWidth: '100px',
-                      padding: '4px'
-                    }}
+                    className={styles.tagInput}
                   />
                 </div>
-                <p style={{ 
-                  margin: '4px 0 0 0', 
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  fontSize: '12px'
-                }}>
+                <p className={styles.tagHint}>
                   Press Tab to complete. Enter to create
                 </p>
               </div>
 
               {/* Rating */}
               <div>
-                <label style={{ 
-                  display: 'block', 
-                  color: '#fff', 
-                  marginBottom: '8px',
-                  fontSize: '14px',
-                  fontWeight: 500
-                }}>
-                  Rating
-                </label>
-                <div style={{ display: 'flex', gap: '4px' }}>
+                <label className={styles.fieldLabel}>Rating</label>
+                <div className={styles.ratingStars}>
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       onClick={() => setRating(star)}
                       onMouseEnter={() => setHoveredRating(star)}
                       onMouseLeave={() => setHoveredRating(0)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '32px',
-                        padding: 0,
-                        color: (hoveredRating || rating) >= star ? '#fbbf24' : 'rgba(255, 255, 255, 0.3)',
-                        transition: 'color 0.1s'
-                      }}
+                      className={`${styles.starBtn} ${
+                        (hoveredRating || rating) >= star ? styles.filled : styles.empty
+                      }`}
                     >
                       ★
                     </button>
@@ -410,26 +226,10 @@ const MovieReviewModal: React.FC<MovieReviewModalProps> = ({
 
               {/* Like */}
               <div>
-                <label style={{ 
-                  display: 'block', 
-                  color: '#fff', 
-                  marginBottom: '8px',
-                  fontSize: '14px',
-                  fontWeight: 500
-                }}>
-                  Like
-                </label>
+                <label className={styles.fieldLabel}>Like</label>
                 <button
                   onClick={() => setLiked(!liked)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '32px',
-                    padding: 0,
-                    color: liked ? '#ef4444' : 'rgba(255, 255, 255, 0.3)',
-                    transition: 'color 0.2s'
-                  }}
+                  className={`${styles.likeBtn} ${liked ? styles.liked : styles.notLiked}`}
                 >
                   {liked ? '❤' : '🤍'}
                 </button>
@@ -437,37 +237,16 @@ const MovieReviewModal: React.FC<MovieReviewModalProps> = ({
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Footer */}
-        <div style={{
-          padding: '20px 32px',
-          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-          display: 'flex',
-          justifyContent: 'flex-end'
-        }}>
-          <button
-            onClick={handleSave}
-            style={{
-              backgroundColor: '#00c853',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '10px 32px',
-              fontSize: '16px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'background-color 0.2s',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#00e676'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#00c853'}
-          >
-            SAVE
-          </button>
-        </div>
+      {/* Footer */}
+      <div className={styles.footer}>
+        <button onClick={handleSave} className={styles.saveBtn}>
+          SAVE
+        </button>
       </div>
     </div>
+  </div>
   );
 };
 
