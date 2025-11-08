@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from '../utils/axiosInstance';
-import styles from "../components/ImageModules/Image.module.css";
+
 import Alert from "../components/Alert";
 import CastListSlider from "@/components/CastListSlider";
 import SeasonsNavBar from "@/components/SeasonPage/SeasonsNavBar";
 import ProgressBar from '../components/ProgressBar';
 import AppHeader from "@/components/AppHeader";
+
+import styles from './SeasonPage.module.css';
 
 interface Season {
     id: string;
@@ -22,7 +24,7 @@ interface Season {
     watchedRuntime: number;
     lastModified: string;
     seasonCast: Cast[];
-	seasonCastGuests: Cast[];
+    seasonCastGuests: Cast[];
     episodes: Episode[];
     totalSeasons: number;
     hasSpecials: boolean;
@@ -279,181 +281,200 @@ const SeasonPage = () => {
         <>
             <AppHeader />
 
-            <div className="container">
-                
-                <SeasonsNavBar
-                    tmdbId={tmdbId!}
-                    currentSeasonNo={currentSeasonNo}
-                    totalSeasons={totalSeasons}
-                    hasSpecials={hasSpecials}
+            {/* Alert Component */}
+            {alert && (
+                <Alert
+                    type={alert.type}
+                    message={alert.message}
+                    onClose={() => setAlert(null)}
                 />
+            )}
 
-                <div className="row">
-                    <div className={`col-4 ${styles.imageContainer} ${styles.poster}`}>
-                        <img
-                            src={`https://www.themoviedb.org/t/p/original${season.posterPath}`}
-                            alt={season.name}
+            <div className={styles.pageContainer}>
+
+                {/* Hero Section */}
+                <div className={styles.heroSection}>
+
+                    <div className={styles.container}>
+                        <SeasonsNavBar
+                            tmdbId={tmdbId!}
+                            currentSeasonNo={currentSeasonNo}
+                            totalSeasons={totalSeasons}
+                            hasSpecials={hasSpecials}
                         />
-                    </div>
-                    <div className="col-8">
-                        <h1>{season.name}</h1>
-                        {season.overview && (
-                            <div>
-                                <h3>Overview :</h3>
-                                <p>{season.overview}</p>
+                        <br />
+                        <div className={styles.heroContent}>
+                            {/* Poster */}
+                            <div className={styles.posterContainer}>
+                                <img
+                                    src={`https://www.themoviedb.org/t/p/original${season.posterPath}`}
+                                    alt={season.name}
+                                    className={styles.posterImage}
+                                />
                             </div>
-                        )}
 
-                        {/* {toggle season completed} */}
-                        <a href="#" onClick={() => toggleSeasonWatch()}>
-                            {seasonWatchState ? (<i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
-                        </a>
+                            {/* Info */}
+                            <div className={styles.infoSection}>
+                                <h1 className={styles.seasonTitle}>{season.name}</h1>
 
-                        {season.episodeCount !== 0 && (
-                            <>
-                                <p>
-                                    Total Episodes Watched : {epWatchCount} / {season.episodeCount}
-                                </p>
+                                {/* Stats Bar */}
+                                <div className={styles.statsBar}>
+                                    <button
+                                        onClick={toggleSeasonWatch}
+                                        className={`${styles.watchButton} ${seasonWatchState ? styles.watched : styles.unwatched}`}
+                                    >
+                                        <i className={`bi ${seasonWatchState ? 'bi-eye-fill' : 'bi-eye-slash-fill'}`}></i>
+                                        {seasonWatchState ? 'Watched' : 'Mark as Watched'}
+                                    </button>
+
+                                    <div className={styles.statsInfo}>
+                                        <span className={styles.statsBadge}>
+                                            {epWatchCount}/{season.episodeCount} Episodes
+                                        </span>
+                                        <span className={styles.statsSeparator}>•</span>
+                                        <span className={styles.statsText}>
+                                            {formatRuntime(seasonWatchRuntime)} / {formatRuntime(season.totalRuntime)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Progress Bar */}
+                                <div className={styles.progressContainer}>
+                                    <ProgressBar episodesWatched={epWatchCount} totalEpisodes={season.episodeCount} />
+                                    <div className={styles.progressText}>
+                                        {Math.round((epWatchCount / season.episodeCount) * 100)}% Complete
+                                    </div>
+                                </div>
+
+                                {/* Overview */}
+                                {season.overview && (
+                                    <div className={styles.overviewSection}>
+                                        <h3 className={styles.overviewTitle}>Overview</h3>
+                                        <p className={styles.overviewText}>{season.overview}</p>
+                                    </div>
+                                )}
 
                                 {season.lastModified && (
-                                    <p>
-                                        Last Modified :{" "}
-                                        {new Date(season.lastModified).toLocaleString("en-US", {
-                                            month: "long",
-                                            day: "numeric",
-                                            year: "numeric",
-                                            hour: "numeric",
-                                            minute: "numeric",
+                                    <p className={styles.lastModified}>
+                                        Last updated: {new Date(season.lastModified).toLocaleDateString('en-US', {
+                                            month: 'long',
+                                            day: 'numeric',
+                                            year: 'numeric'
                                         })}
                                     </p>
                                 )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                                <p>
-                                    Total Watched Runtime : {formatRuntime(seasonWatchRuntime)} /{" "}
-                                    {formatRuntime(season.totalRuntime)}{" "}
-                                </p>
-                            </>
+
+                {/* Cast Section */}
+                <div className={styles.container}>
+                    <div className={styles.castSection}>
+                        <h2 className={styles.sectionTitle}>Cast</h2>
+
+                        {/* Tabs */}
+                        <div className={styles.tabsContainer}>
+                            <button
+                                onClick={() => setSeasonCastActiveTab('regulars')}
+                                className={`${styles.tabButton} ${seasonCastActiveTab === 'regulars' ? styles.tabActive : ''}`}
+                            >
+                                Season Regulars ({season?.seasonCast?.length ?? 0})
+                            </button>
+                            <button
+                                onClick={() => setSeasonCastActiveTab('guests')}
+                                className={`${styles.tabButton} ${seasonCastActiveTab === 'guests' ? styles.tabActive : ''}`}
+                            >
+                                Guest Stars ({season?.seasonCastGuests?.length ?? 0})
+                            </button>
+                        </div>
+
+                        {/* Tab content */}
+                        {seasonCastActiveTab === 'regulars' ? (
+                            <CastListSlider profiles={season?.seasonCast} childType='movie' />
+                        ) : (
+                            <CastListSlider profiles={season?.seasonCastGuests} childType='tv' />
                         )}
                     </div>
                 </div>
 
-                <br />
+                {/* Episodes Section */}
+                <div className={styles.container}>
+                    <div className={styles.episodesSection}>
+                        <h2 className={styles.sectionTitle}>Episodes</h2>
 
-                <h3>Actors - Season Regulars</h3>
+                        <div className={styles.episodesList}>
+                            {season.episodes.map((episode) => {
+                                const isWatched = epWatchState[episode.episodeNo];
 
-                {/* Tab buttons */}
-                <div className="d-flex mb-3">
-                    <button
-                        className={`btn ${seasonCastActiveTab === "regulars" ? "btn-primary" : "btn-outline-primary"} me-2`}
-                        onClick={() => setSeasonCastActiveTab("regulars")}
-                    >
-                        Season Regulars ({season?.seasonCast?.length ?? 0})
-                    </button>
-                    <button
-                        className={`btn ${seasonCastActiveTab === "guests" ? "btn-primary" : "btn-outline-primary"}`}
-                        onClick={() => setSeasonCastActiveTab("guests")}
-                    >
-                        Guest Stars ({season?.seasonCastGuests?.length ?? 0})
-                    </button>
-                </div>
+                                return (
+                                    <div key={episode.episodeNo} className={styles.episodeCard}>
+                                        <div className={styles.episodeContent}>
+                                            {/* Episode Thumbnail */}
+                                            <div className={styles.episodeThumbnail}>
+                                                <img
+                                                    src={episode.stillPath
+                                                        ? `https://www.themoviedb.org/t/p/original${episode.stillPath}`
+                                                        : `https://placehold.co/428x240?text=Ep. ${episode.episodeNo}`
+                                                    }
+                                                    alt={`Episode ${episode.episodeNo}`}
+                                                    className={styles.thumbnailImage}
+                                                />
 
-                {/* Tab content */}
-                {seasonCastActiveTab === "regulars" ? (
-                    <CastListSlider profiles={season?.seasonCast} childType='movie' />
-                ) : (
-                    <CastListSlider profiles={season?.seasonCastGuests} childType='tv' />
-                )}
+                                                {isWatched && (
+                                                    <div className={styles.watchedBadge}>
+                                                        <i className="bi bi-check-lg"></i>
+                                                    </div>
+                                                )}
+                                            </div>
 
-                <br />
+                                            {/* Episode Info */}
+                                            <div className={styles.episodeInfo}>
+                                                <div className={styles.episodeHeader}>
+                                                    <div>
+                                                        <div className={styles.episodeNumber}>Episode {episode.episodeNo}</div>
+                                                        <h3 className={styles.episodeTitle}>{episode.name}</h3>
+                                                    </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', width: '100%' }}>
-                    <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>{season.episodeCount} Episodes</h3>
-                    <ProgressBar episodesWatched={epWatchCount} totalEpisodes={totalEpisodes} />
-                </div>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleEpisodeWatch(episode.episodeNo);
+                                                        }}
+                                                        className={`${styles.episodeWatchButton} ${isWatched ? styles.episodeWatched : ''}`}
+                                                    >
+                                                        <i className={`bi ${isWatched ? 'bi-eye-fill' : 'bi-eye-slash-fill'}`}></i>
+                                                        {isWatched ? 'Watched' : 'Mark Watched'}
+                                                    </button>
+                                                </div>
 
-                <div className="row">
-                    {season.episodes.map((episode) => {
-                        const key = `${episode.episodeNo}`;
-                        const watchStateRender = epWatchState ? epWatchState[key] : false;
+                                                <div className={styles.episodeMeta}>
+                                                    {episode.airDate && (
+                                                        <span className={styles.metaText}>
+                                                            {new Date(episode.airDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </span>
+                                                    )}
+                                                    <span className={styles.metaSeparator}>•</span>
+                                                    <span className={styles.metaText}>{formatRuntime(episode.runtime)}</span>
+                                                </div>
 
-                        return (
-                            <>
-                                <div key={key} className={`col-4 ${styles.imageContainer} ${styles.still}`}>
-                                    {/* Alert Component */}
-                                    {alert && (
-                                        <Alert
-                                            type={alert.type}
-                                            message={alert.message}
-                                            onClose={() => setAlert(null)}
-                                        />
-                                    )}
-                                    <a
-                                        href={`servies/${tmdbId}/Season/${season.seasonNo}/Episode/${episode.episodeNo}`}
-                                    >
-                                        <img
-                                            src={
-                                                episode.stillPath
-                                                    ? `https://www.themoviedb.org/t/p/original${episode.stillPath}`
-                                                    : `https://placehold.co/428x240?text=Ep. ${episode.episodeNo}`
-                                            }
-                                            alt={`Episode ${episode.episodeNo}`}
-                                        />
-                                    </a>
-                                </div>
-                                <div className="col-8">
-                                    <a
-                                        href={`/track-service/services/${tmdbId}/Season/${seasonNo}/Episode/${episode.episodeNo}`}
-                                        style={{ textDecoration: "none", color: "inherit" }}
-                                    >
-                                        <span style={{ fontWeight: "bold", fontSize: "20px" }}>
-                                            <span style={{ color: "red" }}>Episode {episode.episodeNo}</span>{" "}
-                                            {episode.name}
-                                        </span>
-                                    </a>
-                                    <br />
-                                    {episode.airDate && (
-                                        <span>
-                                            Aired Date :{" "}
-                                            {new Date(episode.airDate).toLocaleDateString("en-US", {
-                                                month: "long",
-                                                day: "numeric",
-                                                year: "numeric",
-                                            })}
-                                        </span>
-                                    )}
-                                    <br />
+                                                {episode.overview && (
+                                                    <p className={styles.episodeOverview}>{episode.overview}</p>
+                                                )}
 
-                                    {episode.overview && <p>{episode.overview}</p>}
-
-                                    <p>Runtime : {formatRuntime(episode.runtime)}</p>
-
-                                    {episode.lastModified && (
-                                        <p>
-                                            Last Modified :{" "}
-                                            {new Date(episode.lastModified).toLocaleString("en-US", {
-                                                month: "long",
-                                                day: "numeric",
-                                                year: "numeric",
-                                                hour: "numeric",
-                                                minute: "numeric",
-                                            })}
-                                        </p>
-                                    )}
-
-                                    {/* {toggle completed} */}
-                                    <a
-                                        href="#"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            toggleEpisodeWatch(episode.episodeNo);
-                                        }}
-                                    >
-                                        {watchStateRender ? (<i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
-                                    </a>
-                                </div>
-                            </>
-                        );
-                    })}
+                                                {episode.lastModified && (
+                                                    <p className={styles.episodeLastModified}>
+                                                        Updated: {new Date(episode.lastModified).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

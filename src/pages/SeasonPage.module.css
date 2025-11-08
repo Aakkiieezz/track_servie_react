@@ -1,0 +1,459 @@
+/* =========================
+   Page Container
+   ========================= */
+.pageContainer {
+  /* background-color: #0f0f0f; */
+  min-height: 100vh;
+  color: #fff;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* =========================
+   Hero Section
+   ========================= */
+/* .heroSection {
+  background: linear-gradient(to bottom, rgba(15, 15, 15, 0.7), rgba(15, 15, 15, 1)),
+    url('https://placehold.co/1920x400?text=Season+Banner');
+  background-size: cover;
+  background-position: center;
+  padding: 60px 0 40px;
+} */
+
+.heroContent {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.posterContainer {
+  flex: 0 0 280px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.posterImage {
+  width: 100%;
+  display: block;
+}
+
+.infoSection {
+  flex: 1;
+}
+
+.seasonTitle {
+  font-size: 48px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.5px;
+}
+
+/* =========================
+   Stats Bar
+   ========================= */
+.statsBar {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.watchButton {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.watchButton.watched {
+  background: #10b981;
+}
+
+.watchButton.unwatched {
+  background: #ef4444;
+}
+
+.watchButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.statsInfo {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.statsBadge {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.statsSeparator {
+  color: #6b7280;
+}
+
+.statsText {
+  color: #9ca3af;
+}
+
+/* =========================
+   Progress Bar
+   ========================= */
+.progressContainer {
+  margin-bottom: 24px;
+}
+
+.progressBar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 6px;
+}
+
+/* =========================
+   Overview Section
+   ========================= */
+.overviewSection {
+  margin-bottom: 20px;
+}
+
+.overviewTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #d1d5db;
+}
+
+.overviewText {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #e5e7eb;
+  margin: 0;
+}
+
+.lastModified {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 12px 0 0 0;
+}
+
+/* =========================
+   Cast Section
+   ========================= */
+.castSection {
+  margin: 48px 0;
+}
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: -0.5px;
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.tabButton {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.tabButton.tabActive {
+  background: #3b82f6;
+}
+
+.tabButton:hover {
+  background: rgba(59, 130, 246, 0.7);
+}
+
+.castGrid {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+}
+
+.castCard {
+  min-width: 140px;
+  text-align: center;
+}
+
+.actorAvatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #1f2937;
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.actorName {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.actorCharacter {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* =========================
+   Episodes Section
+   ========================= */
+.episodesSection {
+  margin: 48px 0;
+  padding-bottom: 48px;
+}
+
+.episodesList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.episodeCard {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.episodeCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.episodeContent {
+  display: flex;
+  gap: 10px;
+}
+
+.episodeThumbnail {
+  flex: 0 0 356px;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a1a;
+}
+
+.thumbnailImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 1.777;
+}
+
+.watchedBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.episodeInfo {
+  flex: 1;
+  padding: 20px 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.episodeCard:hover .episodeInfo {
+  overflow: visible;
+}
+
+.episodeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.episodeHeader > div:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.episodeNumber {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-bottom: 0;
+}
+
+.episodeTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.episodeWatchButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.episodeWatchButton.episodeWatched {
+  background: #10b981;
+}
+
+.episodeWatchButton:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.episodeMeta {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.metaText {
+  color: #9ca3af;
+}
+
+.metaSeparator {
+  color: #6b7280;
+}
+
+.episodeOverview {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #d1d5db;
+  margin: 0 0 12px 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  max-height: 4.8em; /* 3 lines * 1.6 line-height */
+  transition: max-height 0.3s ease;
+}
+
+.episodeCard:hover .episodeOverview {
+  -webkit-line-clamp: unset;
+  max-height: 1000px;
+}
+
+.episodeLastModified {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* =========================
+   Responsive Design
+   ========================= */
+@media (max-width: 768px) {
+  .heroContent {
+    flex-direction: column;
+  }
+
+  .posterContainer {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .seasonTitle {
+    font-size: 32px;
+  }
+
+  .episodeContent {
+    flex-direction: column;
+  }
+
+  .episodeThumbnail {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .episodeInfo {
+    padding: 20px;
+  }
+
+  .episodeHeader {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .episodeWatchButton {
+    width: 100%;
+    justify-content: center;
+  }
+}

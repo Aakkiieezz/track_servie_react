@@ -8,7 +8,6 @@ interface ProgressBarProps {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ episodesWatched, totalEpisodes }) => {
     const progress = (episodesWatched / totalEpisodes) * 100;
-    const formattedProgress = progress.toFixed(1);
 
     return (
         <div className={styles.progressBar}>
@@ -16,7 +15,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ episodesWatched, totalEpisode
                 className={styles.progress}
                 style={{ width: `${progress}%` }}
             >
-                {progress > 10 && <span className={styles.progressText}>{formattedProgress}%</span>}
+                {progress > 5 && 
+                    <span className={styles.progressText}>
+                        {Math.round((episodesWatched / totalEpisodes) * 100)}%
+                    </span>
+                }
             </div>
         </div>
     );
