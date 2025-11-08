@@ -28,7 +28,7 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
     return (
         <nav className={styles.paginationNav}>
             {totalPages > 1 && (
-                <ul className="pagination justify-content-center">
+                <ul className={`pagination ${styles.pagination} justify-content-center`}>
 
                 {/* Previous */}
                 <li className={`page-item ${!hasPrevious ? 'disabled' : ''}`}>
@@ -69,7 +69,7 @@ const PaginationBar: React.FC<PaginationProps> = ({ pageNumber: pgNo, totalPages
                     </li>
                 )}
 
-                <li className="page-item active">
+                <li className={`page-item ${styles.active}`}>
                     <button className={styles.pageLink}>{pgNo + 1}</button>
                 </li>
 

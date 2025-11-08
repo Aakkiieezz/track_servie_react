@@ -22,10 +22,18 @@
 }
 
 /* Hover */
-.pageLink:hover:not(.disabled):not(.active) {
-  background: var(--btnOutlinePrimary-bg-hover);
-  transform: translateY(-1px);
+.pageLink:hover:not(.disabled):not(.ellipsis) {
+  /* background: var(--btnOutlinePrimary-bg-hover); */
+  background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+}
+
+:global(.page-item).active .pageLink:hover,
+.active > .pageLink:hover {
+  background: var(--btn-primary-bg);
+  transform: none;
+  box-shadow: none;
+  cursor: default;
 }
 
 /* Disabled state */
@@ -61,10 +69,9 @@
 }
 
 /* Hover effect for prev/next */
-.prevNext:hover:not(:disabled):not(.disabled) {
+.prevNext:hover:not(:disabled) {
   background: rgba(255,255,255,0.12);
   border-color: #fff;
-  transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(255,255,255,0.25);
 }
 
@@ -91,7 +98,6 @@
   background: rgba(0, 0, 0, 0.12);
   border-color: rgba(0, 0, 0, 0.75);
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  transform: translateY(-1px);
 }
 
 :global(body:not(.dark)) .prevNext:disabled,

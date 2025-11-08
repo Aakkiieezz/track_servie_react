@@ -147,10 +147,10 @@ body {
   --btn-outline-danger-bg: rgba(217, 83, 79, 0.08);
   --btn-outline-danger-bg-hover: rgba(217, 83, 79, 0.16);
 
-  --btn-primary-bg: rgba(76, 175, 80, 0.92);
-  --btn-primary-border: rgba(76, 175, 80, 1);
-  --btn-primary-bg-hover: rgba(76, 175, 80, 1);
-  --btn-primary-glow: rgba(76, 175, 80, 0.35);
+  --btn-primary-bg: rgba(63, 113, 174, 0.92);
+  --btn-primary-border: rgba(63, 113, 174, 1);
+  --btn-primary-bg-hover: rgba(63, 113, 174, 1);
+  --btn-primary-glow: rgba(63, 113, 174, 0.35);
 
   --btn-link-text: #1a73e8;
 
@@ -202,10 +202,10 @@ body.dark {
   --btn-outline-danger-bg: rgba(255, 107, 107, 0.05);
   --btn-outline-danger-bg-hover: rgba(255, 107, 107, 0.20);
 
-  --btn-primary-bg: rgba(76, 175, 80, 0.75);
-  --btn-primary-border: rgba(76, 175, 80, 0.9);
-  --btn-primary-bg-hover: rgba(76, 175, 80, 0.95);
-  --btn-primary-glow: rgba(76, 175, 80, 0.5);
+  --btn-primary-bg: rgba(63, 113, 174, 0.75);
+  --btn-primary-border: rgba(63, 113, 174, 0.9);
+  --btn-primary-bg-hover: rgba(63, 113, 174, 0.95);
+  --btn-primary-glow: rgba(63, 113, 174, 0.5);
 
   --btn-link-text: rgba(255, 255, 255, 0.85);
 
