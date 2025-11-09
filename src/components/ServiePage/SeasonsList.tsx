@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { Link } from "react-router-dom";
 import ProgressBar from '../ProgressBar';
 import axiosInstance from '../../utils/axiosInstance';
 import Alert from '../Alert';
 import styles from "../ImageModules/Image.module.css";
-import styles1 from "./SeasonsList.module.css";
+import seasonStyles from "./SeasonsList.module.css";
 
 interface Season {
   id: string;
@@ -160,94 +161,119 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWat
     }
   };
 
+  function formatRuntime(totalMinutes: number): string {
+    const days = Math.floor(totalMinutes / 1440);
+    const hours = Math.floor((totalMinutes % 1440) / 60);
+    const minutes = totalMinutes % 60;
+
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    return parts.length > 0 ? parts.join(" ") : "0m";
+  }
+
   return (
     <>
       <div className="row left">
         {seasons.map((season) => {
-
           const key = season.seasonNo;
           const watchStateRender = seasonWatchState[key];
           const epWatchCountRender = epWatchCount[key];
           const seasonWatchRuntimeRender = seasonWatchRuntime[key];
 
-          function formatRuntime(totalMinutes: number): string {
-            const days = Math.floor(totalMinutes / 1440);
-            const hours = Math.floor((totalMinutes % 1440) / 60);
-            const minutes = totalMinutes % 60;
-
-            const parts: string[] = [];
-
-            if (days > 0)
-              parts.push(`${days}d`);
-            if (hours > 0)
-              parts.push(`${hours}h`);
-            if (minutes > 0)
-              parts.push(`${minutes}m`);
-
-            return parts.length > 0 ? parts.join(' ') : '0m';
-          }
-
           return (
-            <div key={key} className={`col-xxl-2 col-sm-3 col-4 ${styles.imageContainer} ${styles.poster}`}>
+            <div
+              key={key}
+              className={`col-xxl-2 col-sm-3 col-4 ${styles.imageContainer} ${styles.poster}`}
+            >
+              <div className={styles.posterWrapper}>
 
-              <div className={styles1.imageSeasonPoster}> {/* is this styles1.imageSeasonPoster really necessary ??? */}
-                <img
-                  className="rounded"
-                  src={season.posterPath
-                    ? `https://www.themoviedb.org/t/p/w300${season.posterPath}`
-                    : `https://placehold.co/400x600?text=S${season.seasonNo}`}
-                  alt={season.name || 'No poster available'}
-                />
-              </div>
+                {/* ===== TOP TITLE OVERLAY ===== */}
+                <div className={styles.titleOverlay}>
+                  <Link
+                    to={`/servies/${tmdbId}/Season/${season.seasonNo}`}
+                    state={{ season }}
+                    className={styles.titleLink}
+                  >
+                    <span className={styles.titleText}>{season.name}</span>
+                  </Link>
+                </div>
 
-              <div className={`${styles.buttonsContainer} rounded`}>
-                <a href={`servies/${tmdbId}/Season/${season.seasonNo}`}>
-                  <strong>{season.name}</strong>
-                </a>
-                <br />
-
-                {/* {toggle completed} */}
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleWatch(tmdbId, season.seasonNo);
-                  }}
+                {/* POSTER IMAGE */}
+                <Link
+                  to={`/servies/${tmdbId}/Season/${season.seasonNo}`}
+                  state={{ season }}
                 >
-                  {watchStateRender ? (<i className={`bi bi-eye-fill ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
-                </a>
+                  <img
+                    className={`rounded ${styles.imageBorder}`}
+                    src={
+                      season.posterPath
+                        ? `https://www.themoviedb.org/t/p/w300${season.posterPath}`
+                        : `https://placehold.co/400x600?text=S${season.seasonNo}`
+                    }
+                    alt={season.name}
+                  />
+                </Link>
 
-                {/* Link to poster page if posterPath exists */}
-                {season.posterPath && (
-                  <a href={`servies/${tmdbId}/Season/${season.seasonNo}/posters`}>
-                    <i className={`bi bi-file-image ${styles.icon}`}></i>
-                  </a>
+                {/* ===== PROGRESS SECTION ===== */}
+                {season.episodeCount > 0 && (
+                  <div className={styles.progressBarWrapper}>
+                    <div className={styles.episodeCount}>
+                      <p>
+                        {epWatchCountRender}/{season.episodeCount}
+                      </p>
+                      {season.totalRuntime > 0 && (
+                        <span style={{ marginLeft: "6px" }}>
+                          ({formatRuntime(seasonWatchRuntimeRender)} / {formatRuntime(season.totalRuntime)})
+                        </span>
+                      )}
+                    </div>
+
+                    <ProgressBar
+                      episodesWatched={epWatchCountRender}
+                      totalEpisodes={season.episodeCount}
+                    />
+                  </div>
                 )}
 
-                <br />
+                {/* ===== BOTTOM BUTTONS ===== */}
+                <div
+                  className={styles.buttonsContainer}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className={styles.iconGrid}>
+                    {/* Toggle Watched */}
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleWatch(tmdbId, season.seasonNo);
+                      }}
+                      title={watchStateRender ? "Mark as Unwatched" : "Mark as Watched"}
+                    >
+                      {watchStateRender ? (
+                        <i className={`bi bi-eye-fill ${styles.eyeFill}`}></i>
+                      ) : (
+                        <i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>
+                      )}
+                    </a>
 
-                {/* Display episode progress */}
-                {season.episodeCount !== 0 && (
-                  <span>
-                    {epWatchCountRender}/{season.episodeCount}
-                  </span>
-                )}
-
-                <br />
-
-                {season.totalRuntime > 0 && (
-                  <span>{formatRuntime(seasonWatchRuntimeRender)}  / {formatRuntime(season.totalRuntime)}</span>
-                )}
-
-                <br />
-
-                {/* Progress bar for episode watching */}
-                {season.episodeCount !== 0 && (<ProgressBar episodesWatched={epWatchCountRender} totalEpisodes={season.episodeCount} />
-                )}
-
+                    {/* Open Poster Gallery */}
+                    {season.posterPath && (
+                      <Link
+                        to={`/servies/${tmdbId}/Season/${season.seasonNo}/posters`}
+                        title="Season Posters"
+                      >
+                        <i className={`bi bi-file-image ${styles.icon}`}></i>
+                      </Link>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <div>
+              {/* Static label under poster */}
+              <div className={seasonStyles.seasonLabel}>
                 <strong>{season.name}</strong>
               </div>
             </div>
@@ -255,7 +281,7 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWat
         })}
       </div>
 
-      {/* Alert Component */}
+      {/* Alert */}
       {alert && (
         <Alert
           type={alert.type}

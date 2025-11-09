@@ -338,10 +338,8 @@ const ServiePage = () => {
 
                                 {/* Trailer Section */}
                                 <div className={styles.trailerSection}>
-                                    {(data?.trailerSite === "YouTube" || data?.trailerSite === "Vimeo") ? (
+                                    {(data?.trailerSite === "YouTube" || data?.trailerSite === "Vimeo") && (
                                         <VideoPopup videoSite={data.trailerSite} videoKey={data.trailerKey} />
-                                    ) : (
-                                        <p>No official trailer</p>
                                     )}
                                 </div>
 
@@ -384,17 +382,6 @@ const ServiePage = () => {
                                         <h4>Overview</h4>
                                         {data.tagline && <h5 className={styles.tagline}>{data.tagline}</h5>}
                                         <p className={styles.overviewText}>{data.overview}</p>
-                                    </div>
-                                )}
-
-                                {/* Runtime Section for Movies */}
-                                {childType === 'movie' && data?.runtime && (
-                                    <div className={styles.overviewSection}>
-                                        <span>Runtime: {formatRuntime(data?.runtime)}</span>
-                                        <br />
-                                        {data?.releaseDate && (
-                                            <span>Release Date: {format(new Date(data.releaseDate), 'dd MMM yyyy')}</span>
-                                        )}
                                     </div>
                                 )}
 
@@ -501,6 +488,22 @@ const ServiePage = () => {
                                                 <span className={styles.detailLabel}>Total Watched Runtime:</span>
                                                 <span className={styles.detailValue}>
                                                     {formatRuntime(servieWatchRuntime)} / {formatRuntime(servieRuntime)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {childType === 'movie' && data?.releaseDate && (
+                                            <div className={styles.detailItem}>
+                                                <span className={styles.detailLabel}>Release Date:</span>
+                                                <span className={styles.detailValue}>
+                                                    {format(new Date(data.releaseDate), 'dd MMM yyyy')}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {childType === 'movie' && data?.runtime && (
+                                            <div className={styles.detailItem}>
+                                                <span className={styles.detailLabel}>Runtime:</span>
+                                                <span className={styles.detailValue}>
+                                                    {formatRuntime(data?.runtime)}
                                                 </span>
                                             </div>
                                         )}

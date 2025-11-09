@@ -1,146 +1,226 @@
 .imageContainer {
- display: inline-block;
- position: relative;
- overflow: hidden;
- padding: 0.2%;
- transition: filter 0.3s ease;
+  display: inline-block;
+  position: relative;
+  overflow: visible;
+  padding: 0.2%;
+  transition: transform 0.3s ease;
 }
 
-.imageContainer.poster:hover img {
- filter: blur(4px);
+.posterWrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
 }
 
+/* Poster image */
 .imageContainer.poster img {
- width: 100%;
- height: 100%;
- aspect-ratio: 2/3;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 2/3;
+  display: block;
+  transition: filter 0.3s ease, transform 0.3s ease;
 }
 
-/* `still` is only used in SeasonPage */
+/* Dim poster on hover */
+.imageContainer:hover img {
+  filter: brightness(55%);
+}
+
+/* Still image variant (e.g., seasons) */
 .imageContainer.still img {
- aspect-ratio: 16/9;
- width: 100%;
- height: 100%;
- object-fit: cover;
+  aspect-ratio: 16/9;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.imageBorder {
- border: 1px solid rgb(217, 217, 217);
- border-radius: 4px; /* If you want to keep the rounded corners */
-}
+/* .imageBorder {
+  border: 0.5px solid rgba(217, 217, 217, 0.434);
+  border-radius: 1px;
+} */
 
 .backgroundImage {
- position: fixed; /* Fixes the background image */
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
- object-fit: cover; /* Ensures the image fully covers the container */
- z-index: -1; /* Ensures the image stays behind content */
- filter: blur(3px) brightness(40%); /* Optional: Adds styling effects */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  filter: blur(3px) brightness(40%);
+}
+
+/* ==================================================
+   TITLE OVERLAY - INSIDE POSTER (TOP)
+   ================================================== */
+
+.titleOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px 10px;
+
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+
+  display: flex;
+  justify-content: center;
+  text-align: center;
+
+  border-radius: 8px 8px 0 0; /* top corners rounded now */
+
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.imageContainer:hover .titleOverlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.titleLink {
+  display: flex;
+  flex-direction: column;    /* stack title & year vertically */
+  align-items: center;
+  width: 100%;
+  text-decoration: none;
+  color: white;
+
+  /* remove problematic wrapping constraints */
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+
+  pointer-events: auto; /* allow clicking inside */
+  cursor: pointer;
+}
+
+/* Title always takes flexible width */
+.titleText {
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  margin-bottom: 4px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  text-align: center;
+  white-space: normal;
+}
+
+.yearText {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ==================================================
+   PROGRESS BAR (Bottom Middle)
+   ================================================== */
+
+.progressBarWrapper {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  padding: 8px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.6) 70%, transparent 100%);
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.imageContainer:hover .progressBarWrapper {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.episodeCount {
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* ==================================================
+   ACTION BUTTONS (Bottom Overlay)
+   ================================================== */
+
+.buttonsContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  z-index: 3;
+  border-radius: 0 0 8px 8px;
 }
 
 .imageContainer:hover .buttonsContainer {
- display: block;
- opacity: 1;
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.buttonsContainer {
- display: none;
- position: absolute;
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
- background-color: rgba(0, 0, 0, 0.7);
- color: white;
- text-align: center;
- opacity: 0;
- transition: opacity 0.3s ease;
+.iconGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); /* responsive, fits container */
+  gap: 6px;
+  align-items: center;
+  justify-items: center;
+  width: 100%;       /* ensure it never exceeds poster width */
 }
 
-.buttonsContainer button {
- border: none;
- background-color: white;
- color: black;
- font-size: 16px;
- cursor: pointer;
-}
-
-.buttonsContainer button:hover {
- background-color: black;
- color: white;
-}
-
-/* =========================
-   Common Icon Styling
-   ========================= */
+/* Icons */
 .icon {
-  transition: all 0.9s ease;
+  font-size: 1.15rem; /* was 1.3rem */
+  transition: all 0.3s ease;
   cursor: pointer;
-  font-size: 1rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .icon:hover {
-  transform: scale(1.5);
-  opacity: 0.8;
+  transform: scale(1.3);
 }
 
-/* =========================
-   Eye (Watch / Unwatch)
-   ========================= */
-.eyeSlashFill {
-  color: red; /* Not watched */
-}
+/* Eye */
+.eyeSlashFill { color: #ff4444; }
+.eyeSlashFill:hover { color: #ff6666; }
+.eyeFill { color: #00e676; }
+.eyeFill:hover { color: #69f0ae; }
 
-.eyeFill {
-  color: green; /* Watched */
-}
+/* Heart */
+.heart { transition: all 0.3s ease; }
+.liked { color: #ff6600; }
+.notLiked { color: #ffffff; }
+.heart:not(.liked):hover { color: #ff1744; }
+.heart.liked:hover { color: #ff8a50; }
 
-/* =========================
-   Heart (Like)
-   ========================= */
-.heart {
-  transition: color 0.3s ease;
-}
+/* Other icons */
+.icon:not(.eyeFill):not(.eyeSlashFill):not(.heart):not(.remove):not(.options) { color: #ffffff; }
+.icon:not(.eyeFill):not(.eyeSlashFill):not(.heart):not(.remove):not(.options):hover { color: #64b5f6; }
 
-.liked {
-  color: rgb(255, 102, 0); /* Liked state */
-}
+.remove { color: #ff4444; }
+.remove:hover { color: #ff6666; }
+.options { color: #bbb; }
+.options:hover { color: #fff; }
 
-.notLiked {
-  color: white; /* Default */
-}
-
-.heart:not(.liked):hover {
-  color: red; /* Hover color when not liked */
-}
-
-.heart.liked:hover {
-  color: white; /* Hover color when liked */
-}
-
-/* =========================
-   Watchlist, Remove, Options
-   ========================= */
-
-.remove {
-  color: red;
-}
-
-.options {
-  color: #aaa; /* subtle gray */
-}
-
-
-
-
-.customCol10 {
- flex: 0 0 10%; /* 12.5% width for each item to make 8 items per row */
- max-width: 10%; /* Set max-width also to 12.5% */
-}
-
-.blurred {
- filter: brightness(25%);
- transition: filter 0.3s ease-in-out;
+/* Responsive */
+@media (max-width: 768px) {
+  .titleText { font-size: 0.82rem; }
+  .yearText { font-size: 0.72rem; }
+  .icon { font-size: 1.1rem; }
+  .iconGrid { gap: 6px; }
 }

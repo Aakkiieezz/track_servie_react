@@ -126,11 +126,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
       setAlert({ type: "danger", message: "Failed to update watch status !!" });
     }
   }
-
-  const removeServie = (tmdbId: number, childtype: "movie" | "tv") => {
-    console.log(`Removing servie with ID ${tmdbId} of type ${childtype}`);
-  };
-
+  
   const toggleWatchList = async (tmdbId: number, childType: "movie" | "tv") => {
     console.log("watchlist toggle");
     try {
@@ -175,119 +171,164 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
   };
 
   return (
-    <>
-      <div className="row center">
-        {servies.map((servie) => {
-          const key = `${servie.childtype}-${servie.tmdbId}`;
-          const watchStateRender = servieWatchState[key];
-          const likeStateRender = servieLikedState[key];
-          return (
-            <div className={`col-xxl-1 col-sm-2 col-3 ${styles.imageContainer} ${styles.poster}`}
-              key={key} >
-              
-              <div>
+  <>
+    <div className="row center">
+      {servies.map((servie) => {
+        const key = `${servie.childtype}-${servie.tmdbId}`;
+        const watchStateRender = servieWatchState[key];
+        const likeStateRender = servieLikedState[key];
+        return (
+          <div
+            className={`col-xxl-1 col-sm-2 col-3 ${styles.imageContainer} ${styles.poster}`}
+            key={key}
+          >
+            <div className={styles.posterWrapper}>
 
-                <img
-                  className={`rounded ${styles.imageBorder}`}
-                  src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace('.jpg', '.webp')}`}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null; // prevent infinite loop if fallback also fails
-                    e.currentTarget.src = `https://www.themoviedb.org/t/p/original${servie.posterPath}`;
+              {/* TITLE OVERLAY INSIDE IMAGE */}
+              <div className={styles.titleOverlay}>
+                <Link
+                  to='/servie'
+                  state={{
+                    childType: servie.childtype,
+                    tmdbId: servie.tmdbId
                   }}
-                  alt={servie.title}
-                />
+                  className={styles.titleLink}
+                >
+                  <span className={styles.titleText}>{servie.title}</span>
 
-                <div className={`${styles.buttonsContainer} rounded`}>
-                  <Link to='/servie' state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}>
-                    <strong>{servie.title}</strong>
-                  </Link>
-
-                  <br />
-
-                  {/* only Movie */}
-                  {servie.releaseDate && (
-                    <span>{new Date(servie.releaseDate).getFullYear()}</span>
-                  )}
-
-                  {/* only TV */}
-                  {servie.childtype === "tv" && (
-                    <>
-
-                      {servie.firstAirDate && (
-                        <span>
-                          {new Date(servie.firstAirDate).getFullYear()} - {" "}
-                          {new Date(servie.lastAirDate!).getFullYear() ===
-                            new Date().getFullYear()
+                  <span className={styles.yearText}>
+                    {servie.childtype === "tv"
+                      ? `(${new Date(servie.firstAirDate!).getFullYear()} - ${
+                          new Date(servie.lastAirDate!).getFullYear() === new Date().getFullYear()
                             ? "present"
-                            : new Date(servie.lastAirDate!).getFullYear()}
-                        </span>
-                      )}
+                            : new Date(servie.lastAirDate!).getFullYear()
+                        })`
+                      : servie.releaseDate && `(${new Date(servie.releaseDate).getFullYear()})`}
+                  </span>
+                </Link>
+              </div>
 
-                      <br />
+              <img
+                className={`rounded ${styles.imageBorder}`}
+                src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${servie.posterPath.replace(
+                  ".jpg",
+                  ".webp"
+                )}`}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = `https://www.themoviedb.org/t/p/original${servie.posterPath}`;
+                }}
+                alt={servie.title}
+              />
 
-                      <span>{servie.episodesWatched}/{servie.totalEpisodes}</span>
+              {/* Progress Bar */}
+              {servie.childtype === "tv" &&
+                servie.totalEpisodes != null &&
+                servie.episodesWatched != null && (
+                  <div className={styles.progressBarWrapper}>
+                    <div className={styles.episodeCount}>
+                      {servie.episodesWatched}/{servie.totalEpisodes}
+                    </div>
+                    <ProgressBar
+                      episodesWatched={servie.episodesWatched}
+                      totalEpisodes={servie.totalEpisodes}
+                    />
+                  </div>
+                )}
 
-                      <br />
-
-                      {/* Progress bar */}
-                      {servie.totalEpisodes != null && servie.episodesWatched != null && (
-                        <ProgressBar episodesWatched={servie.episodesWatched} totalEpisodes={servie.totalEpisodes}/>
-                      )}
-                    </>
-                  )}
-
-                  <br />
-
-                  <a href="#" onClick={() => toggleWatch(servie.childtype, servie.tmdbId)}>
-                    {watchStateRender ? (<i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
+              {/* Buttons */}
+              <div className={styles.buttonsContainer}>
+                <div className={styles.iconGrid}>
+                  <a
+                    href="#"
+                    onClick={() => toggleWatch(servie.childtype, servie.tmdbId)}
+                    title={
+                      watchStateRender ? "Mark as Unwatched" : "Mark as Watched"
+                    }
+                  >
+                    {watchStateRender ? (
+                      <i
+                        className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}
+                      ></i>
+                    ) : (
+                      <i
+                        className={`bi bi-eye-slash-fill ${styles.icon} ${styles.eyeSlashFill}`}
+                      ></i>
+                    )}
                   </a>
 
-                  <Link to='/images' state={{ childType: servie.childtype, tmdbId: servie.tmdbId, title: servie.title, releaseDate: servie.releaseDate, firstAirDate:servie.firstAirDate, lastAirDate:servie.lastAirDate }}>
+                  <Link
+                    to="/images"
+                    state={{
+                      childType: servie.childtype,
+                      tmdbId: servie.tmdbId,
+                      title: servie.title,
+                      releaseDate: servie.releaseDate,
+                      firstAirDate: servie.firstAirDate,
+                      lastAirDate: servie.lastAirDate,
+                    }}
+                    title="View Images"
+                  >
                     <i className={`bi bi-file-image ${styles.icon}`}></i>
                   </Link>
 
-                  <a href="#" onClick={() => toggleLike(servie.childtype, servie.tmdbId)}>
-                    <i className={`bi bi-suit-heart-fill ${styles.icon} ${styles.heart} ${likeStateRender ? styles.liked : styles.notLiked}`}></i>
+                  <a
+                    href="#"
+                    onClick={() => toggleLike(servie.childtype, servie.tmdbId)}
+                    title={likeStateRender ? "Unlike" : "Like"}
+                  >
+                    <i
+                      className={`bi bi-suit-heart-fill ${styles.icon} ${styles.heart} ${
+                        likeStateRender ? styles.liked : styles.notLiked
+                      }`}
+                    ></i>
                   </a>
 
-                  <a href="#" onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}>
+                  <a
+                    href="#"
+                    onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
+                    title="Add to Watchlist"
+                  >
                     <i className={`bi bi-clock-fill ${styles.icon}`}></i>
                   </a>
 
-                  <a href="#" onClick={() => removeServie(servie.tmdbId, servie.childtype)}>
-                    <i className={`bi bi-x-circle-fill ${styles.icon} ${styles.remove}`}></i>
-                  </a>
-
-                  <a href="#" onClick={(e) => { e.preventDefault(); openOptionsMenu(servie.tmdbId, servie.childtype); }}>
-                    <i className={`bi bi-three-dots-vertical ${styles.icon} ${styles.options}`}></i>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openOptionsMenu(servie.tmdbId, servie.childtype);
+                    }}
+                    title="More Options"
+                  >
+                    <i
+                      className={`bi bi-three-dots-vertical ${styles.icon} ${styles.options}`}
+                    ></i>
                   </a>
                 </div>
-
               </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
+    </div>
 
-      {/* Alert Component */}
-      {alert && (
-        <Alert
-          type={alert.type}
-          message={alert.message}
-          onClose={() => setAlert(null)}
-        />
-      )}
-
-      {/* Options Modal */}
-      <ServieOptionsModal
-        isOpen={showOptionsModal}
-        onClose={closeOptionsMenu}
-        servie={selectedServie}
-        onSuccess={handleModalSuccess}
-        onError={handleModalError}
+    {alert && (
+      <Alert
+        type={alert.type}
+        message={alert.message}
+        onClose={() => setAlert(null)}
       />
-    </>
-  );
+    )}
+
+    <ServieOptionsModal
+      isOpen={showOptionsModal}
+      onClose={closeOptionsMenu}
+      servie={selectedServie}
+      onSuccess={handleModalSuccess}
+      onError={handleModalError}
+    />
+  </>
+);
 };
 
 export default ServieGrid;

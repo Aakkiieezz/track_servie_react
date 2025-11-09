@@ -32,14 +32,13 @@ body {
 .light-surface {
   background: white;
   border-radius: 12px;
-  box-shadow: 0px 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.08);
 }
-
 
 /* 🌙 DARK MODE */
 body.dark {
   background-color: #1c1c1c;
-  background-image: url('../src/assets/abstract-luxury-blur-dark-grey-black-gradient-used-as-background-studio-wall-display-your-pr.jpg');
+  background-image: url("../src/assets/abstract-luxury-blur-dark-grey-black-gradient-used-as-background-studio-wall-display-your-pr.jpg");
   color: #eee;
   background-size: cover;
   background-attachment: fixed;
@@ -48,46 +47,43 @@ body.dark {
 
 /* Optional dark surfaces for cards / lists */
 body.dark .light-surface {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   backdrop-filter: blur(12px);
-  box-shadow: 0px 2px 14px rgba(0,0,0,0.4);
+  box-shadow: 0px 2px 14px rgba(0, 0, 0, 0.4);
 }
-
-
-
 
 /* General Styling */
 html,
 body {
- margin: 0; /* Removes any default margins */
- padding: 0; /* Removes any default padding */
- width: 100%; /* Ensures the page takes up the full viewport width */
- overflow-x: hidden; /* Disables horizontal scrolling */
+  margin: 0; /* Removes any default margins */
+  padding: 0; /* Removes any default padding */
+  width: 100%; /* Ensures the page takes up the full viewport width */
+  overflow-x: hidden; /* Disables horizontal scrolling */
 }
 
 .container,
 .container-fluid {
- padding: 5px;
+  padding: 5px;
 }
 
 .container-fluid.backdrop {
- position: relative; /* To position child elements */
- width: 100vw; /* Full viewport width */
- min-height: 100vh; /* Use min-height instead of height for scrolling */
- margin: 0; /* Remove default margins */
- padding: 0; /* Remove default padding */
- overflow-x: hidden; /* Only hide horizontal overflow, allow vertical scrolling */
+  position: relative; /* To position child elements */
+  width: 100vw; /* Full viewport width */
+  min-height: 100vh; /* Use min-height instead of height for scrolling */
+  margin: 0; /* Remove default margins */
+  padding: 0; /* Remove default padding */
+  overflow-x: hidden; /* Only hide horizontal overflow, allow vertical scrolling */
 }
 
 .content-overlay {
- position: relative; /* Stays above the background image */
- z-index: 1;
- width: 100%;
- min-height: 100%; /* Ensure content stretches if shorter */
- padding: 20px;
- color: white;
- overflow-y: auto; /* Enables scrolling if content overflows */
+  position: relative; /* Stays above the background image */
+  z-index: 1;
+  width: 100%;
+  min-height: 100%; /* Ensure content stretches if shorter */
+  padding: 20px;
+  color: white;
+  overflow-y: auto; /* Enables scrolling if content overflows */
 }
 
 .container,
@@ -97,30 +93,28 @@ body {
 .container-sm,
 .container-xl,
 .container-xxl {
- --bs-gutter-x: 0;
+  --bs-gutter-x: 0;
 }
 
 .row {
- padding: 5px;
- --bs-gutter-x: 0;
+  padding: 5px;
+  --bs-gutter-x: 0;
 }
 
 .row.center {
- justify-content: center;
+  justify-content: center;
 }
 
 .row.left {
- justify-content: left;
+  justify-content: left;
 }
 
 :root {
-  --appHeader-height: 80px;  /* set your header height */
+  --appHeader-height: 80px; /* set your header height */
 }
-
 
 /* Default (Light Theme) */
 :root {
-
   --header-bg: rgba(212, 212, 212, 0.2);
   --header-border: rgba(0, 0, 0, 0.08);
   --header-text: #222;
@@ -171,11 +165,38 @@ body {
   --dd-hover-bg: rgba(0, 0, 0, 0.05);
   --dd-header-text: rgba(0, 0, 0, 0.55);
   --dd-divider: rgba(0, 0, 0, 0.12);
+
+  /* Tabs */
+  --tab-bg: rgba(255, 255, 255, 0.45);
+  --tab-hover-bg: rgba(255, 255, 255, 0.65);
+  --tab-active-bg: rgba(26, 115, 232, 0.2);
+  --tab-active-border: rgba(26, 115, 232, 0.65);
+  --tab-text: #333;
+
+  /* Image overlay */
+  --overlay-bg: rgba(0, 0, 0, 0.65);
+  --overlay-hover: #60a5fa;
+
+
+  /* Surfaces */
+  --surface: #ffffff;                     /* main surface (cards, panels) */
+  --surface-variant: #fbfbfd;             /* slightly different surface */
+  --surface-border: rgba(0, 0, 0, 0.06);  /* border for surfaces */
+  --surface-contrast: #f3f4f6;            /* subtle elevated surface */
+
+  /* Shadows / elevation */
+  --surface-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+
+  /* Text on surfaces */
+  --surface-text: #111827;
+  --surface-text-muted: #6b7280;
+
+  /* Overlay / translucent */
+  --surface-overlay: rgba(255, 255, 255, 0.6); /* for translucent overlays in light */
 }
 
 /* 🌙 Dark Theme */
 body.dark {
-
   --header-bg: rgba(15, 15, 15, 0.65);
   --header-border: rgba(255, 255, 255, 0.12);
   --header-text: #fff;
@@ -200,7 +221,7 @@ body.dark {
   --btn-outline-danger-text: #ff6b6b;
   --btn-outline-danger-border: rgba(255, 107, 107, 0.3);
   --btn-outline-danger-bg: rgba(255, 107, 107, 0.05);
-  --btn-outline-danger-bg-hover: rgba(255, 107, 107, 0.20);
+  --btn-outline-danger-bg-hover: rgba(255, 107, 107, 0.2);
 
   --btn-primary-bg: rgba(63, 113, 174, 0.75);
   --btn-primary-border: rgba(63, 113, 174, 0.9);
@@ -212,18 +233,43 @@ body.dark {
   /* FORM CONTROLS (SearchPageFilter.tsx) */
   --form-bg: rgba(39, 39, 39, 0.774);
   --form-bg-focus: rgba(255, 255, 255, 0.13);
-  --form-border: rgba(255, 255, 255, 0.20);
+  --form-border: rgba(255, 255, 255, 0.2);
   --form-border-focus: rgba(255, 255, 255, 0.35);
   --form-text: #fff;
-  --form-placeholder: rgba(255, 255, 255, 0.50);
-  --form-focus-ring: rgba(255, 255, 255, 0.10);
+  --form-placeholder: rgba(255, 255, 255, 0.5);
+  --form-focus-ring: rgba(255, 255, 255, 0.1);
 
   /* DROPDOWN MENUS */
   /* --dd-bg: rgba(255, 2, 2, 0.8);
   --dd-border: rgba(255, 255, 255, 0.18);
   --dd-text: rgba(255, 255, 255, 0.85); */
   --dd-text-hover: #fff;
-  --dd-hover-bg: rgba(255, 255, 255, 0.10);
+  --dd-hover-bg: rgba(255, 255, 255, 0.1);
   --dd-header-text: rgba(255, 255, 255, 0.6);
   --dd-divider: rgba(255, 255, 255, 0.12);
+
+  --tab-bg: rgba(255, 255, 255, 0.08);
+  --tab-hover-bg: rgba(255, 255, 255, 0.18);
+  --tab-active-bg: rgba(63, 113, 174, 0.35);
+  --tab-active-border: rgba(63, 113, 174, 0.85);
+  --tab-text: #eee;
+
+  --overlay-bg: rgba(0, 0, 0, 0.55);
+  --overlay-hover: #93c5fd;
+
+  /* Surfaces */
+  --surface: rgba(255, 255, 255, 0.04);        /* main surface (cards, panels) */
+  --surface-variant: rgba(255, 255, 255, 0.02);/* alternate dark surface */
+  --surface-border: rgba(255, 255, 255, 0.06); /* subtle border in dark */
+  --surface-contrast: rgba(255, 255, 255, 0.03);/* slightly lighter surface for stacking */
+
+  /* Shadows / elevation */
+  --surface-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+
+  /* Text on surfaces */
+  --surface-text: #f3f4f6;
+  --surface-text-muted: #a3a3a3;
+
+  /* Overlay / translucent */
+  --surface-overlay: rgba(0, 0, 0, 0.45); /* for translucent overlays in dark */
 }
