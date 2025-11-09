@@ -1,23 +1,126 @@
+/* Light/Dark Mode Variables */
+:global(body:not(.dark)) .serviePageWrapper {
+  --modal-bg: rgba(255, 255, 255, 0.700);
+  --modal-text: #222;
+  --modal-border: rgba(0, 0, 0, 0.12);
+  --modal-hover: rgba(0, 0, 0, 0.05);
+  --modal-backdrop: rgba(0, 0, 0, 0.45);
+  --list-active-accent: #2979ff;
+  --list-active-bg: rgba(41, 121, 255, 0.12);
+}
+
+:global(body.dark) .serviePageWrapper {
+  --modal-bg: rgba(20, 20, 20, 0.800);
+  --modal-text: #ededed;
+  --modal-border: rgba(255, 255, 255, 0.14);
+  --modal-hover: rgba(255, 255, 255, 0.08);
+  --modal-backdrop: rgba(0, 0, 0, 0.55);
+  --list-active-accent: #82b1ff;
+  --list-active-bg: rgba(130, 177, 255, 0.10);
+}
+
+/* Page Wrapper */
+.serviePageWrapper {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Full Page Background */
+.fullPageBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.backgroundImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.backdropOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--modal-backdrop);
+  backdrop-filter: blur(8px);
+}
+
+/* Page Content */
+.pageContent {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+/* Content Grid Layout */
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 1200px) {
+  .contentGrid {
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .sidebar {
+    order: -1;
+  }
+}
+
+/* Main Content */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Title/Logo */
 .titleLogo {
   height: 100px;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* left align */
+  justify-content: flex-start;
   overflow: hidden;
 }
 
 .titleLogo img {
-  height: 100%;       /* stretch to container height */
-  width: auto;        /* keep ratio */
+  height: 100%;
+  width: auto;
   display: block;
-  max-width: 1000px;    /* allow wide images without shrinking */
+  max-width: 1000px;
+  /* filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5)); */
 }
 
 .titleLogo .title {
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* left align text */
+  justify-content: flex-start;
   padding: 0 12px;
   text-align: left;
   margin: 0;
@@ -26,4 +129,309 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--modal-text);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  font-weight: 700;
+}
+
+/* Year Info */
+.yearInfo {
+  margin-top: -0.5rem;
+}
+
+.yearText {
+  font-size: 1.2rem;
+  color: var(--modal-text);
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+/* Trailer Section */
+.trailerSection {
+  margin: 0.5rem 0;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+
+.btnTranslucent {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  color: var(--modal-text);
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btnTranslucent:hover {
+  background: var(--modal-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btnTranslucent:active {
+  transform: translateY(0);
+}
+
+/* Rating Section */
+.ratingSection {
+  margin: 1rem 0;
+}
+
+/* Overview Section */
+.overviewSection {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.overviewSection h4 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: var(--modal-text);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.overviewSection h5 {
+  color: var(--modal-text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.tagline {
+  font-style: italic;
+  opacity: 0.85;
+  margin-bottom: 1rem;
+  color: var(--modal-text);
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+.overviewText {
+  color: var(--modal-text);
+  line-height: 1.6;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.overviewSection span {
+  color: var(--modal-text);
+  opacity: 0.9;
+}
+
+/* Cast Section */
+.castSection {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.castSection h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--modal-text);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.castTabs {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Cast slider container - constrain width */
+.castSection :global(.cast-slider),
+.castSection > div:last-child {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.tabBtn {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.tabBtn.active {
+  background: var(--list-active-bg);
+  border-color: var(--list-active-accent);
+  color: var(--list-active-accent);
+}
+
+/* Seasons Section */
+.seasonsSection {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.seasonsHeader {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.seasonsHeader h3 {
+  margin: 0;
+  color: var(--modal-text);
+  font-size: 1.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.episodesInfo {
+  color: var(--modal-text);
+  opacity: 0.85;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+/* Sidebar */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-self: start;
+  position: sticky;
+  top: 2rem;
+}
+
+@media (max-width: 992px) {
+  .sidebar {
+    position: static;
+  }
+}
+
+/* Info Cards */
+.infoCard {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.infoCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cardTitle {
+  margin: 0 0 1rem 0;
+  color: var(--modal-text);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* Genres */
+.genresGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.genreTag {
+  display: inline-block;
+  padding: 6px 14px;
+  background: var(--modal-hover);
+  border: 1px solid var(--modal-border);
+  border-radius: 20px;
+  color: var(--modal-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.genreTag:hover {
+  background: var(--list-active-bg);
+  border-color: var(--list-active-accent);
+  color: var(--list-active-accent);
+  transform: translateY(-1px);
+}
+
+/* Keywords */
+.keywordsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.keywordTag {
+  display: inline-block;
+  padding: 5px 12px;
+  background: var(--modal-hover);
+  border: 1px solid var(--modal-border);
+  border-radius: 16px;
+  color: var(--modal-text);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 400;
+  text-transform: capitalize;
+  transition: all 0.2s ease;
+}
+
+.keywordTag:hover {
+  background: var(--list-active-bg);
+  border-color: var(--list-active-accent);
+  color: var(--list-active-accent);
+  transform: translateY(-1px);
+}
+
+/* Details List */
+.detailsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--modal-border);
+}
+
+.detailItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.detailLabel {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  font-weight: 500;
+  color: var(--modal-text);
+}
+
+.detailValue {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--modal-text);
 }

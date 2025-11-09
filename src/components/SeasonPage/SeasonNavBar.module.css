@@ -1,0 +1,82 @@
+/* =========================
+   CSS Variables (inherited from parent)
+   ========================= */
+
+/* =========================
+   Season Navigation Bar
+   ========================= */
+.nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  padding: 16px 0;
+  font-weight: 500;
+  font-size: 1rem;
+  user-select: none;
+  flex-wrap: wrap;
+}
+
+/* Label styling */
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-right: 8px;
+}
+
+/* Season number/special buttons */
+.active,
+.inactive {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+/* Active season */
+.active {
+  color: rgba(63, 113, 174, 1);
+  font-weight: 700;
+  transform: scale(1.1);
+}
+
+/* Inactive season */
+.inactive {
+  color: var(--text-muted);
+}
+
+.inactive:hover {
+  color: rgba(63, 113, 174, 1);
+  transform: scale(1.2);
+}
+
+.inactive:active {
+  transform: scale(1.1);
+}
+
+/* Focus state for accessibility */
+.active:focus-visible,
+.inactive:focus-visible {
+  outline: 2px solid rgba(63, 113, 174, 1);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .nav {
+    gap: 0.75rem;
+  }
+
+  .label {
+    font-size: 0.7rem;
+    margin-right: 6px;
+  }
+
+  .active,
+  .inactive {
+    font-size: 0.9rem;
+  }
+}

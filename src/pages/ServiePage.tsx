@@ -6,12 +6,12 @@ import CastListSlider from '../components/CastListSlider';
 import SeasonsList from '../components/ServiePage/SeasonsList';
 import { format } from 'date-fns';
 import Alert from '../components/Alert';
-import styles from "../components/ImageModules/Image.module.css";
-import styles1 from "./ServiePage.module.css";
+// import styles from "../components/ImageModules/Image.module.css";
 import HalfStarRating from '@/components/HalfStarRating';
 import VideoPopup from './VideoPopup';
 import MovieReviewModal from '@/components/MovieReviewModal';
 import AppHeader from '@/components/AppHeader';
+import styles from './ServiePage.module.css';
 
 interface ReviewData {
     tmdbId: number;
@@ -78,7 +78,7 @@ interface ServieDto {
     rated: number;
     cast: Cast[];
     seriesCastRegulars: Cast[];
-	seriesCastGuests: Cast[];
+    seriesCastGuests: Cast[];
     voteAverage: number;
     voteCount: number;
     keywords: { id: number; name: string }[];
@@ -247,28 +247,27 @@ const ServiePage = () => {
                 `/servies/review/${tmdbId}`,
                 { review: reviewData.review },
                 {
-                  params: {
-                    type: reviewData.childType,
-                    rating: reviewData.rating,
-                  },
+                    params: {
+                        type: reviewData.childType,
+                        rating: reviewData.rating,
+                    },
                 }
             );
-            
+
             if (response.status === 200 || response.status === 201) {
-                setAlert({ 
-                    type: "success", 
-                    message: "Review saved successfully!" 
+                setAlert({
+                    type: "success",
+                    message: "Review saved successfully!"
                 });
             }
         } catch (error) {
             console.error('Failed to save review', error);
-            setAlert({ 
-                type: "danger", 
-                message: "Failed to save review!" 
+            setAlert({
+                type: "danger",
+                message: "Failed to save review!"
             });
         }
     };
-
     return (
         <>
             {/* Alert Component */}
@@ -280,256 +279,273 @@ const ServiePage = () => {
                 />
             )}
 
-            <AppHeader />
+            <div className={styles.serviePageWrapper}>
+                {/* Full-page background */}
+                <div className={styles.fullPageBackdrop}>
+                    <img
+                        className={styles.backgroundImage}
+                        src={`https://www.themoviedb.org/t/p/original${data?.backdropPath}`}
+                        alt={"Backdrop Unavailable"}
+                        onError={(e) => {
+                            e.currentTarget.src = 'src/assets/defaultBackground.png';
+                        }}
+                    />
+                    <div className={styles.backdropOverlay}></div>
+                </div>
 
-            <div className="container-fluid backdrop">
-                <img
-                    className={styles.backgroundImage}
-                    src={`https://www.themoviedb.org/t/p/original${data?.backdropPath}`}
-                    alt={"Backdrop Unavailable"}
-                    onError={(e) => {
-                        e.currentTarget.src = 'src/assets/defaultBackground.png';
-                    }}
-                />
-                <div className="content-overlay">
-                    {/* Main Content */}
+                {/* Content on top of background */}
+                <div className={styles.pageContent}>
+                    <AppHeader />
+
                     <div className="container">
-
-                        {/* Title/Logo Section */}
-                        <div className={styles1.titleLogo}>
-                        {!isImageError && data?.logoPath ? (
-                            <img
-                                src={`https://www.themoviedb.org/t/p/original${data.logoPath}`}
-                                alt={data?.title || "logo"}
-                                onError={() => setIsImageError(true)}
-                            />
-                        ) : (
-                            <h1 className={styles1.title} title={data?.title}>
-                                {data?.title}
-                            </h1>
-                        )}
-                        </div>
-
-                        <br />
-
-                        {/* Release Year Section */}
-                        {(childType === 'movie') && data?.releaseDate && (
-                            <>
-                                <span>{new Date(data.releaseDate).getFullYear()}</span>
-                                <br />
-                            </>
-                        )}
-
-                        {(childType === 'tv') && data?.firstAirDate && (
-                        <span>
-                            {new Date(data?.firstAirDate).getFullYear()} -{" "}
-                            {new Date(data?.lastAirDate!).getFullYear() ===
-                            new Date().getFullYear()
-                            ? "present"
-                            : new Date(data?.lastAirDate!).getFullYear()}
-                        </span>
-                        )}
-
-                        <br />
-
-                        <div>
-                            {(data?.trailerSite === "YouTube" || data?.trailerSite === "Vimeo") ? (
-                                  <VideoPopup videoSite={data.trailerSite} videoKey={data.trailerKey} />
-                            ) : (
-                                <p>No official trailer</p>
-                            )}
-                        </div>
-
-                        {/* Genres Section */}
-                        <h4>Genres</h4>
-                        <div className="d-flex flex-wrap gap-2">
-                            {data?.genres.map((genre) => (
-                                <a key={genre.id} href={`servies?genreIds=${genre.id}`} className="btn btn-secondary btn-sm">
-                                    {genre.name}
-                                </a>
-                            ))}
-                        </div>
-
-                        <br />
-
-                        {/* Keywords Section */}
-                        {data?.keywords && data.keywords.length > 0 && (
-                            <>
-                                <h4>Keywords</h4>
-                                <div className="d-flex flex-wrap gap-2">
-                                    {data.keywords.map((keyword) => (
-                                        <a key={keyword.id} href={`servies?keywordIds=${keyword.id}`} className="btn btn-secondary btn-sm text-capitalize">
-                                            {keyword.name}
-                                        </a>
-                                    ))}
-                                </div>
-                            </>
-                        )}
-
-                        <br />
-
-                        {/* {toggle completed} */}
-                        <a
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                toggleWatch(childType);
-                            }}
-                        >
-                            {servieWatchState ? (<i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>) : (<i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>)}
-                        </a>
-
-                        {/* Overview Section */}
-                        {data?.overview && (
-                            <>
-                                <h4>Overview</h4>
-                                <h5>{data.tagline}</h5>
-                                <p>{data.overview}</p>
-                            </>
-                        )}
-
-                        {/* Rating Section */}
-                        <div>
-                            <HalfStarRating maxStars={5} initialRating={rating} onRatingChange={handleRatingChange} />
-                        </div>
-
-                        {/* Runtime Section */}
-                        {(childType === 'movie') && data?.runtime && (
-                            <>
-                                <span>Runtime : {formatRuntime(data?.runtime)}</span>
-                                <br />
-                            </>
-                        )}
-                        {(childType === 'tv') && data?.totalRuntime && (
-                            <>
-                                <span>Total Watched Runtime : {formatRuntime(servieWatchRuntime)}  / {formatRuntime(servieRuntime)}</span>
-                                <br />
-                            </>
-                        )}
-
-                        {/* Release Date Section */}
-                        {(childType === 'movie') && data?.releaseDate && (
-                            <>
-                                <span>Release Date : {format(new Date(data.releaseDate), 'dd MMM yyyy')}</span>
-                                <br />
-                            </>
-                        )}
-
-                        Vote Average : {data && (data.voteAverage > 0 ? data.voteAverage + ' / 10' : 'Not Rated Yet')}
-                        
-                        <br />
-
-                        Vote Count : {data && (data.voteCount > 0 ? data.voteCount : 'No Votes Yet')}
-
-                        {/* Cast Section */}
-                        {childType === "movie" && (
-                            <>
-                                <h4>Cast</h4>
-                                <CastListSlider profiles={data?.cast} childType={childType} />
-                            </>
-                        )}
-
-                        {childType === "tv" && (
-                            <>
-                                <h4>Cast</h4>
-
-                                {/* Tab buttons */}
-                                <div className="d-flex mb-3">
-                                    <button
-                                        className={`btn ${seriesCastActiveTab === "regulars" ? "btn-primary" : "btn-outline-primary"} me-2`}
-                                        onClick={() => setSeriesCastActiveTab("regulars")}
-                                        >
-                                        Series Regulars ({data?.seriesCastRegulars?.length ?? 0})
-                                    </button>
-                                    <button
-                                        className={`btn ${seriesCastActiveTab === "guests" ? "btn-primary" : "btn-outline-primary"}`}
-                                        onClick={() => setSeriesCastActiveTab("guests")}
-                                        >
-                                        Guest Stars ({data?.seriesCastGuests?.length ?? 0})
-                                    </button>
+                        <div className={styles.contentGrid}>
+                            {/* Left Column - Main Content */}
+                            <div className={styles.mainContent}>
+                                {/* Title/Logo Section */}
+                                <div className={styles.titleLogo}>
+                                    {!isImageError && data?.logoPath ? (
+                                        <img
+                                            src={`https://www.themoviedb.org/t/p/original${data.logoPath}`}
+                                            alt={data?.title || "logo"}
+                                            onError={() => setIsImageError(true)}
+                                        />
+                                    ) : (
+                                        <h1 className={styles.title} title={data?.title}>
+                                            {data?.title}
+                                        </h1>
+                                    )}
                                 </div>
 
-                                {/* Cast Tab content */}
-                                {seriesCastActiveTab === "regulars" ? (
-                                    <CastListSlider profiles={data?.seriesCastRegulars} childType={childType} />
-                                ) : (
-                                    <CastListSlider profiles={data?.seriesCastGuests} childType={childType} />
+                                {/* Release Year Section */}
+                                {childType === 'movie' && data?.releaseDate && (
+                                    <div className={styles.yearInfo}>
+                                        <span className={styles.yearText}>
+                                            {new Date(data.releaseDate).getFullYear()}
+                                        </span>
+                                    </div>
                                 )}
-                            </>
-                        )}
 
-                        <br />
+                                {childType === 'tv' && data?.firstAirDate && (
+                                    <div className={styles.yearInfo}>
+                                        <span className={styles.yearText}>
+                                            {new Date(data?.firstAirDate).getFullYear()} -{" "}
+                                            {new Date(data?.lastAirDate!).getFullYear() === new Date().getFullYear()
+                                                ? "present"
+                                                : new Date(data?.lastAirDate!).getFullYear()}
+                                        </span>
+                                    </div>
+                                )}
 
-                        {/* Review Button - Add this in the appropriate location */}
-                        <div style={{ margin: '20px 0' }}>
-                            <button
-                                onClick={() => setIsReviewModalOpen(true)}
-                                className="btn btn-primary"
-                                style={{
-                                    padding: '10px 24px',
-                                    fontSize: '16px',
-                                    fontWeight: 600
-                                }}
-                            >
-                                <i className="bi bi-pencil-square me-2"></i>
-                                Add Review
-                            </button>
-                        </div>
-
-                        {/* Add the Modal Component at the end of your return statement, before the closing </> */}
-                        <MovieReviewModal
-                            isOpen={isReviewModalOpen}
-                            onClose={() => setIsReviewModalOpen(false)}
-                            onSave={handleSaveReview}
-                            tmdbId={tmdbId}
-                            childType={childType}
-                            title={data?.title || ''}
-                            year={childType === 'movie' 
-                                ? (data?.releaseDate ? new Date(data.releaseDate).getFullYear().toString() : '')
-                                : (data?.firstAirDate ? new Date(data.firstAirDate).getFullYear().toString() : '')
-                            }
-                            posterPath={`https://www.themoviedb.org/t/p/w500${data?.backdropPath || ''}`}
-                        />
-
-                        <br />
-
-                        {/* Movie Collection */}
-                        {data?.collectionId && (
-                            <>
-                                <h5>{data.collectionName}</h5>
-                                <img
-                                    className="rounded"
-                                    src={`https://www.themoviedb.org/t/p/original${data.colleactionPosterPath}`}
-                                    alt="Poster Unavailable"
-                                    style={{ width: "200px", height: "300px" }}
-                                    onClick={() => navigate(`/movie-collection/${data.collectionId}`)}
-                                />
-                            </>
-                        )}
-
-                        {(childType === 'tv') && (
-                            <>
-                                <span>Last Modified : {format(new Date(lastModified), 'dd-MM-yyyy HH:mm:ss')}</span>
-                                <br />
-                                <span>Total Episodes Watched : {totalEpWatched + '/' + data?.totalEpisodes}</span>
-
-                                <br />
-                                <br />
-
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', width: '100%' }}>
-                                    <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>{data?.totalSeasons} Seasons</h3>
-                                    <ProgressBar episodesWatched={totalEpWatched} totalEpisodes={totalEpisodes} />
+                                {/* Trailer Section */}
+                                <div className={styles.trailerSection}>
+                                    {(data?.trailerSite === "YouTube" || data?.trailerSite === "Vimeo") ? (
+                                        <VideoPopup videoSite={data.trailerSite} videoKey={data.trailerKey} />
+                                    ) : (
+                                        <p>No official trailer</p>
+                                    )}
                                 </div>
-                                
-                                <SeasonsList
-                                    seasons={data?.seasons}
-                                    tmdbId={tmdbId}
-                                    onEpWatchCountChange={handleEpWatchCountChange} />
-                            </>
-                        )}
+
+                                {/* Action Buttons */}
+                                <div className={styles.actionButtons}>
+                                    <button
+                                        className={styles.btnTranslucent}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            toggleWatch(childType);
+                                        }}
+                                    >
+                                        {servieWatchState ? (
+                                            <>
+                                                <i className="bi bi-eye-fill"></i> Watched
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="bi bi-eye-slash-fill"></i> Mark as Watched
+                                            </>
+                                        )}
+                                    </button>
+
+                                    <button
+                                        onClick={() => setIsReviewModalOpen(true)}
+                                        className={styles.btnTranslucent}
+                                    >
+                                        <i className="bi bi-pencil-square"></i> Add Review
+                                    </button>
+                                </div>
+
+                                {/* Rating */}
+                                <div className={styles.ratingSection}>
+                                    <HalfStarRating maxStars={5} initialRating={rating} onRatingChange={handleRatingChange} />
+                                </div>
+
+                                {/* Overview Section */}
+                                {data?.overview && (
+                                    <div className={styles.overviewSection}>
+                                        <h4>Overview</h4>
+                                        {data.tagline && <h5 className={styles.tagline}>{data.tagline}</h5>}
+                                        <p className={styles.overviewText}>{data.overview}</p>
+                                    </div>
+                                )}
+
+                                {/* Runtime Section for Movies */}
+                                {childType === 'movie' && data?.runtime && (
+                                    <div className={styles.overviewSection}>
+                                        <span>Runtime: {formatRuntime(data?.runtime)}</span>
+                                        <br />
+                                        {data?.releaseDate && (
+                                            <span>Release Date: {format(new Date(data.releaseDate), 'dd MMM yyyy')}</span>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Cast Section */}
+                                {childType === "movie" && (
+                                    <div className={styles.castSection}>
+                                        <h4>Cast</h4>
+                                        <CastListSlider profiles={data?.cast} childType={childType} />
+                                    </div>
+                                )}
+
+                                {childType === "tv" && (
+                                    <div className={styles.castSection}>
+                                        <h4>Cast</h4>
+                                        <div className={styles.castTabs}>
+                                            <button
+                                                className={`${styles.btnTranslucent} ${styles.tabBtn} ${seriesCastActiveTab === "regulars" ? styles.active : ""}`}
+                                                onClick={() => setSeriesCastActiveTab("regulars")}
+                                            >
+                                                Series Regulars ({data?.seriesCastRegulars?.length ?? 0})
+                                            </button>
+                                            <button
+                                                className={`${styles.btnTranslucent} ${styles.tabBtn} ${seriesCastActiveTab === "guests" ? styles.active : ""}`}
+                                                onClick={() => setSeriesCastActiveTab("guests")}
+                                            >
+                                                Guest Stars ({data?.seriesCastGuests?.length ?? 0})
+                                            </button>
+                                        </div>
+                                        {seriesCastActiveTab === "regulars" ? (
+                                            <CastListSlider profiles={data?.seriesCastRegulars} childType={childType} />
+                                        ) : (
+                                            <CastListSlider profiles={data?.seriesCastGuests} childType={childType} />
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Movie Collection */}
+                                {data?.collectionId && (
+                                    <div className={styles.overviewSection}>
+                                        <h5>{data.collectionName}</h5>
+                                        <img
+                                            className="rounded"
+                                            src={`https://www.themoviedb.org/t/p/original${data.colleactionPosterPath}`}
+                                            alt="Poster Unavailable"
+                                            style={{ width: "200px", height: "300px", cursor: "pointer" }}
+                                            onClick={() => navigate(`/movie-collection/${data.collectionId}`)}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Seasons Section */}
+                                {childType === 'tv' && (
+                                    <div className={styles.seasonsSection}>
+                                        <div className={styles.seasonsHeader}>
+                                            <h3>{data?.totalSeasons} Seasons</h3>
+                                            <ProgressBar episodesWatched={totalEpWatched} totalEpisodes={totalEpisodes} />
+                                        </div>
+                                        <div className={styles.episodesInfo}>
+                                            <span>Total Episodes Watched: {totalEpWatched}/{data?.totalEpisodes}</span>
+                                        </div>
+                                        <SeasonsList
+                                            seasons={data?.seasons}
+                                            tmdbId={tmdbId}
+                                            onEpWatchCountChange={handleEpWatchCountChange}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Right Column - Info Cards */}
+                            <div className={styles.sidebar}>
+                                {/* Genres Card */}
+                                <div className={styles.infoCard}>
+                                    <h4 className={styles.cardTitle}>Genres</h4>
+                                    <div className={styles.genresGrid}>
+                                        {data?.genres.map((genre) => (
+                                            <a key={genre.id} href={`servies?genreIds=${genre.id}`} className={styles.genreTag}>
+                                                {genre.name}
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Keywords Card */}
+                                {data?.keywords && data.keywords.length > 0 && (
+                                    <div className={styles.infoCard}>
+                                        <h4 className={styles.cardTitle}>Keywords</h4>
+                                        <div className={styles.keywordsGrid}>
+                                            {data.keywords.map((keyword) => (
+                                                <a key={keyword.id} href={`servies?keywordIds=${keyword.id}`} className={styles.keywordTag}>
+                                                    {keyword.name}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Details Card */}
+                                <div className={styles.infoCard}>
+                                    <h4 className={styles.cardTitle}>Details</h4>
+                                    <div className={styles.detailsList}>
+                                        {childType === 'tv' && data?.totalRuntime && (
+                                            <div className={styles.detailItem}>
+                                                <span className={styles.detailLabel}>Total Watched Runtime:</span>
+                                                <span className={styles.detailValue}>
+                                                    {formatRuntime(servieWatchRuntime)} / {formatRuntime(servieRuntime)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Vote Average:</span>
+                                            <span className={styles.detailValue}>
+                                                {data && (data.voteAverage > 0 ? `${data.voteAverage} / 10` : 'Not Rated Yet')}
+                                            </span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Vote Count:</span>
+                                            <span className={styles.detailValue}>
+                                                {data && (data.voteCount > 0 ? data.voteCount.toLocaleString() : 'No Votes Yet')}
+                                            </span>
+                                        </div>
+                                        {childType === 'tv' && (
+                                            <div className={styles.detailItem}>
+                                                <span className={styles.detailLabel}>Last Modified:</span>
+                                                <span className={styles.detailValue}>
+                                                    {format(new Date(lastModified), 'dd-MM-yyyy HH:mm:ss')}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {/* Review Modal */}
+            <MovieReviewModal
+                isOpen={isReviewModalOpen}
+                onClose={() => setIsReviewModalOpen(false)}
+                onSave={handleSaveReview}
+                tmdbId={tmdbId}
+                childType={childType}
+                title={data?.title || ''}
+                year={childType === 'movie'
+                    ? (data?.releaseDate ? new Date(data.releaseDate).getFullYear().toString() : '')
+                    : (data?.firstAirDate ? new Date(data.firstAirDate).getFullYear().toString() : '')
+                }
+                posterPath={`https://www.themoviedb.org/t/p/w500${data?.backdropPath || ''}`}
+            />
         </>
     );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import styles from './SeasonNav.module.css';
+import styles from './SeasonNavBar.module.css';
 
 interface SeasonProps {
   tmdbId: string;
