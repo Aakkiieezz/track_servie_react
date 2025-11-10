@@ -46,20 +46,36 @@ const ProfilePic: React.FC = () => {
                 />
 
                 <ul className={`dropdown-menu ${AppHeaderStyles.dropdownMenu} ${styles.dropdownMenu}`}>
-                    <li><button className={AppHeaderStyles.dropdownItem} type="button" onClick={() => { navigate("/profile") }}>Profile</button></li>
-                    <li><button className={AppHeaderStyles.dropdownItem} type="button" onClick={() => { navigate("/settings") }}>Settings</button></li>
-                    <li><button className={AppHeaderStyles.dropdownItem} type="button" onClick={() => { navigate("/watchlist") }}>Watchlist</button></li>
-                    <li><button className={AppHeaderStyles.dropdownItem} type="button" onClick={() => { navigate("/list") }}>Lists</button></li>
+                    <li>
+                        <button className={AppHeaderStyles.dropdownItem} type="button" onClick={() => { navigate("/profile") }}>
+                            <i className="bi bi-person-circle"></i> Profile
+                        </button>
+                    </li>
+                    <li>
+                        <button className={AppHeaderStyles.dropdownItem} type="button" onClick={() => { navigate("/settings") }}>
+                            <i className="bi bi-sliders"></i> Settings
+                        </button>
+                    </li>
+                    <li>
+                        <button className={AppHeaderStyles.dropdownItem} type="button" onClick={() => { navigate("/watchlist") }}>
+                            <i className="bi bi-clock-fill"></i> Watchlist
+                        </button>
+                    </li>
+                    <li>
+                        <button className={AppHeaderStyles.dropdownItem} type="button" onClick={() => { navigate("/list") }}>
+                            <i className="bi bi-list"></i> Lists
+                        </button>
+                    </li>
 
                     <li>
                         <button className={AppHeaderStyles.dropdownItem} type="button" onClick={toggleTheme}>
-                            {darkMode ? "🌙 Dark Mode" : "☀️ Light Mode"}
+                            <i className={`bi ${darkMode ? "bi-lightbulb-fill" : "bi-lightbulb-off-fill"}`}></i> {darkMode ? " Light Mode" : " Dark Mode"}
                         </button>
                     </li>
 
                     <li>
                         <button className={AppHeaderStyles.dropdownItem} type="button" onClick={() => handleLogout(navigate)} style={{ color: "rgb(255,100,100)" }}>
-                            Logout
+                            <i className="bi bi-box-arrow-left"></i> Logout
                         </button>
                     </li>
                 </ul>
