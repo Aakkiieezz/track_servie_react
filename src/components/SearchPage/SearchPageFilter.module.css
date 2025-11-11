@@ -1,53 +1,44 @@
-.searchContainer {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.searchIcon {
-  cursor: pointer;
-  font-size: 1.5rem;
-  color: #666;
-  transition: margin-right 0.3s ease-in-out;
-}
-
-.form {
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.input {
-  flex-grow: 1;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  outline: none;
-  padding: 0.5rem;
-  font-size: 1rem;
-}
-
-.select {
-  border: none;
-  border-radius: 4px;
-  padding: 0.5rem;
-  font-size: 1rem;
-  margin: 0 0.5rem;
-}
-
+/* ✅ DARK THEME (default) */
 .dropdownContainer {
+  z-index: 9999;
   position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  max-height: 300;
-  overflow: auto;
-  background: white;
-  border-radius: 8;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  margin-top: 4;
+
+  /* Dark theme styling */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  /* Shape + Depth */
+  border-radius: 12px;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
+
+  /* Smooth animation */
   transition: opacity 0.25s ease, transform 0.25s ease;
+  
+  /* ✅ NO overflow here - let dropdownContent handle it */
+}
+
+/* ✅ Inner content wrapper handles scrolling */
+.dropdownContent {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: inherit;
+  
+  /* ✅ Enable smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ✅ LIGHT THEME Override */
+:global(body:not(.dark)) .dropdownContainer {
+  background: rgba(255, 255, 255, 0.700);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ DARK THEME border */
+:global(body.dark) .dropdownContainer {
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .formControl {
@@ -68,4 +59,73 @@
   border-color: var(--form-border-focus);
   color: var(--form-text);
   box-shadow: 0 0 0 0.2rem var(--form-focus-ring);
+}
+
+.imageBorder {
+  border: 1px solid var(--surface-border);
+}
+
+/* ✅ Enhanced scrollbar styling - DARK THEME */
+.dropdownContent::-webkit-scrollbar {
+  width: 10px;
+}
+
+.dropdownContent::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
+
+.dropdownContent::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.5);
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.dropdownContent::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.7);
+}
+
+/* ✅ Light theme scrollbar */
+:global(body:not(.dark)) .dropdownContent::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+:global(body:not(.dark)) .dropdownContent::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+:global(body:not(.dark)) .dropdownContent::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* ✅ Hover effect for dropdown items - DARK THEME */
+.hoverBgLight {
+  transition: background-color 0.15s ease;
+}
+
+.hoverBgLight:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ✅ Light theme hover */
+:global(body:not(.dark)) .hoverBgLight:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ✅ Text colors for dropdown items */
+:global(body.dark) .dropdownContainer {
+  color: #eee;
+}
+
+:global(body:not(.dark)) .dropdownContainer {
+  color: #222;
+}
+
+/* ✅ Border color for items */
+:global(body.dark) .dropdownContainer .border-bottom {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:global(body:not(.dark)) .dropdownContainer .border-bottom {
+  border-color: rgba(0, 0, 0, 0.1) !important;
 }

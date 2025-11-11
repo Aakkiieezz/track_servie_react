@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../../utils/axiosInstance';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -37,12 +38,27 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
   const [searchResults, setSearchResults] = useState<ServieDto3[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
 
   const lastApiCallTime = useRef<number>(0);
-  const cooldownPeriod = 3000; // 3 seconds cooldown
+  const cooldownPeriod = 3000;
 
-  // Refs for outside click detection
+  // Refs
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+   // 🎯 Calculate dropdown position
+  const updateDropdownPosition = () => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 6,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+    }
+  };
 
   // 🕒 Debounced search effect
   useEffect(() => {
@@ -63,6 +79,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
           .then((res) => {
             setSearchResults(res.data);
             setShowDropdown(true);
+            updateDropdownPosition();
           })
           .catch((err) => console.error('Error searching servies:', err))
           .finally(() => setIsLoading(false));
@@ -75,35 +92,180 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
     return () => clearTimeout(delayDebounce);
   }, [query, type]);
 
-  // 🚀 ESC key and outside click handling
+  // 🚀 ESC key and outside click handling - FIXED
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setShowDropdown(false);
     };
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setShowDropdown(false);
+      const target = e.target as Node;
+      // Check if click is outside both the container AND the dropdown portal
+      if (
+        containerRef.current && 
+        !containerRef.current.contains(target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    // Throttled scroll handler to prevent excessive updates
+    let scrollTimeout: NodeJS.Timeout;
+    const handleScroll = () => {
+      if (showDropdown) {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          updateDropdownPosition();
+        }, 50); // Throttle scroll updates
+      }
+    };
+
+    const handleResize = () => {
+      if (showDropdown) {
+        updateDropdownPosition();
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('scroll', handleScroll, { passive: true }); // Use passive for better performance
+    window.addEventListener('resize', handleResize);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(scrollTimeout);
     };
-  }, []);
+  }, [showDropdown]);
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("SearchPageFilter -> handleFilterChange() triggered");
     handleFilterChange({ query, type });
-    setShowDropdown(false); // hide when submitted
+    setShowDropdown(false);
+  };
+
+  // 🌟 Portal Dropdown Component - FIXED scrolling
+  const DropdownPortal = () => {
+    if (!showDropdown || searchResults.length === 0) return null;
+
+    // Calculate max height to prevent dropdown from going off-screen
+    const viewportHeight = window.innerHeight;
+    const spaceBelow = viewportHeight - dropdownPosition.top;
+    const maxHeight = Math.min(400, spaceBelow - 20); // 20px padding from bottom
+
+    return createPortal(
+      <div
+        ref={dropdownRef}
+        className={styles.dropdownContainer}
+        style={{
+          position: 'absolute',
+          top: `${dropdownPosition.top}px`,
+          left: `${dropdownPosition.left}px`,
+          width: `${dropdownPosition.width}px`,
+          maxHeight: `${maxHeight}px`,
+          opacity: showDropdown ? 1 : 0,
+          transform: showDropdown ? 'translateY(0)' : 'translateY(-5px)',
+          pointerEvents: showDropdown ? 'auto' : 'none',
+        }}
+        onMouseDown={(e) => {
+          // Prevent mousedown from triggering outside click
+          e.stopPropagation();
+        }}
+        onClick={(e) => {
+          // Prevent clicks inside dropdown from closing it
+          e.stopPropagation();
+        }}
+        onTouchStart={(e) => {
+          // ✅ Allow touch scrolling - don't stop propagation for touch events
+          // This allows the browser to handle scrolling naturally
+        }}
+        onTouchMove={(e) => {
+          // ✅ Allow touch scrolling - don't stop propagation for touch events
+        }}
+      >
+        <div 
+          className={styles.dropdownContent}
+          onScroll={(e) => {
+            // Allow scroll events to bubble naturally
+            e.stopPropagation();
+          }}
+        >
+          {isLoading && (
+            <div className="text-center p-2 text-secondary small">
+              Searching...
+            </div>
+          )}
+
+          {!isLoading &&
+            query.trim().length >= 1 &&
+            searchResults.map((result) => (
+              <Link
+                to="/servie"
+                state={{
+                  childType: result.childtype,
+                  tmdbId: result.tmdbId,
+                }}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+                key={result.tmdbId}
+                onClick={() => setShowDropdown(false)}
+              >
+                <div
+                  className={`d-flex align-items-center p-2 border-bottom ${styles.hoverBgLight}`}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {result.posterPath ? (
+                    <img
+                      className={`rounded ${styles.imageBorder}`}
+                      src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${result.posterPath.replace(
+                        '.jpg',
+                        '.webp'
+                      )}`}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = `https://www.themoviedb.org/t/p/original${result.posterPath}`;
+                      }}
+                      alt={result.title}
+                      style={{
+                        width: 70,
+                        height: 105,
+                        objectFit: 'cover',
+                        marginRight: 8,
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: 40,
+                        height: 60,
+                        background: '#eee',
+                        borderRadius: 4,
+                        marginRight: 8,
+                      }}
+                    />
+                  )}
+                  <div>
+                    <div style={{ fontWeight: 500 }}>{result.title}</div>
+                    <div className="text-muted small">
+                      {result.childtype}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+        </div>
+      </div>,
+      document.body
+    );
   };
 
   return (
     <div
-      ref={containerRef} // 👈 attach ref for outside click detection
+      ref={containerRef}
       className={styles.searchContainer}
       style={{
         width: expanded ? '300px' : '40px',
@@ -139,6 +301,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
             {/* 🔍 Search Input */}
             <div className="input-group flex-grow-1">
               <input
+                ref={inputRef}
                 className={`${styles.formControl} form-control border-start-0`}
                 style={{ boxShadow: 'none' }}
                 type="text"
@@ -147,7 +310,10 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => {
-                  if (searchResults.length > 0) setShowDropdown(true);
+                  if (searchResults.length > 0) {
+                    setShowDropdown(true);
+                    updateDropdownPosition();
+                  }
                 }}
                 placeholder="Search..."
               />
@@ -180,80 +346,8 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
             </div>
           </form>
 
-          {/* 🔽 Animated dropdown */}
-          <div
-            className={styles.dropdownContainer}
-            style={{
-              opacity: showDropdown && searchResults.length > 0 ? 1 : 0,
-              transform: showDropdown ? 'translateY(0)' : 'translateY(-5px)',
-              pointerEvents:
-                showDropdown && searchResults.length > 0 ? 'auto' : 'none',
-            }}
-          >
-            {isLoading && (
-              <div className="text-center p-2 text-secondary small">
-                Searching...
-              </div>
-            )}
-
-            {!isLoading &&
-              showDropdown &&
-              query.trim().length >= 1 &&
-              searchResults.map((result) => (
-                <Link
-                  to="/servie"
-                  state={{
-                    childType: result.childtype,
-                    tmdbId: result.tmdbId,
-                  }}
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-                  key={result.tmdbId}
-                  onClick={() => setShowDropdown(false)} // 👈 hide on select
-                >
-                  <div
-                    className={`d-flex align-items-center p-2 border-bottom ${styles.hoverBgLight}`}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {result.posterPath ? (
-                      <img
-                        className={`rounded ${styles.imageBorder}`}
-                        src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${result.posterPath.replace(
-                          '.jpg',
-                          '.webp'
-                        )}`}
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = `https://www.themoviedb.org/t/p/original${result.posterPath}`;
-                        }}
-                        alt={result.title}
-                        style={{
-                          width: 70,
-                          height: 105,
-                          objectFit: 'cover',
-                          marginRight: 8,
-                        }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: 40,
-                          height: 60,
-                          background: '#eee',
-                          borderRadius: 4,
-                          marginRight: 8,
-                        }}
-                      />
-                    )}
-                    <div>
-                      <div style={{ fontWeight: 500 }}>{result.title}</div>
-                      <div className="text-muted small">
-                        {result.childtype}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-          </div>
+          {/* 🌟 Portal Dropdown */}
+          <DropdownPortal />
         </>
       )}
     </div>
