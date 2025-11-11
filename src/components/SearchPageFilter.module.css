@@ -1,9 +1,8 @@
 .dropdownContainer {
   z-index: 9999;
   position: absolute;
-  background: var(--dropdown-backdrop);
-  backdrop-filter: blur(var(--dropdown-blur));
-  -webkit-backdrop-filter: blur(var(--dropdown-blur));
+  background: var(--semi-transparency-bg);
+  backdrop-filter: var(--blur-strength);
   border-radius: var(--border-radius);
   box-shadow: var(--dropdown-shadow);
   border: var(--dropdown-border-width) solid var(--dropdown-border);

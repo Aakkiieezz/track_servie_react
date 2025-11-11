@@ -157,11 +157,9 @@ body {
   --surface-overlay: rgba(255, 255, 255, 0.6); /* for translucent overlays in light */
 
   --dropdown-bg: rgba(255, 255, 255, 0.700);
-  --dropdown-backdrop: rgba(255, 255, 255, 0.700);
   --dropdown-border: rgba(0, 0, 0, 0.1);
   --dropdown-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   --dropdown-border-width: 1px;
-  --dropdown-blur: 12px;
 }
 
 /* 🌙 Dark Theme */
@@ -240,9 +238,7 @@ body.dark {
   --surface-overlay: rgba(0, 0, 0, 0.45); /* for translucent overlays in dark */
 
   --dropdown-bg: rgba(0, 0, 0, 0.55);
-  --dropdown-backdrop: rgba(0, 0, 0, 0.55);
   --dropdown-border: rgba(255, 255, 255, 0.1);
   --dropdown-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
   --dropdown-border-width: 1px;
-  --dropdown-blur: 12px;
 }
