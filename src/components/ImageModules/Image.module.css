@@ -34,11 +34,6 @@
   object-fit: cover;
 }
 
-/* .imageBorder {
-  border: 0.5px solid rgba(217, 217, 217, 0.434);
-  border-radius: 1px;
-} */
-
 .backgroundImage {
   position: fixed;
   top: 0;
@@ -161,7 +156,8 @@
   right: 0;
   padding: 10px;
   background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(10px);
+  backdrop-filter: var(--blur-strength);
+
   opacity: 0;
   transform: translateY(10px);
   transition: all 0.3s ease;

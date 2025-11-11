@@ -1,20 +1,16 @@
 /* Light/Dark Mode Variables */
 :global(body:not(.dark)) .serviePageWrapper {
-  --modal-bg: rgba(255, 255, 255, 0.700);
   --modal-text: #222;
   --modal-border: rgba(0, 0, 0, 0.12);
   --modal-hover: rgba(0, 0, 0, 0.05);
-  --modal-backdrop: rgba(0, 0, 0, 0.45);
   --list-active-accent: #2979ff;
   --list-active-bg: rgba(41, 121, 255, 0.12);
 }
 
 :global(body.dark) .serviePageWrapper {
-  --modal-bg: rgba(20, 20, 20, 0.800);
   --modal-text: #ededed;
   --modal-border: rgba(255, 255, 255, 0.14);
   --modal-hover: rgba(255, 255, 255, 0.08);
-  --modal-backdrop: rgba(0, 0, 0, 0.55);
   --list-active-accent: #82b1ff;
   --list-active-bg: rgba(130, 177, 255, 0.10);
 }
@@ -50,8 +46,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--modal-backdrop);
-  /* backdrop-filter: blur(1px); */
+  background: var(--slight-backdrop);
+  /* backdrop-filter: blur(1px);                  Does blur looks good or not ??? */              
 }
 
 /* Page Content */
@@ -169,7 +165,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
+  backdrop-filter: var(--blur-strength);
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -194,9 +190,9 @@
 .overviewSection {
   background: var(--modal-bg);
   border: 1px solid var(--modal-border);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   padding: 1.5rem;
-  backdrop-filter: blur(10px);
+  backdrop-filter: var(--blur-strength);
 }
 
 .overviewSection h4 {
@@ -239,9 +235,9 @@
 .castSection {
   background: var(--modal-bg);
   border: 1px solid var(--modal-border);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   padding: 1.5rem;
-  backdrop-filter: blur(10px);
+  backdrop-filter: var(--blur-strength);
   overflow: hidden;
 }
 
@@ -283,9 +279,9 @@
 .seasonsSection {
   background: var(--modal-bg);
   border: 1px solid var(--modal-border);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   padding: 1.5rem;
-  backdrop-filter: blur(10px);
+  backdrop-filter: var(--blur-strength);
 }
 
 .seasonsHeader {
@@ -331,9 +327,9 @@
 .infoCard {
   background: var(--modal-bg);
   border: 1px solid var(--modal-border);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
+  backdrop-filter: var(--blur-strength);
   padding: 1.25rem;
-  backdrop-filter: blur(10px);
   transition: all 0.2s ease;
 }
 

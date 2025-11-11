@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
-import axiosInstance from '../../utils/axiosInstance';
+import axiosInstance from '../utils/axiosInstance';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import styles from "./SearchPageFilter.module.css";
-import stylesAppHeader from "../AppHeader.module.css";
+import stylesAppHeader from "./AppHeader.module.css";
 
 type SearchType = 'movie' | 'tv' | 'servie' | 'person' | 'collection';
 
@@ -48,7 +48,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-   // 🎯 Calculate dropdown position
+  // 🎯 Calculate dropdown position
   const updateDropdownPosition = () => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
@@ -70,12 +70,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
         setIsLoading(true);
         lastApiCallTime.current = now;
 
-        axiosInstance
-          .get(
-            `servies/search-debound?type=${encodeURIComponent(
-              type
-            )}&partialSearchQuery=${encodeURIComponent(query)}`
-          )
+        axiosInstance.get(`servies/search-debound?type=${encodeURIComponent(type)}&partialSearchQuery=${encodeURIComponent(query)}`)
           .then((res) => {
             setSearchResults(res.data);
             setShowDropdown(true);
@@ -92,7 +87,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
     return () => clearTimeout(delayDebounce);
   }, [query, type]);
 
-  // 🚀 ESC key and outside click handling - FIXED
+  // Exit menu on ESC keypress & outside click
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setShowDropdown(false);
@@ -102,7 +97,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
       const target = e.target as Node;
       // Check if click is outside both the container AND the dropdown portal
       if (
-        containerRef.current && 
+        containerRef.current &&
         !containerRef.current.contains(target) &&
         dropdownRef.current &&
         !dropdownRef.current.contains(target)
@@ -123,9 +118,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
     };
 
     const handleResize = () => {
-      if (showDropdown) {
-        updateDropdownPosition();
-      }
+      if (showDropdown) updateDropdownPosition();
     };
 
     document.addEventListener('keydown', handleKeyDown);
@@ -149,7 +142,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
     setShowDropdown(false);
   };
 
-  // 🌟 Portal Dropdown Component - FIXED scrolling
+  // 🌟 Portal Dropdown Component - for suggestions
   const DropdownPortal = () => {
     if (!showDropdown || searchResults.length === 0) return null;
 
@@ -173,25 +166,17 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
           pointerEvents: showDropdown ? 'auto' : 'none',
         }}
         onMouseDown={(e) => {
-          // Prevent mousedown from triggering outside click
           e.stopPropagation();
         }}
         onClick={(e) => {
-          // Prevent clicks inside dropdown from closing it
           e.stopPropagation();
         }}
-        onTouchStart={(e) => {
-          // ✅ Allow touch scrolling - don't stop propagation for touch events
-          // This allows the browser to handle scrolling naturally
-        }}
-        onTouchMove={(e) => {
-          // ✅ Allow touch scrolling - don't stop propagation for touch events
-        }}
+        // onTouchStart={(e) => {}}
+        // onTouchMove={(e) => {}}
       >
-        <div 
+        <div
           className={styles.dropdownContent}
           onScroll={(e) => {
-            // Allow scroll events to bubble naturally
             e.stopPropagation();
           }}
         >
@@ -221,10 +206,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
                   {result.posterPath ? (
                     <img
                       className={`rounded ${styles.imageBorder}`}
-                      src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${result.posterPath.replace(
-                        '.jpg',
-                        '.webp'
-                      )}`}
+                      src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${result.posterPath.replace('.jpg', '.webp')}`}
                       onError={(e) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.src = `https://www.themoviedb.org/t/p/original${result.posterPath}`;
@@ -290,13 +272,13 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
           <form onSubmit={handleSearchSubmit} className={` ${styles.form} d-flex flex-row align-items-center gap-1 `}>
 
             <button
-            type="button"
-            className={`btn ${stylesAppHeader.btnOutlinePrimary} d-flex align-items-center`}
-            onClick={onCollapse}
-            title="Collapse search"
-          >
-            <i className="bi bi-search"></i>
-          </button>
+              type="button"
+              className={`btn ${stylesAppHeader.btnOutlinePrimary} d-flex align-items-center`}
+              onClick={onCollapse}
+              title="Collapse search"
+            >
+              <i className="bi bi-search"></i>
+            </button>
 
             {/* 🔍 Search Input */}
             <div className="input-group flex-grow-1">

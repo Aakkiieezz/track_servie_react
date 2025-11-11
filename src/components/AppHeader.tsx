@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import HomePageFilter from "./HomePage/HomePageFilter";
-import SearchPageFilter from "./SearchPage/SearchPageFilter";
+import SearchPageFilter from "./SearchPageFilter";
 import ProfilePic from "./ProfilePage/ProfilePic";
 import styles from "./AppHeader.module.css";
 

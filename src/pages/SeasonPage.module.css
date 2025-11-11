@@ -70,7 +70,7 @@
 
 .posterContainer {
   flex: 0 0 280px;
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   overflow: hidden;
   box-shadow: 0 8px 32px var(--shadow-strong);
 }
@@ -304,7 +304,7 @@
 
 .episodeCard {
   background: var(--bg-tertiary);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   overflow: hidden;
   transition: all 0.3s ease;
   border: 1px solid var(--border-color);

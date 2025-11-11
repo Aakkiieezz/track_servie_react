@@ -35,7 +35,6 @@ const ProfilePic: React.FC = () => {
                 <img
                     src={profilePicUrl || "src/assets/defaultProfileImg.jpg"}
                     alt="Profile"
-                    className={styles.profilePic}
                     data-bs-toggle="dropdown"
                     data-bs-display="static"
                     data-bs-auto-close="true"

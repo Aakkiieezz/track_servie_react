@@ -1,8 +1,8 @@
 /* --- Backdrop --- */
 .backdrop {
+  background: var(--slight-backdrop);
   position: fixed;
   inset: 0;
-  background: var(--modal-backdrop);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,10 +14,9 @@
   background: var(--modal-bg);
   color: var(--modal-text);
   width: clamp(260px, 90vw, 420px);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: var(--blur-strength);
   overflow: hidden;
   animation: fadeIn 0.25s ease;
   border: 1px solid var(--modal-border);
@@ -71,26 +70,6 @@
 }
 .listItem:hover {
   background: var(--modal-hover);
-}
-
-/* ✅ Light Mode (default when body does NOT have .dark) */
-:global(body:not(.dark)) .backdrop {
-  --modal-bg: rgba(255, 255, 255, 0.700);   /* slightly whiter / less transparent */
-  --modal-text: #222;
-  --modal-border: rgba(0, 0, 0, 0.12);
-  --modal-hover: rgba(0, 0, 0, 0.05);       /* darken the selection */
-  /* --modal-backdrop: rgba(0, 0, 0, 0.45);   soft dim behind modal */
-  background: var(--modal-backdrop);
-}
-
-/* 🌙 Dark Mode */
-:global(body.dark) .backdrop {
-  --modal-bg: rgba(20, 20, 20, 0.800);      /* darker + nicer contrast */
-  --modal-text: #ededed;
-  --modal-border: rgba(255, 255, 255, 0.14);
-  --modal-hover: rgba(255, 255, 255, 0.08); /* brighten the selection */
-  /* --modal-backdrop: rgba(0, 0, 0, 0.55); */
-  background: var(--modal-backdrop);
 }
 
 /* Fade Animation */

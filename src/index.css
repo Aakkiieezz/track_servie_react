@@ -2,55 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-/* [aakkiieezz@JARVIS track_servie_react]$ npx shadcn@latest init
-✔ Preflight checks.
-✔ Verifying framework. Found Vite.
-✔ Validating Tailwind CSS.
-✔ Validating import alias.
-✔ Which style would you like to use? › Default
-✔ Which color would you like to use as the base color? › Gray
-✔ Would you like to use CSS variables for theming? -> yes
-✔ Writing components.json.
-✔ Checking registry.
-✔ Updating tailwind.config.js
-✔ Updating src/App.css
-✔ Installing dependencies.
-✔ Created 1 file:
-  - src/lib/utils.ts
-Success! Project initialization completed.
-You may now add components */
-
 /* 🌞 LIGHT MODE (default) */
 body {
-  background-color: #f5f5f7;
+  background-color: var(--body-bg);
+  color: var(--body-color);
   background-image: none; /* Light theme looks cleaner without texture */
-  color: #222;
   transition: background 0.4s ease, color 0.4s ease;
-}
-
-/* Card / Section contrast adjustment (optional) */
-.light-surface {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* 🌙 DARK MODE */
 body.dark {
-  background-color: #1c1c1c;
   background-image: url("../src/assets/abstract-luxury-blur-dark-grey-black-gradient-used-as-background-studio-wall-display-your-pr.jpg");
-  color: #eee;
   background-size: cover;
   background-attachment: fixed;
-  transition: background 0.4s ease, color 0.4s ease;
-}
-
-/* Optional dark surfaces for cards / lists */
-body.dark .light-surface {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0px 2px 14px rgba(0, 0, 0, 0.4);
 }
 
 /* General Styling */
@@ -111,13 +75,26 @@ body {
 
 :root {
   --appHeader-height: 80px; /* set your header height */
+  --border-radius: 12px;
+  --blur-strength: blur(12px);  
+  --slight-backdrop: rgba(0, 0, 0, 0.5);              /* modal[ServieOptionsModal], */
 }
 
 /* Default (Light Theme) */
 :root {
-  --header-bg: rgba(212, 212, 212, 0.2);
+  --semi-transparency-bg: rgba(255, 255, 255, 0.700);
+  
+  --body-bg: #ffffff;
+  --body-color: #222;
+
+  --header-bg: var(--semi-transparency-bg);
   --header-border: rgba(0, 0, 0, 0.08);
   --header-text: #222;
+
+  --modal-bg: var(--semi-transparency-bg);   /* slightly whiter / less transparent */
+  --modal-text: #222;
+  --modal-border: rgba(0, 0, 0, 0.12);
+  --modal-hover: rgba(0, 0, 0, 0.05);  
 
   --input-bg: rgba(0, 0, 0, 0.06);
   --input-border: rgba(0, 0, 0, 0.2);
@@ -125,8 +102,6 @@ body {
 
   --profile-img-border: rgba(0, 0, 0, 0.2);
   --profile-img-border-hover: rgba(0, 0, 0, 0.5);
-
-  /* ----------------------------- */
 
   --btn-text: #222;
   --btn-text-muted: #555;
@@ -157,10 +132,6 @@ body {
   --form-placeholder: rgba(0, 0, 0, 0.45);
   --form-focus-ring: rgba(0, 0, 0, 0.12);
 
-  /* DROPDOWN MENUS */
-  /* --dd-bg: rgba(255, 255, 255, 0.700);
-  --dd-border: rgba(0, 0, 0, 0.14);
-  --dd-text: #222; */
   --dd-text-hover: #000;
   --dd-hover-bg: rgba(0, 0, 0, 0.05);
   --dd-header-text: rgba(0, 0, 0, 0.55);
@@ -173,33 +144,41 @@ body {
   --tab-active-border: rgba(26, 115, 232, 0.65);
   --tab-text: #333;
 
-  /* Image overlay */
   --overlay-bg: rgba(0, 0, 0, 0.65);
   --overlay-hover: #60a5fa;
 
-
-  /* Surfaces */
   --surface: #ffffff;                     /* main surface (cards, panels) */
   --surface-variant: #fbfbfd;             /* slightly different surface */
   --surface-border: rgba(0, 0, 0, 0.06);  /* border for surfaces */
   --surface-contrast: #f3f4f6;            /* subtle elevated surface */
-
-  /* Shadows / elevation */
   --surface-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
-
-  /* Text on surfaces */
   --surface-text: #111827;
   --surface-text-muted: #6b7280;
-
-  /* Overlay / translucent */
   --surface-overlay: rgba(255, 255, 255, 0.6); /* for translucent overlays in light */
+
+  --dropdown-bg: rgba(255, 255, 255, 0.700);
+  --dropdown-backdrop: rgba(255, 255, 255, 0.700);
+  --dropdown-border: rgba(0, 0, 0, 0.1);
+  --dropdown-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  --dropdown-border-width: 1px;
+  --dropdown-blur: 12px;
 }
 
 /* 🌙 Dark Theme */
 body.dark {
-  --header-bg: rgba(15, 15, 15, 0.65);
+  --semi-transparency-bg: rgba(20, 20, 20, 0.800);
+
+  --body-bg: #1c1c1c;
+  --body-color: #eee;
+  
+  --header-bg: var(--semi-transparency-bg);
   --header-border: rgba(255, 255, 255, 0.12);
   --header-text: #fff;
+
+  --modal-bg: var(--semi-transparency-bg);     /* darker + nicer contrast */
+  --modal-text: #ededed;
+  --modal-border: rgba(255, 255, 255, 0.14);
+  --modal-hover: rgba(255, 255, 255, 0.08); /* brighten the selection */
 
   --input-bg: rgba(255, 255, 255, 0.08);
   --input-border: rgba(255, 255, 255, 0.25);
@@ -207,8 +186,6 @@ body.dark {
 
   --profile-img-border: rgba(255, 255, 255, 0.2);
   --profile-img-border-hover: rgba(255, 255, 255, 0.4);
-
-  /* ---------------------------------------- */
 
   --btn-text: #eee;
   --btn-text-muted: #aaa;
@@ -230,19 +207,15 @@ body.dark {
 
   --btn-link-text: rgba(255, 255, 255, 0.85);
 
-  /* FORM CONTROLS (SearchPageFilter.tsx) */
+  /* FORM CONTROLS (SearchPageFilter.tsx -> search input text field) */
   --form-bg: rgba(39, 39, 39, 0.774);
-  --form-bg-focus: rgba(255, 255, 255, 0.13);
+  --form-bg-focus: rgba(255, 255, 255, 0.13);               /* brighten when in focus */
   --form-border: rgba(255, 255, 255, 0.2);
   --form-border-focus: rgba(255, 255, 255, 0.35);
   --form-text: #fff;
   --form-placeholder: rgba(255, 255, 255, 0.5);
   --form-focus-ring: rgba(255, 255, 255, 0.1);
 
-  /* DROPDOWN MENUS */
-  /* --dd-bg: rgba(255, 2, 2, 0.8);
-  --dd-border: rgba(255, 255, 255, 0.18);
-  --dd-text: rgba(255, 255, 255, 0.85); */
   --dd-text-hover: #fff;
   --dd-hover-bg: rgba(255, 255, 255, 0.1);
   --dd-header-text: rgba(255, 255, 255, 0.6);
@@ -257,19 +230,19 @@ body.dark {
   --overlay-bg: rgba(0, 0, 0, 0.55);
   --overlay-hover: #93c5fd;
 
-  /* Surfaces */
-  --surface: rgba(255, 255, 255, 0.04);        /* main surface (cards, panels) */
-  --surface-variant: rgba(255, 255, 255, 0.02);/* alternate dark surface */
-  --surface-border: rgba(255, 255, 255, 0.06); /* subtle border in dark */
-  --surface-contrast: rgba(255, 255, 255, 0.03);/* slightly lighter surface for stacking */
-
-  /* Shadows / elevation */
+  --surface: rgba(255, 255, 255, 0.04);               /* main surface (cards, panels) */
+  --surface-variant: rgba(255, 255, 255, 0.02);       /* alternate dark surface */
+  --surface-border: rgba(255, 255, 255, 0.06);        /* subtle border in dark */
+  --surface-contrast: rgba(255, 255, 255, 0.03);      /* slightly lighter surface for stacking */
   --surface-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
-
-  /* Text on surfaces */
   --surface-text: #f3f4f6;
   --surface-text-muted: #a3a3a3;
-
-  /* Overlay / translucent */
   --surface-overlay: rgba(0, 0, 0, 0.45); /* for translucent overlays in dark */
+
+  --dropdown-bg: rgba(0, 0, 0, 0.55);
+  --dropdown-backdrop: rgba(0, 0, 0, 0.55);
+  --dropdown-border: rgba(255, 255, 255, 0.1);
+  --dropdown-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
+  --dropdown-border-width: 1px;
+  --dropdown-blur: 12px;
 }

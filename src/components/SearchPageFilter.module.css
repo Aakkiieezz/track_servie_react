@@ -1,44 +1,21 @@
-/* ✅ DARK THEME (default) */
 .dropdownContainer {
   z-index: 9999;
   position: absolute;
-
-  /* Dark theme styling */
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  /* Shape + Depth */
-  border-radius: 12px;
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
-
-  /* Smooth animation */
+  background: var(--dropdown-backdrop);
+  backdrop-filter: blur(var(--dropdown-blur));
+  -webkit-backdrop-filter: blur(var(--dropdown-blur));
+  border-radius: var(--border-radius);
+  box-shadow: var(--dropdown-shadow);
+  border: var(--dropdown-border-width) solid var(--dropdown-border);
   transition: opacity 0.25s ease, transform 0.25s ease;
-  
-  /* ✅ NO overflow here - let dropdownContent handle it */
 }
 
-/* ✅ Inner content wrapper handles scrolling */
 .dropdownContent {
   overflow-x: hidden;
   overflow-y: auto;
   max-height: inherit;
-  
-  /* ✅ Enable smooth scrolling */
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-}
-
-/* ✅ LIGHT THEME Override */
-:global(body:not(.dark)) .dropdownContainer {
-  background: rgba(255, 255, 255, 0.700);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-/* ✅ DARK THEME border */
-:global(body.dark) .dropdownContainer {
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .formControl {
@@ -72,7 +49,7 @@
 
 .dropdownContent::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
 }
 
 .dropdownContent::-webkit-scrollbar-thumb {
@@ -103,15 +80,6 @@
   transition: background-color 0.15s ease;
 }
 
-.hoverBgLight:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* ✅ Light theme hover */
-:global(body:not(.dark)) .hoverBgLight:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
 /* ✅ Text colors for dropdown items */
 :global(body.dark) .dropdownContainer {
   color: #eee;
@@ -123,7 +91,7 @@
 
 /* ✅ Border color for items */
 :global(body.dark) .dropdownContainer .border-bottom {
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 0, 0, 0.1) !important;
 }
 
 :global(body:not(.dark)) .dropdownContainer .border-bottom {

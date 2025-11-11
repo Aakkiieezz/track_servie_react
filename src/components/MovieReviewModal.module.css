@@ -1,11 +1,8 @@
-/* WatchedModal.module.css */
-/* This shares the same base variables and structure as ServieOptionsModal.module.css */
-
 /* --- Backdrop --- */
 .backdrop {
   position: fixed;
   inset: 0;
-  background: var(--modal-backdrop);
+  background: var(--slight-backdrop);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,10 +15,9 @@
   color: var(--modal-text);
   width: clamp(260px, 90vw, 800px);
   max-width: 800px;
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: var(--blur-strength);
   overflow: hidden;
   animation: fadeIn 0.25s ease;
   border: 1px solid var(--modal-border);
@@ -307,22 +303,18 @@
 
 /* ✅ Light Mode (default when body does NOT have .dark) */
 :global(body:not(.dark)) .backdrop {
-  --modal-bg: rgba(255, 255, 255, 0.700);
   --modal-text: #222;
   --modal-border: rgba(0, 0, 0, 0.12);
   --modal-hover: rgba(0, 0, 0, 0.05);
-  --modal-backdrop: rgba(0, 0, 0, 0.45);
   --list-active-accent: #2979ff;
   --list-active-bg: rgba(41, 121, 255, 0.12);
 }
 
 /* 🌙 Dark Mode */
 :global(body.dark) .backdrop {
-  --modal-bg: rgba(20, 20, 20, 0.800);
   --modal-text: #ededed;
   --modal-border: rgba(255, 255, 255, 0.14);
   --modal-hover: rgba(255, 255, 255, 0.08);
-  --modal-backdrop: rgba(0, 0, 0, 0.55);
   --list-active-accent: #82b1ff;
   --list-active-bg: rgba(130, 177, 255, 0.10);
 }
