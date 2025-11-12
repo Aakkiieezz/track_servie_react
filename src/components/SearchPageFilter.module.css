@@ -17,6 +17,11 @@
   overscroll-behavior: contain;
 }
 
+.dropdownContent .border {
+  /* this looks good but has a flaw that the line for last item comes out of the curved content */
+  border-bottom: var(--dropdown-border-width) solid var(--dropdown-border);
+}
+
 .formControl {
   background: var(--form-bg);
   border: 1px solid var(--form-border);
@@ -84,8 +89,20 @@
   color: #eee;
 }
 
+:global(body.dark) .dropdownContainer .childType {
+  color: #aaa; /* lighter gray for dark mode */
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
 :global(body:not(.dark)) .dropdownContainer {
   color: #222;
+}
+
+:global(body:not(.dark)) .dropdownContainer .childType {
+  color: #555; /* darker gray for light mode */
+  font-size: 0.85rem;
+  opacity: 0.9;
 }
 
 /* ✅ Border color for items */

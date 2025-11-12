@@ -200,7 +200,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
                 onClick={() => setShowDropdown(false)}
               >
                 <div
-                  className={`d-flex align-items-center p-2 border-bottom ${styles.hoverBgLight}`}
+                  className={`d-flex align-items-center p-2 ${styles.border} ${styles.hoverBgLight}`}
                   style={{ cursor: 'pointer' }}
                 >
                   {result.posterPath ? (
@@ -232,7 +232,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
                   )}
                   <div>
                     <div style={{ fontWeight: 500 }}>{result.title}</div>
-                    <div className="text-muted small">
+                    <div className={styles.childType}>
                       {result.childtype}
                     </div>
                   </div>

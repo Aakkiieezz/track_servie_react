@@ -108,8 +108,8 @@
   height: 100%;
   width: auto;
   display: block;
-  max-width: 1000px;
-  /* filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5)); */
+    max-width: 1000px;
+    /* filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5)); */
 }
 
 .titleLogo .title {

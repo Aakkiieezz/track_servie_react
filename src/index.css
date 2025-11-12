@@ -82,7 +82,7 @@ body {
 
 /* Default (Light Theme) */
 :root {
-  --semi-transparency-bg: rgba(255, 255, 255, 0.700);
+  --semi-transparency-bg: rgba(255, 255, 255, 0.500);
   
   --body-bg: #ffffff;
   --body-color: #222;
@@ -164,7 +164,7 @@ body {
 
 /* 🌙 Dark Theme */
 body.dark {
-  --semi-transparency-bg: rgba(20, 20, 20, 0.800);
+  --semi-transparency-bg: rgba(20, 20, 20, 0.700);
 
   --body-bg: #1c1c1c;
   --body-color: #eee;
