@@ -3,23 +3,30 @@ import styles from './ProgressBar.module.css'
 
 interface ProgressBarProps {
     episodesWatched: number;
-    totalEpisodes: number;
+    totalEpisodes: number | null;
 }
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ episodesWatched, totalEpisodes }) => {
-    const progress = (episodesWatched / totalEpisodes) * 100;
+    const progress = totalEpisodes && totalEpisodes > 0
+        ? Math.min((episodesWatched / totalEpisodes) * 100, 100)
+        : 0;
+    const roundedProgress = Math.round(progress);
 
     return (
-        <div className={styles.progressBar}>
+        <div
+            className={styles.progressBar}
+            role="progressbar"
+            aria-valuenow={roundedProgress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+        >
             <div
                 className={styles.progress}
                 style={{ width: `${progress}%` }}
             >
-                {progress > 5 && 
-                    <span className={styles.progressText}>
-                        {Math.round((episodesWatched / totalEpisodes) * 100)}%
-                    </span>
-                }
+                <span className={styles.progressText}>
+                    {roundedProgress}%
+                </span>
             </div>
         </div>
     );

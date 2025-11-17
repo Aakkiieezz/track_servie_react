@@ -3,21 +3,27 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import AppHeader from "../components/AppHeader";
 import PaginationBar from "../components/PaginationBar";
 import axiosInstance from '../utils/axiosInstance';
-import SearchServieGrid from "../components/SearchPage/SearchServieGrid";
+import ServieGrid from "@/components/HomePage/ServieGrid";
 
 interface Servie {
+    // Servie fields
     tmdbId: number;
     childtype: "movie" | "tv";
     title: string;
     posterPath: string;
-    found: boolean; // check where used
-    totalEpisodes?: number;
-    episodesWatched?: number;
-    completed: boolean;
+
+    // Movie fields
     releaseDate?: string;
-    language: string; // check where used
-    // firstAirDate?: string;
-    // lastAirDate?: string;
+
+    // Series fields
+    totalEpisodes: number | null;
+    firstAirDate?: string;
+    lastAirDate?: string;
+
+    // UserServieData fields
+    episodesWatched: number;
+    completed: boolean;
+    liked: boolean;
 }
 
 type SearchType = 'movie' | 'tv' | 'servie' | 'person' | 'collection';
@@ -103,7 +109,7 @@ const SearchPage: React.FC = () => {
             {loading ?
                 (<p>Loading...</p>) :
                 (servies.length > 0 ?
-                    (<SearchServieGrid servies={servies} />) :
+                    (<ServieGrid servies={servies} />) :
                     (<p>No results found.</p>)
                 )
             }
