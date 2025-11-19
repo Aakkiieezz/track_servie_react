@@ -66,6 +66,7 @@
   display: inline-block;
   padding: 4px;
   border-radius: 10px;
+  cursor: pointer;
 }
 
 /* placeholder style when no previews */
@@ -102,6 +103,7 @@
   padding: 0;
   cursor: pointer;
   text-align: left;
+  flex: 1;
 }
 
 .listName {
@@ -109,6 +111,11 @@
   margin: 0;
   font-weight: 700;
   color: var(--text-primary);
+  transition: color 0.2s ease;
+}
+
+.listNameBtn:hover .listName {
+  color: var(--text-link);
 }
 
 /* badge */
@@ -119,11 +126,12 @@
   font-weight: 600;
   color: var(--text-secondary);
   font-size: 13px;
+  white-space: nowrap;
 }
 
 /* description clamped */
 .description {
-  margin: 0;
+  margin: 0 0 10px 0;
   color: var(--text-tertiary);
   font-size: 14px;
   line-height: 1.6;
@@ -132,6 +140,38 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* action buttons */
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--overlay-light);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.actionBtn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.actionBtnDanger:hover {
+  background: rgba(220, 53, 69, 0.15);
+  color: #dc3545;
 }
 
 /* row hover */
@@ -144,16 +184,25 @@
 /* responsive: stack on mobile */
 @media (max-width: 768px) {
   .listRow {
-    flex-direction: row;
+    flex-direction: column;
     gap: 12px;
+    align-items: stretch;
   }
   .left {
-    flex: 0 0 auto;
+    width: 100%;
+    justify-content: flex-start;
   }
   .posterArea {
-    width: 36%;
+    width: 50%;
   }
   .listName {
     font-size: 18px;
+  }
+  .titleRow {
+    flex-wrap: wrap;
+  }
+  .actions {
+    margin-top: 10px;
+    width: 100%;
   }
 }
