@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from '../utils/axiosInstance';
 
 import styles from "./ProfilePage.module.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Alert from "../components/Alert";
 import { Link } from "react-router-dom";
 import NetworkTab from "@/components/NetworkTab";
@@ -103,17 +102,13 @@ const ProfilePage: React.FC = () => {
   const handleExportData = async () => {
     try {
       const response = await axiosInstance.get("http://localhost:8080/track-servie/export/user-data", {
-        responseType: "blob", // important!
+        responseType: "blob",
       });
 
-      // Fetch filename from our custom header
       const fileName = response.headers["x-filename"] || "backup.zip";
-
-      // Create a blob URL
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-
       link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
@@ -128,9 +123,7 @@ const ProfilePage: React.FC = () => {
 
   const handleImportData = async () => {
     try {
-      // Example: GET to export endpoint
       const response = await axiosInstance.get("user/data/export", { responseType: "blob" });
-      // Download CSV file
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
@@ -146,28 +139,81 @@ const ProfilePage: React.FC = () => {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case "Profile":
-        return <p>This is the overview content for {username}.</p>;
+      case "Overview":
+        return (
+          <div className={styles.overviewContent}>
+            <div className={styles.statsGrid}>
+              <div className={styles.statCard}>
+                <i className="bi bi-film"></i>
+                <div className={styles.statInfo}>
+                  <span className={styles.statValue}>{watchedCounts.movie}</span>
+                  <span className={styles.statLabel}>Movies Watched</span>
+                </div>
+              </div>
+              <div className={styles.statCard}>
+                <i className="bi bi-tv"></i>
+                <div className={styles.statInfo}>
+                  <span className={styles.statValue}>{watchedCounts.tv}</span>
+                  <span className={styles.statLabel}>Series Watched</span>
+                </div>
+              </div>
+              <div className={styles.statCard}>
+                <i className="bi bi-calendar-check"></i>
+                <div className={styles.statInfo}>
+                  <span className={styles.statValue}>{watchedCounts.movie + watchedCounts.tv}</span>
+                  <span className={styles.statLabel}>Total Watched</span>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.quickLinks}>
+              <h3 className={styles.sectionTitle}>Quick Links</h3>
+              <div className={styles.linksGrid}>
+                <Link to="/stats" className={styles.linkCard}>
+                  <i className="bi bi-graph-up"></i>
+                  <span>Statistics</span>
+                </Link>
+                <Link to="/statslangbarlog" className={styles.linkCard}>
+                  <i className="bi bi-bar-chart"></i>
+                  <span>Language Stats</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        );
       case "Settings":
-        return <p>Here are the posts by {username}.</p>;
+        return (
+          <div className={styles.settingsContent}>
+            <h3 className={styles.sectionTitle}>Settings</h3>
+            <p className={styles.placeholderText}>Settings panel coming soon...</p>
+          </div>
+        );
       case "Network":
         return (
-          <NetworkTab
-            activeNetworkTab={activeNetworkTab}
-            setActiveNetworkTab={setActiveNetworkTab}
-          />
+          <div className={styles.networkContent}>
+            <NetworkTab
+              activeNetworkTab={activeNetworkTab}
+              setActiveNetworkTab={setActiveNetworkTab}
+            />
+          </div>
         );
       case "Data":
         return (
-          <div>
-            <h3>Account data</h3>
-            <p>Import data to your account, or export your account in CSV format:</p>
-            <button className="btn btn-primary me-2" onClick={handleImportData}>
-              Import your data
-            </button>
-            <button className="btn btn-secondary" onClick={handleExportData}>
-              Export your data
-            </button>
+          <div className={styles.dataContent}>
+            <h3 className={styles.sectionTitle}>Account Data</h3>
+            <p className={styles.dataDescription}>
+              Import data to your account, or export your account in CSV format
+            </p>
+            <div className={styles.dataActions}>
+              <button className={styles.primaryButton} onClick={handleImportData}>
+                <i className="bi bi-upload"></i>
+                Import Your Data
+              </button>
+              <button className={styles.secondaryButton} onClick={handleExportData}>
+                <i className="bi bi-download"></i>
+                Export Your Data
+              </button>
+            </div>
           </div>
         );
       default:
@@ -179,94 +225,100 @@ const ProfilePage: React.FC = () => {
     <>
       <AppHeader />
 
-      <div className={styles.profilePageContainer}>
-        {/* Alert Component */}
-        {alert && (
-          <Alert
-            type={alert.type}
-            message={alert.message}
-            onClose={() => setAlert(null)}
-          />
-        )}
+      {alert && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
 
-        <nav className="bg-gray-800 p-4">
-          <Link to="/stats" className="text-white hover:underline">Stats</Link>
-          <br></br>
-          <Link to="/statslangbarlog" className="text-white hover:underline">StatsLangBarLog</Link>
-        </nav>
+      <div className={styles.pageContainer}>
+        <div className={styles.container}>
+          {/* Profile Header */}
+          <div className={styles.profileHeader}>
+            <div className={styles.profilePicWrapper}>
+              <img
+                src={profilePicUrl || "src/assets/defaultProfileImg.jpg"}
+                alt="Profile"
+                className={styles.profilePic}
+                onClick={toggleDropdown}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+                }}
+              />
+              <button className={styles.editButton} onClick={toggleDropdown}>
+                <i className="bi bi-camera"></i>
+              </button>
 
-        <div className={styles.profileHeader}>
-          <div className={styles.profilePicWrapper}>
+              {isDropdownOpen && (
+                <div className={styles.dropdownMenu}>
+                  <label htmlFor="uploadImage" className={styles.dropdownItem}>
+                    <i className="bi bi-upload"></i>
+                    Upload Image
+                    <input
+                      type="file"
+                      id="uploadImage"
+                      className={styles.fileInput}
+                      onChange={uploadImage}
+                      accept="image/*"
+                    />
+                  </label>
+                  <button className={styles.dropdownItem} onClick={deleteImage}>
+                    <i className="bi bi-trash"></i>
+                    Delete Image
+                  </button>
+                </div>
+              )}
+            </div>
 
-            <img
-              src={profilePicUrl || "src/assets/defaultProfileImg.jpg"}
-              alt="Profile"
-              className={styles.profilePic}
-              onClick={toggleDropdown}
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
-              }}
-            />
-
-            {isDropdownOpen && (
-              <div className={styles.dropdownMenu}>
-                <label htmlFor="uploadImage" className={styles.dropdownItem}>
-                  Upload Image
-                  <input
-                    type="file"
-                    id="uploadImage"
-                    className={styles.fileInput}
-                    onChange={uploadImage}
-                  />
-                </label>
-                <button className={styles.dropdownItem} onClick={deleteImage}>
-                  Delete Image
-                </button>
+            <div className={styles.profileInfo}>
+              <h1 className={styles.username}>{username}</h1>
+              <div className={styles.userStats}>
+                <span className={styles.userStat}>
+                  <i className="bi bi-film"></i> {watchedCounts.movie} movies
+                </span>
+                <span className={styles.statsSeparator}>•</span>
+                <span className={styles.userStat}>
+                  <i className="bi bi-tv"></i> {watchedCounts.tv} series
+                </span>
               </div>
-            )}
+            </div>
           </div>
-          <h1 className={styles.username}>{username}</h1>
+
+          {/* Tab Navigation */}
+          <div className={styles.tabNavigation}>
+            <button
+              className={`${styles.tabButton} ${activeTab === "Overview" ? styles.active : ""}`}
+              onClick={() => handleTabChange("Overview")}
+            >
+              Overview
+            </button>
+            <button
+              className={`${styles.tabButton} ${activeTab === "Settings" ? styles.active : ""}`}
+              onClick={() => handleTabChange("Settings")}
+            >
+              Settings
+            </button>
+            <button
+              className={`${styles.tabButton} ${activeTab === "Network" ? styles.active : ""}`}
+              onClick={() => handleTabChange("Network")}
+            >
+              Network
+            </button>
+            <button
+              className={`${styles.tabButton} ${activeTab === "Data" ? styles.active : ""}`}
+              onClick={() => handleTabChange("Data")}
+            >
+              Data
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          <div className={styles.tabContent}>
+            {renderTabContent()}
+          </div>
         </div>
-
-        <div>
-          Movies watched: {watchedCounts.movie} <br />
-          Series watched: {watchedCounts.tv}
-        </div>
-
-        <div className={styles.tabNavigation}>
-          <button
-            className={`${styles.tabButton} ${activeTab === "Profile" ? styles.active : ""
-              }`}
-            onClick={() => handleTabChange("Profile")}
-          >
-            Profile
-          </button>
-
-          <button
-            className={`${styles.tabButton} ${activeTab === "Settings" ? styles.active : ""
-              }`}
-            onClick={() => handleTabChange("Settings")}
-          >
-            Settings
-          </button>
-
-          <button
-            className={`${styles.tabButton} ${activeTab === "Network" ? styles.active : ""
-              }`}
-            onClick={() => handleTabChange("Network")}
-          >
-            Network
-          </button>
-
-          <button
-            className={`${styles.tabButton} ${activeTab === "Data" ? styles.active : ""
-              }`}
-            onClick={() => handleTabChange("Data")}
-          >
-            Data
-          </button>
-        </div>
-        <div className={styles.tabContent}>{renderTabContent()}</div>
       </div>
     </>
   );

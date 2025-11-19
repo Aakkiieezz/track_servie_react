@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from '../utils/axiosInstance';
+import styles from './NetworkTab.module.css';
 
 interface FollowUser {
   id: number;
@@ -17,99 +18,178 @@ const NetworkTab: React.FC<NetworkTabProps> = ({ activeNetworkTab, setActiveNetw
   const [followers, setFollowers] = useState<FollowUser[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<FollowUser[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Load following list
   useEffect(() => {
-    if (activeNetworkTab === "Following")
-        axiosInstance.get("follows/following", { params: { page: 0, size: 20 } })
-          .then(res => setFollowing(res.data.content))
-          .catch(() => setFollowing([]));
+    if (activeNetworkTab === "Following") {
+      axiosInstance.get("follows/following", { params: { page: 0, size: 20 } })
+        .then(res => setFollowing(res.data.content))
+        .catch(() => setFollowing([]));
+    }
   }, [activeNetworkTab]);
 
   // Load followers list
   useEffect(() => {
-    if (activeNetworkTab === "Followers")
-        axiosInstance.get("follows/followers", { params: { page: 0, size: 20 } })
-          .then(res => setFollowers(res.data.content))
-          .catch(() => setFollowers([]));
+    if (activeNetworkTab === "Followers") {
+      axiosInstance.get("follows/followers", { params: { page: 0, size: 20 } })
+        .then(res => setFollowers(res.data.content))
+        .catch(() => setFollowers([]));
+    }
   }, [activeNetworkTab]);
 
   // Debounced search
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      if (searchQuery.trim().length > 1)
+      if (searchQuery.trim().length > 1) {
+        setIsSearching(true);
         axiosInstance.get(`/user/search?username=${searchQuery}`)
-          .then(res => setSearchResults(res.data))
-          .catch(err => console.error("Error searching users:", err));
-      else
+          .then(res => {
+            setSearchResults(res.data);
+            setIsSearching(false);
+          })
+          .catch(err => {
+            console.error("Error searching users:", err);
+            setIsSearching(false);
+          });
+      } else {
         setSearchResults([]);
+        setIsSearching(false);
+      }
     }, 500);
 
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
-  const renderUserList = (users: FollowUser[]) => (
-    <div>
-      {users.map(user => (
-        <div
-          key={user.id}
-          className="d-flex align-items-center mb-3"
-          style={{ gap: "10px", cursor: "pointer" }}
-          onClick={() => window.location.href = `/profile/${user.username}`}
-        >
-          <img
-            src={user.profileImgUrl}
-            alt={user.username}
-            style={{
-              width: "50px",
-              height: "50px",
-              borderRadius: "50%",
-              objectFit: "cover",
-            }}
-          />
-          <span>{user.username}</span>
+  const renderUserList = (users: FollowUser[], emptyMessage: string) => {
+    if (users.length === 0) {
+      return (
+        <div className={styles.emptyState}>
+          <i className="bi bi-people"></i>
+          <p>{emptyMessage}</p>
         </div>
-      ))}
-    </div>
-  );
+      );
+    }
+
+    return (
+      <div className={styles.userList}>
+        {users.map(user => (
+          <div
+            key={user.id}
+            className={styles.userCard}
+            onClick={() => window.location.href = `/profile/${user.username}`}
+          >
+            <img
+              src={user.profileImgUrl}
+              alt={user.username}
+              className={styles.userAvatar}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+              }}
+            />
+            <div className={styles.userInfo}>
+              <span className={styles.userName}>{user.username}</span>
+            </div>
+            <i className="bi bi-chevron-right"></i>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <div>
+    <div className={styles.networkTab}>
       {/* Sub-tabs */}
-      <div className="d-flex mb-3">
+      <div className={styles.subTabs}>
         <button
-          className={`btn ${activeNetworkTab === "Following" ? "btn-primary" : "btn-outline-primary"} me-2`}
+          className={`${styles.subTabButton} ${activeNetworkTab === "Following" ? styles.active : ""}`}
           onClick={() => setActiveNetworkTab("Following")}
         >
-          Following
+          <i className="bi bi-person-check"></i>
+          Following ({following.length})
         </button>
         <button
-          className={`btn ${activeNetworkTab === "Followers" ? "btn-primary" : "btn-outline-primary"}`}
+          className={`${styles.subTabButton} ${activeNetworkTab === "Followers" ? styles.active : ""}`}
           onClick={() => setActiveNetworkTab("Followers")}
         >
-          Followers
+          <i className="bi bi-people"></i>
+          Followers ({followers.length})
         </button>
       </div>
 
       {/* Search bar */}
-      <div className="mb-3">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search users..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        {searchResults.length > 0 && (
-          <div className="mt-2 border rounded p-2">
-            {renderUserList(searchResults)}
+      <div className={styles.searchContainer}>
+        <div className={styles.searchInputWrapper}>
+          <i className="bi bi-search"></i>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Search users..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button
+              className={styles.clearButton}
+              onClick={() => setSearchQuery("")}
+            >
+              <i className="bi bi-x"></i>
+            </button>
+          )}
+        </div>
+
+        {/* Search Results */}
+        {searchQuery && (
+          <div className={styles.searchResults}>
+            {isSearching ? (
+              <div className={styles.searchLoading}>
+                <div className={styles.spinner}></div>
+                <span>Searching...</span>
+              </div>
+            ) : searchResults.length > 0 ? (
+              <div className={styles.userList}>
+                {searchResults.map(user => (
+                  <div
+                    key={user.id}
+                    className={styles.userCard}
+                    onClick={() => window.location.href = `/profile/${user.username}`}
+                  >
+                    <img
+                      src={user.profileImgUrl}
+                      alt={user.username}
+                      className={styles.userAvatar}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+                      }}
+                    />
+                    <div className={styles.userInfo}>
+                      <span className={styles.userName}>{user.username}</span>
+                    </div>
+                    <i className="bi bi-chevron-right"></i>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+                <i className="bi bi-search"></i>
+                <p>No users found</p>
+              </div>
+            )}
           </div>
         )}
       </div>
 
       {/* Tab content */}
-      {activeNetworkTab === "Following" && renderUserList(following)}
-      {activeNetworkTab === "Followers" && renderUserList(followers)}
+      {!searchQuery && (
+        <div className={styles.tabContent}>
+          {activeNetworkTab === "Following" && 
+            renderUserList(following, "You're not following anyone yet")
+          }
+          {activeNetworkTab === "Followers" && 
+            renderUserList(followers, "No followers yet")
+          }
+        </div>
+      )}
     </div>
   );
 };

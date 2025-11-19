@@ -124,9 +124,8 @@ const ImageGalleryPage: React.FC = () => {
       // Set initial active language
       if (grouped['POSTER']) {
         const languages = Object.keys(grouped['POSTER']).sort();
-        if (languages.length > 0) {
+        if (languages.length > 0)
           setActiveLanguage(languages[0]);
-        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

@@ -17,12 +17,12 @@ interface Servie {
     releaseDate?: string;
 
     // Series fields
-    totalEpisodes?: number;
+    totalEpisodes: number | null;
     firstAirDate?: string;
     lastAirDate?: string;
 
     // UserServieData fields
-    episodesWatched?: number;
+    episodesWatched: number;
     completed: boolean;
     liked: boolean;
 }
@@ -50,14 +50,14 @@ const WatchListPage: React.FC = () => {
     });
 
     const location = useLocation();
-    
+
     const queryParams = new URLSearchParams(location.search);
     const initialQuery = queryParams.get('query') || "";
     const initialType = (queryParams.get('type') as SearchFilters['type']) || "movie";
 
     const [, setSearchFilters] = useState<SearchFilters>({ query: initialQuery, type: initialType });
     const [searchParams] = useSearchParams();
-    
+
     useEffect(() => {
         const queryFromUrl = searchParams.get('query') || '';
         const typeFromUrl = (searchParams.get('type') as SearchType) || 'movie';
@@ -110,6 +110,15 @@ const WatchListPage: React.FC = () => {
         <div>
 
             <AppHeader />
+
+            <h1 style={{
+                fontSize: "48px",
+                fontWeight: "700",
+                margin: "0 0 12px 0",
+                letterSpacing: "-0.5px"
+            }}>
+                Watchlist
+            </h1>
 
             {loading ? <p>Loading...</p> : <ServieGrid servies={servies} />}
 

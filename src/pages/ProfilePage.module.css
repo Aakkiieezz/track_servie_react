@@ -1,112 +1,500 @@
-.profilePageContainer {
- display: flex;
- flex-direction: column;
- align-items: center;
- width: 100%;
- padding: 20px;
- /* margin-top: 60px; Adjust based on the height of the alert to avoid content overlap */
+/* =========================
+   CSS Variables for Theming
+   ========================= */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f4f6;
+  --bg-tertiary: rgba(0, 0, 0, 0.03);
+  --bg-elevated: rgba(0, 0, 0, 0.06);
+  --bg-card: rgba(0, 0, 0, 0.08);
+  
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-tertiary: #4b5563;
+  --text-muted: #6b7280;
+  --text-subtle: #9ca3af;
+  
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-strong: rgba(0, 0, 0, 0.3);
+  
+  --overlay-light: rgba(0, 0, 0, 0.08);
+  --overlay-medium: rgba(0, 0, 0, 0.1);
+  
+  --border-radius: 12px;
 }
 
+:global(.dark) {
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: rgba(255, 255, 255, 0.05);
+  --bg-elevated: rgba(255, 255, 255, 0.08);
+  --bg-card: rgba(255, 255, 255, 0.1);
+  
+  --text-primary: #ffffff;
+  --text-secondary: #e5e7eb;
+  --text-tertiary: #d1d5db;
+  --text-muted: #9ca3af;
+  --text-subtle: #6b7280;
+  
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-strong: rgba(0, 0, 0, 0.6);
+  
+  --overlay-light: rgba(255, 255, 255, 0.1);
+  --overlay-medium: rgba(255, 255, 255, 0.1);
+}
+
+/* =========================
+   Page Container
+   ========================= */
+.pageContainer {
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--text-secondary);
+  padding: 32px 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* =========================
+   Profile Header
+   ========================= */
 .profileHeader {
- display: flex;
- flex-direction: column;
- align-items: center;
- margin-bottom: 30px;
- position: relative; /* Needed for dropdown positioning */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 48px;
+  padding: 40px 0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .profilePicWrapper {
- position: relative;
- cursor: pointer;
+  position: relative;
+  margin-bottom: 24px;
 }
 
 .profilePic {
- width: 200px;
- height: 200px;
- border-radius: 10px;
- object-fit: cover;
- cursor: pointer;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 4px solid var(--border-color);
+  box-shadow: 0 8px 32px var(--shadow-strong);
+  transition: all 0.3s ease;
 }
 
-.placeholderPic {
- width: 120px;
- height: 120px;
- border-radius: 10px;
- background-color: grey;
- display: flex;
- align-items: center;
- justify-content: center;
- color: white;
- font-size: 0.9rem;
- cursor: pointer;
+.profilePic:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 40px var(--shadow-strong);
+}
+
+.editButton {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: 3px solid var(--bg-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 18px;
+}
+
+.editButton:hover {
+  background: #2563eb;
+  transform: scale(1.1);
 }
 
 .dropdownMenu {
- position: absolute;
- top: 130px;
- right: 0;
- background-color: white;
- border: 1px solid #ccc;
- padding: 10px;
- box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
- z-index: 999;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 8px;
+  box-shadow: 0 8px 24px var(--shadow-strong);
+  z-index: 999;
+  min-width: 200px;
 }
 
 .dropdownItem {
- display: block;
- width: 100%;
- padding: 8px 12px;
- text-align: left;
- background-color: transparent;
- border: none;
- cursor: pointer;
- font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
 }
 
 .dropdownItem:hover {
- background-color: #f0f0f0;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.dropdownItem i {
+  font-size: 16px;
 }
 
 .fileInput {
- display: none;
+  display: none;
 }
 
+.profileInfo {
+  text-align: center;
+}
+
+.username {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.userStats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-muted);
+  justify-content: center;
+}
+
+.userStat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.userStat i {
+  font-size: 16px;
+}
+
+.statsSeparator {
+  color: var(--text-muted);
+}
+
+/* =========================
+   Tab Navigation
+   ========================= */
 .tabNavigation {
- display: flex;
- justify-content: center;
- gap: 20px;
- margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 32px;
+  padding: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
 }
 
 .tabButton {
- padding: 10px 20px;
- font-size: 1rem;
- cursor: pointer;
- background-color: transparent;
- border: none;
- border-bottom: 2px solid transparent;
- transition: border-color 0.3s ease;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
 }
 
 .tabButton:hover {
- border-bottom: 2px solid #ddd;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
 }
 
 .tabButton.active {
- border-bottom: 2px solid #000;
+  background: #3b82f6;
+  color: white;
 }
 
+/* =========================
+   Tab Content
+   ========================= */
 .tabContent {
- width: 80%;
- max-width: 800px;
- margin-top: 20px;
- text-align: center;
+  min-height: 400px;
 }
 
-.alert-top {
- position: fixed;
- top: 0;
- left: 0;
- width: 100%;
- z-index: 1050;
+/* Overview Tab */
+.overviewContent {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  background: var(--bg-elevated);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+.statCard i {
+  font-size: 40px;
+  color: #3b82f6;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statValue {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.quickLinks {
+  margin-top: 16px;
+}
+
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.linksGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.linkCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.linkCard:hover {
+  background: var(--bg-elevated);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow-color);
+  color: #3b82f6;
+}
+
+.linkCard i {
+  font-size: 28px;
+}
+
+/* Settings Tab */
+.settingsContent {
+  padding: 40px 0;
+  text-align: center;
+}
+
+.placeholderText {
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+/* Network Tab */
+.networkContent {
+  padding: 20px 0;
+}
+
+/* Data Tab */
+.dataContent {
+  padding: 40px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  text-align: center;
+}
+
+.dataDescription {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.dataActions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primaryButton {
+  background: #3b82f6;
+  color: white;
+}
+
+.primaryButton:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.secondaryButton {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.secondaryButton:hover {
+  background: var(--bg-elevated);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.primaryButton i,
+.secondaryButton i {
+  font-size: 16px;
+}
+
+/* =========================
+   Responsive Design
+   ========================= */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .profileHeader {
+    padding: 24px 0;
+  }
+
+  .profilePic {
+    width: 140px;
+    height: 140px;
+  }
+
+  .username {
+    font-size: 28px;
+  }
+
+  .tabNavigation {
+    flex-wrap: wrap;
+  }
+
+  .tabButton {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .linksGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .dataActions {
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sectionTitle {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profilePic {
+    width: 120px;
+    height: 120px;
+  }
+
+  .username {
+    font-size: 24px;
+  }
+
+  .userStats {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .statsSeparator {
+    display: none;
+  }
+
+  .tabButton {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .dataContent {
+    padding: 24px;
+  }
 }
