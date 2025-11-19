@@ -288,14 +288,14 @@ const PersonPage: React.FC = () => {
 
                                             {/* Title Overlay */}
                                             <div className={styles.titleOverlay}>
-                                                <Link 
-                                                    to='/servie' 
+                                                <Link
+                                                    to='/servie'
                                                     state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}
                                                     className={styles.titleLink}
                                                 >
                                                     <div className={styles.titleText}>{servie.title}</div>
                                                     <div className={styles.yearText}>
-                                                        {servie.childtype === 'movie' 
+                                                        {servie.childtype === 'movie'
                                                             ? new Date(servie.releaseDate).getFullYear()
                                                             : `${new Date(servie.firstAirDate).getFullYear()} - ${servie.lastAirDate ? new Date(servie.lastAirDate).getFullYear() : 'Present'}`
                                                         }
@@ -315,9 +315,9 @@ const PersonPage: React.FC = () => {
                                                         title={isCompleted ? 'Mark as unwatched' : 'Mark as watched'}
                                                     >
                                                         {isCompleted ? (
-                                                            <i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>
+                                                            <i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>
                                                         ) : (
-                                                            <i className={`bi bi-eye-fill ${styles.eyeFill}`}></i>
+                                                            <i className={`bi bi-eye-slash-fill ${styles.icon} ${styles.eyeSlashFill}`}></i>
                                                         )}
                                                     </button>
 
