@@ -77,7 +77,7 @@ const NetworkTab: React.FC<NetworkTabProps> = ({ activeNetworkTab, setActiveNetw
           <div
             key={user.id}
             className={styles.userCard}
-            onClick={() => window.location.href = `/profile/${user.username}`}
+            onClick={() => window.location.href = `/profile/${user.id}`}
           >
             <img
               src={user.profileImgUrl}
@@ -152,7 +152,7 @@ const NetworkTab: React.FC<NetworkTabProps> = ({ activeNetworkTab, setActiveNetw
                   <div
                     key={user.id}
                     className={styles.userCard}
-                    onClick={() => window.location.href = `/profile/${user.username}`}
+                    onClick={() => window.location.href = `/profile/${user.id}`}
                   >
                     <img
                       src={user.profileImgUrl}

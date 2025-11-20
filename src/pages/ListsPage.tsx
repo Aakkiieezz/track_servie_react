@@ -212,12 +212,13 @@ const ListsPage: React.FC = () => {
                       className={styles.posterArea}
                       onClick={() => navigate(`/list/${li.id}`)}
                     >
-                      <PosterFanStack
-                        posters={previews[li.id] || []}
-                        height={180}
-                        onClick={() => navigate(`/list/${li.id}`)}
-                      />
-                      {(previews[li.id] || []).length === 0 && (
+                      {(previews[li.id] || []).length > 0 ? (
+                        <PosterFanStack
+                          posters={previews[li.id] || []}
+                          height={180}
+                          onClick={() => navigate(`/list/${li.id}`)}
+                        />
+                      ) : (
                         <div className={styles.placeholder}>
                           <div className={styles.placeholderText}>No preview</div>
                         </div>

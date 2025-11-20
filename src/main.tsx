@@ -23,6 +23,7 @@ import ListsPage from "./pages/ListsPage.tsx";
 import ListPage from "./pages/ListPage.tsx";
 import ImageGalleryPage from "./pages/ImageGalleryPage.tsx";
 import "./index.css";
+import UserProfilePage from "./pages/UserProfilePage.tsx";
 
 const processToken = () => {
     const params = new URLSearchParams(window.location.search);
@@ -63,6 +64,7 @@ const router = createBrowserRouter([
     { path: "/watchlist", element: <PrivateRoute element={<WatchListPage />} /> },
     { path: "/list", element: <ListsPage /> },
     { path: "/list/:listId", element: <ListPage /> },
+    { path: "/profile/:userId", element: <UserProfilePage /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(

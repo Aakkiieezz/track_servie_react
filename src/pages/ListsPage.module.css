@@ -50,6 +50,7 @@
   border: 1px solid var(--border-color);
   transition: all 0.22s ease;
   align-items: center;
+  min-height: 210px;
 }
 
 /* left: poster stack wrapper */
@@ -67,6 +68,8 @@
   padding: 4px;
   border-radius: 10px;
   cursor: pointer;
+  min-height: 180px;
+  min-width: 160px;
 }
 
 /* placeholder style when no previews */
@@ -80,6 +83,7 @@
   border-radius: 8px;
   color: var(--text-subtle);
   font-weight: 600;
+  margin: 0;
 }
 
 .right {
