@@ -1,0 +1,96 @@
+.favoritesContainer {
+  display: flex;
+  gap: 16px;
+  padding: 20px 0;
+  overflow-x: auto;
+}
+
+.favoriteCard {
+  position: relative;
+  flex: 0 0 auto;
+  width: 160px;
+  height: 240px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.favoriteCard:hover {
+  transform: scale(1.05);
+}
+
+.posterImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.removeButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(220, 38, 38, 0.9);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.removeButton:hover {
+  background: rgba(220, 38, 38, 1);
+}
+
+.movieTitle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 8px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.addButton {
+  flex: 0 0 auto;
+  width: 160px;
+  height: 240px;
+  border-radius: 8px;
+  border: 2px dashed #cbd5e1;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #64748b;
+}
+
+.addButton:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.addButtonText {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.loadingContainer {
+  padding: 20px 0;
+  text-align: center;
+  color: #64748b;
+}

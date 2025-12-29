@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
 import AppHeader from "@/components/AppHeader";
-import PosterFanStack from "@/components/PosterFanStack";
 import ServieGrid from "../components/HomePage/ServieGrid";
 import styles from "./UserProfilePage.module.css";
-import { UserPlus, UserCheck, MapPin, Mail } from "lucide-react";
+import { UserPlus, UserCheck, MapPin, Mail, Check, Edit } from "lucide-react";
+import FavoritesManager from "@/components/FavouritesManager";
 
 interface UserProfile {
   id: number;
@@ -46,9 +46,7 @@ type TabType = "profile" | "servies" | "lists" | "watchlist" | "network";
 
 const UserProfilePage: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
-  console.log("hurray");
-  console.log(userId);
-  const id = userId ? Number(userId) : null;
+  const id = Number(userId);
   const navigate = useNavigate();
 
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -62,6 +60,8 @@ const UserProfilePage: React.FC = () => {
   const [following, setFollowing] = useState<UserProfile[]>([]);
   const [followers, setFollowers] = useState<UserProfile[]>([]);
   const [tabLoading, setTabLoading] = useState(false);
+
+  const [isEditingFavorites, setIsEditingFavorites] = useState(false);
 
   const fetchUserProfile = async () => {
     if (!id) return;
@@ -85,12 +85,12 @@ const UserProfilePage: React.FC = () => {
     try {
       setTabLoading(true);
       switch (tab) {
-        case "profile":
-          const favoriteRes = await axiosInstance.get<Servie[]>(`user/${id}/servies/favorite?limit=5`);
-          if (favoriteRes.status === 200) {
-            setFavoriteServies(favoriteRes.data);
-          }
-          break;
+        // case "profile":
+        //   const favoriteRes = await axiosInstance.get<Servie[]>(`user/${id}/servies/favorite?limit=5`);
+        //   if (favoriteRes.status === 200) {
+        //     setFavoriteServies(favoriteRes.data);
+        //   }
+        //   break;
         case "servies":
           const serviesRes = await axiosInstance.get<Servie[]>(`user/${id}/servies`);
           if (serviesRes.status === 200) {
@@ -150,6 +150,46 @@ const UserProfilePage: React.FC = () => {
     }
   };
 
+  // Handler to add a favorite
+  const handleAddFavorite = async (index: number) => {
+    // You would typically open a modal or navigate to a search page
+    // For now, let's just log it
+    console.log(`Add favorite at position ${index}`);
+    
+    // Example: You might want to navigate to a search/selection page
+    // navigate('/select-favorite', { state: { userId: id, position: index } });
+    
+    // Or open a modal with a search interface
+    // setShowSearchModal(true);
+  };
+
+  // Handler to remove a favorite
+  const handleRemoveFavorite = async (tmdbId: number) => {
+    if (!id) return;
+    try {
+      // Call your API to remove from favorites
+      await axiosInstance.delete(`user/${id}/servies/${tmdbId}/favorite`);
+      
+      // Update the local state
+      setFavoriteServies(favoriteServies.filter(s => s.tmdbId !== tmdbId));
+      
+      setAlert({ 
+        type: "success", 
+        message: "Removed from favorites" 
+      });
+    } catch (err) {
+      console.error(err);
+      setAlert({ 
+        type: "danger", 
+        message: "Failed to remove from favorites" 
+      });
+    }
+  };
+
+  const handleFetchError = (error: string) => {
+    setAlert({ type: "danger", message: error });
+  };
+
   if (loading) {
     return (
       <>
@@ -167,8 +207,6 @@ const UserProfilePage: React.FC = () => {
       </>
     );
   }
-
-  const favoritePosters = favoriteServies.slice(0, 5).map(s => s.posterPath).filter(Boolean);
 
   return (
     <>
@@ -276,11 +314,16 @@ const UserProfilePage: React.FC = () => {
               <p>Loading...</p>
             ) : activeTab === "profile" ? (
               <div className={styles.profileTab}>
-                <h2 className={styles.sectionTitle}>Favorite Servies</h2>
-                <div className={styles.posterStack}>
-                  <PosterFanStack posters={favoritePosters} height={240} onClick={() => {}} />
-                </div>
-              </div>
+              <h2 className={styles.sectionTitle}>Favorite Servies</h2>
+              
+              <FavoritesManager
+                userId={id}
+                onAdd={handleAddFavorite}
+                onRemove={handleRemoveFavorite}
+                onFetchError={handleFetchError}
+                isEditable={isEditingFavorites}
+              />
+            </div>
             ) : activeTab === "servies" ? (
               <div className={styles.serviesTab}>
                 <h2 className={styles.sectionTitle}>All Servies ({servies.length})</h2>
