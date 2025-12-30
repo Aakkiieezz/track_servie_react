@@ -104,7 +104,7 @@ const UserProfilePage: React.FC = () => {
           }
           break;
         case "watchlist":
-          const watchlistRes = await axiosInstance.get<Servie[]>(`user/${id}/watchlist`);
+          const watchlistRes = await axiosInstance.get<Servie[]>(`list/watchlist`);
           if (watchlistRes.status === 200) {
             setWatchlist(watchlistRes.data);
           }

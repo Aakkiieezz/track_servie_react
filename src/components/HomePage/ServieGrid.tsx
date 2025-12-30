@@ -131,7 +131,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
     console.log("watchlist toggle");
     try {
       const response = await axiosInstance.put(
-        `watchlist/${tmdbId}`,
+        `list/watchlist/${tmdbId}`,
         null,
         {
           params: {

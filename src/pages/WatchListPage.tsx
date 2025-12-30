@@ -74,7 +74,7 @@ const WatchListPage: React.FC = () => {
 
             console.log("WatchListPage -> API Call -> request:", pageNumber);
 
-            const response = await axiosInstance.get("watchlist", {
+            const response = await axiosInstance.get("list/watchlist", {
                 params: {
                     pageNumber: pageNumber !== null ? pageNumber : 0, // Default to 0 if not provided
                     sortBy: "title", // Default to "title" if not provided
