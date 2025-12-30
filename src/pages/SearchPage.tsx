@@ -4,27 +4,7 @@ import AppHeader from "../components/AppHeader";
 import PaginationBar from "../components/PaginationBar";
 import axiosInstance from '../utils/axiosInstance';
 import ServieGrid from "@/components/HomePage/ServieGrid";
-
-interface Servie {
-    // Servie fields
-    tmdbId: number;
-    childtype: "movie" | "tv";
-    title: string;
-    posterPath: string;
-
-    // Movie fields
-    releaseDate?: string;
-
-    // Series fields
-    totalEpisodes: number | null;
-    firstAirDate?: string;
-    lastAirDate?: string;
-
-    // UserServieData fields
-    episodesWatched: number;
-    completed: boolean;
-    liked: boolean;
-}
+import type { Servie } from "@/types/servie";
 
 type SearchType = 'movie' | 'tv' | 'servie' | 'person' | 'collection';
 

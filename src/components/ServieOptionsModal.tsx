@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { useServieListStore } from '../store/useServieListStore';
 import styles from './ServieOptionsModal.module.css';
+import HalfStarRating from './HalfStarRating';
+import Alert from './Alert';
+import { useNavigate } from "react-router-dom";
+import type { Servie } from "@/types/servie";
+import MovieReviewModal from '@/components/MovieReviewModal';
+import type { ReviewData } from "@/types/servie";
 
 interface ServieOptionsModalProps {
     isOpen: boolean;
     onClose: () => void;
-    servie: {
-        tmdbId: number;
-        childtype: string;
-    } | null;
+    servie: Servie;
     onSuccess: (message: string) => void;
     onError: (message: string) => void;
 }
@@ -22,8 +25,16 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     onError,
 }) => {
 
+    const navigate = useNavigate();
+
+    const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+
     const [showListModal, setShowListModal] = useState(false);
     const [loadingLists, setLoadingLists] = useState(false);
+
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
+
+    const [rating, setRating] = useState<number>(0);
 
     const {
         fetchAllServieLists,
@@ -95,30 +106,137 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
         }
     };
 
-    const handleGiveRating = () => {
-        onClose();
+    const handleRatingChange = async (newRating: number) => {
+        const ratingCurrent = rating;
+        setRating(newRating);
+        try {
+            await axiosInstance.put(
+                `servies/${servie.tmdbId}`,
+                null,
+                {
+                    params: {
+                        type: servie.childtype,
+                        rating: newRating,
+                    },
+                }
+            );
+        } catch (error) {
+            setRating(ratingCurrent);
+            console.error('Failed to update watch status', error);
+            setAlert({ type: "danger", message: "Failed to update watch status !!" });
+        }
+    };
+
+    const toggleWatchList = async (tmdbId: number, childType: "movie" | "tv") => {
+        console.log("watchlist toggle");
+        try {
+            const response = await axiosInstance.put(
+                `list/watchlist/${tmdbId}`,
+                null,
+                {
+                    params: {
+                        childtype: childType,
+                    }
+                },
+            );
+            if (response.status === 200)
+                setAlert({ type: "success", message: `Successfully added/removed from watchlist !!` });
+
+        } catch (error) {
+            console.error('Failed to add/remove from watchlist', error);
+
+            setAlert({ type: "danger", message: "Failed to add/remove from watchlist !!" });
+        }
+    }
+
+    const handleSaveReview = async (reviewData: ReviewData) => {
+        try {
+            const response = await axiosInstance.post(
+                `/servies/review/${servie.tmdbId}`,
+                { review: reviewData.review },
+                {
+                    params: {
+                        type: reviewData.childType,
+                        rating: reviewData.rating,
+                    },
+                }
+            );
+
+            if (response.status === 200 || response.status === 201) {
+                setAlert({
+                    type: "success",
+                    message: "Review saved successfully!"
+                });
+            }
+        } catch (error) {
+            console.error('Failed to save review', error);
+            setAlert({
+                type: "danger",
+                message: "Failed to save review!"
+            });
+        }
     };
 
     return (
         <>
+
+            {/* Alert Component */}
+            {alert && (
+                <Alert
+                    type={alert.type}
+                    message={alert.message}
+                    onClose={() => setAlert(null)}
+                />
+            )}
+
             {/* Main Options Modal */}
             {!showListModal && (
                 <div className={styles.backdrop} onClick={onClose}>
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+
+                        {/* Rating */}
                         <div className={styles.header}>
-                            <h5 className={styles.title}>Options</h5>
+                            <div className={styles.ratingSection}>
+                                <HalfStarRating maxStars={5} initialRating={servie.rated} onRatingChange={handleRatingChange} />
+                            </div>
                             <button className={styles.closeBtn} onClick={onClose}>×</button>
                         </div>
 
                         <div className={styles.body}>
+
+                            <button className={styles.listItem} 
+                                        onClick={() => setIsReviewModalOpen(true)}
+                                    >
+                                        <i className="bi bi-pencil-square"></i> Add Review
+                                    </button>
+
+                            <button className={styles.listItem} onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}>
+                                <i className={`bi bi-clock-fill ${styles.icon}`}></i>
+                                Add / Remove from Watchlist
+                            </button>
+
                             <button className={styles.listItem} onClick={openListModal} disabled={loadingLists}>
                                 <i className="bi bi-list-ul"></i>
                                 {loadingLists ? "Loading..." : "Add / Remove from List"}
                             </button>
 
-                            <button className={styles.listItem} onClick={handleGiveRating}>
-                                <i className="bi bi-star"></i>
-                                Give Rating
+                            <button
+                                className={styles.listItem}
+                                onClick={() =>
+                                    navigate("/images", {
+                                        state: {
+                                            childType: servie.childtype,
+                                            tmdbId: servie.tmdbId,
+                                            title: servie.title,
+                                            releaseDate: servie.releaseDate,
+                                            firstAirDate: servie.firstAirDate,
+                                            lastAirDate: servie.lastAirDate,
+                                        },
+                                    })
+                                }
+                            >
+                                <i className={`bi bi-file-image ${styles.icon}`}></i>
+                                Change Poster Image
                             </button>
                         </div>
                     </div>
@@ -179,6 +297,21 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                     </div>
                 </div>
             )}
+
+            {/* Review Modal */}
+            <MovieReviewModal
+                isOpen={isReviewModalOpen}
+                onClose={() => setIsReviewModalOpen(false)}
+                onSave={handleSaveReview}
+                tmdbId={servie.tmdbId}
+                childType={servie.childtype}
+                title={servie.title}
+                year={servie.childtype === 'movie'
+                    ? (servie.releaseDate ? new Date(servie.releaseDate).getFullYear().toString() : '')
+                    : (servie.firstAirDate ? new Date(servie.firstAirDate).getFullYear().toString() : '')
+                }
+                posterPath={`https://www.themoviedb.org/t/p/w500${servie.posterPath || ''}`}
+            />
         </>
     );
 };

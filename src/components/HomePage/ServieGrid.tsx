@@ -3,29 +3,9 @@ import { Link } from 'react-router-dom';
 import ProgressBar from "../ProgressBar";
 import axiosInstance from '../../utils/axiosInstance';
 import Alert from '../Alert';
+import type { Servie } from "@/types/servie";
 import ServieOptionsModal from "../ServieOptionsModal";
 import styles from "../ImageModules/Image.module.css";
-
-interface Servie {
-  // Servie fields
-  tmdbId: number;
-  childtype: "movie" | "tv";
-  title: string;
-  posterPath: string;
-
-  // Movie fields
-  releaseDate?: string;
-
-  // Series fields
-  totalEpisodes: number | null;
-  firstAirDate?: string;
-  lastAirDate?: string;
-
-  // UserServieData fields
-  episodesWatched: number;
-  completed: boolean;
-  liked: boolean;
-}
 
 interface ServieGridProps {
   servies: Servie[];
@@ -127,33 +107,11 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
     }
   }
 
-  const toggleWatchList = async (tmdbId: number, childType: "movie" | "tv") => {
-    console.log("watchlist toggle");
-    try {
-      const response = await axiosInstance.put(
-        `list/watchlist/${tmdbId}`,
-        null,
-        {
-          params: {
-            childtype: childType,
-          }
-        },
-      );
-      if (response.status === 200)
-        setAlert({ type: "success", message: `Successfully added/removed from watchlist !!` });
-
-    } catch (error) {
-      console.error('Failed to add/remove from watchlist', error);
-
-      setAlert({ type: "danger", message: "Failed to add/remove from watchlist !!" });
-    }
-  }
-
   const [showOptionsModal, setShowOptionsModal] = useState(false);
-  const [selectedServie, setSelectedServie] = useState<{ tmdbId: number; childtype: string } | null>(null);
+  const [selectedServie, setSelectedServie] = useState<Servie | null>(null);
 
-  const openOptionsMenu = (tmdbId: number, childtype: string) => {
-    setSelectedServie({ tmdbId, childtype });
+  const openOptionsMenu = (servie: Servie) => {
+    setSelectedServie(servie);
     setShowOptionsModal(true);
   };
 
@@ -274,21 +232,6 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
                       )}
                     </a>
 
-                    <Link
-                      to="/images"
-                      state={{
-                        childType: servie.childtype,
-                        tmdbId: servie.tmdbId,
-                        title: servie.title,
-                        releaseDate: servie.releaseDate,
-                        firstAirDate: servie.firstAirDate,
-                        lastAirDate: servie.lastAirDate,
-                      }}
-                      title="View Images"
-                    >
-                      <i className={`bi bi-file-image ${styles.icon}`}></i>
-                    </Link>
-
                     <a
                       href="#"
                       onClick={() => toggleLike(servie.childtype, servie.tmdbId)}
@@ -302,17 +245,9 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
 
                     <a
                       href="#"
-                      onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}
-                      title="Add to Watchlist"
-                    >
-                      <i className={`bi bi-clock-fill ${styles.icon}`}></i>
-                    </a>
-
-                    <a
-                      href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        openOptionsMenu(servie.tmdbId, servie.childtype);
+                        openOptionsMenu(servie);
                       }}
                       title="More Options"
                     >
@@ -336,13 +271,15 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
         />
       )}
 
-      <ServieOptionsModal
-        isOpen={showOptionsModal}
-        onClose={closeOptionsMenu}
-        servie={selectedServie}
-        onSuccess={handleModalSuccess}
-        onError={handleModalError}
-      />
+      {showOptionsModal && selectedServie && (
+        <ServieOptionsModal
+          isOpen={showOptionsModal}
+          onClose={closeOptionsMenu}
+          servie={selectedServie}
+          onSuccess={handleModalSuccess}
+          onError={handleModalError}
+        />
+      )}
     </>
   );
 };

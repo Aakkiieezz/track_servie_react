@@ -7,20 +7,7 @@ import styles from "./ListPage.module.css";
 import PosterFanStack from "@/components/PosterFanStack";
 import { Trash2, Edit } from "lucide-react";
 import { EditListModal, DeleteListModal } from "@/components/ListPageModals";
-
-interface Servie {
-  tmdbId: number;
-  childtype: "movie" | "tv";
-  title: string;
-  posterPath: string;
-  releaseDate?: string;
-  totalEpisodes: number | null;
-  firstAirDate?: string;
-  lastAirDate?: string;
-  episodesWatched: number;
-  completed: boolean;
-  liked: boolean;
-}
+import type { Servie } from "@/types/servie";
 
 interface ListDto {
   id: number;

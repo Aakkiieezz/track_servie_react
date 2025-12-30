@@ -12,17 +12,7 @@ import VideoPopup from './VideoPopup';
 import MovieReviewModal from '@/components/MovieReviewModal';
 import AppHeader from '@/components/AppHeader';
 import styles from './ServiePage.module.css';
-
-interface ReviewData {
-    tmdbId: number;
-    childType: string;
-    watchedOn: string;
-    watchedBefore: boolean;
-    review: string;
-    tags: string[];
-    rating: number;
-    liked: boolean;
-}
+import type { ReviewData } from "@/types/servie";
 
 interface GenreDtoServiePage {
     id: number;
@@ -268,6 +258,7 @@ const ServiePage = () => {
             });
         }
     };
+
     return (
         <>
             {/* Alert Component */}

@@ -2,20 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import axiosInstance from '../utils/axiosInstance';
 import styles from './FavouritesManager.module.css';
-
-interface Servie {
-  tmdbId: number;
-  childtype: "movie" | "tv";
-  title: string;
-  posterPath: string;
-  releaseDate?: string;
-  totalEpisodes: number | null;
-  firstAirDate?: string;
-  lastAirDate?: string;
-  episodesWatched: number;
-  completed: boolean;
-  liked: boolean;
-}
+import type { Servie } from "@/types/servie";
 
 interface FavoritesManagerProps {
   userId: number;

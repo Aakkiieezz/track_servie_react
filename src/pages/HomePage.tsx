@@ -6,27 +6,7 @@ import axiosInstance from '../utils/axiosInstance';
 import { useFilterStore } from '../store/useFilterStore';
 import { useSearchParams } from 'react-router-dom';
 import AppHeader from "@/components/AppHeader";
-
-interface Servie {
-    // Servie fields
-    tmdbId: number;
-    childtype: "movie" | "tv";
-    title: string;
-    posterPath: string;
-
-    // Movie fields
-    releaseDate?: string;
-
-    // Series fields
-    totalEpisodes?: number;
-    firstAirDate?: string;
-    lastAirDate?: string;
-
-    // UserServieData fields
-    episodesWatched?: number;
-    completed: boolean;
-    liked: boolean;
-}
+import type { Servie } from "@/types/servie";
 
 interface Filters {
     type: string;

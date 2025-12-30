@@ -6,6 +6,7 @@ import ServieGrid from "../components/HomePage/ServieGrid";
 import styles from "./UserProfilePage.module.css";
 import { UserPlus, UserCheck, MapPin, Mail, Check, Edit } from "lucide-react";
 import FavoritesManager from "@/components/FavouritesManager";
+import type { Servie } from "@/types/servie";
 
 interface UserProfile {
   id: number;
@@ -19,20 +20,6 @@ interface UserProfile {
   followingCount: number;
   following: boolean; // check to see if you following this user
   totalServies: number;
-}
-
-interface Servie {
-  tmdbId: number;
-  childtype: "movie" | "tv";
-  title: string;
-  posterPath: string;
-  releaseDate?: string;
-  totalEpisodes: number | null;
-  firstAirDate?: string;
-  lastAirDate?: string;
-  episodesWatched: number;
-  completed: boolean;
-  liked: boolean;
 }
 
 interface List {

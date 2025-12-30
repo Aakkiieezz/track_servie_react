@@ -2,17 +2,17 @@ import React, { useState } from "react";
 
 interface HalfStarRatingProps {
   maxStars?: number;
-  initialRating?: number;
+  initialRating?: number | null;
   onRatingChange?: (rating: number) => void;
 }
 
 const HalfStarRating: React.FC<HalfStarRatingProps> = ({
   maxStars = 5,
-  initialRating = 0,
+  initialRating,
   onRatingChange,
 }) => {
   const [hoverRating, setHoverRating] = useState<number | null>(null);
-  const [rating, setRating] = useState(initialRating);
+  const [rating, setRating] = useState<number>(initialRating ?? 0);
   const [showRemove, setShowRemove] = useState(false);
 
   const handleMouseOver = (value: number) => {
@@ -49,7 +49,7 @@ const HalfStarRating: React.FC<HalfStarRatingProps> = ({
       onMouseLeave={handleMouseLeave} // Reset hover state on mouse leave
     >
       {/* Hidden Cross Button */}
-      {showRemove && initialRating > 0 && (
+      {showRemove && (initialRating ?? 0) > 0 && (
         <span
           onClick={handleRemoveRating}
           style={{
