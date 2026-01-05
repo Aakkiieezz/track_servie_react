@@ -171,7 +171,14 @@ const ServiePage = () => {
         setTotalEpWatched(servieWatchStateNew ? totalEpisodes : 0);
 
         try {
-            const response = await axiosInstance.put(`servies/${childtype}/${tmdbId}/toggle`);
+            const response = await axiosInstance.put(`servies/${childtype}/${tmdbId}/watch`,
+                null,
+                {
+                    params: {
+                        newServieWatchState: servieWatchStateNew,
+                    },
+                }
+            );
 
             if (response.status === 200)
                 setAlert({ type: "success", message: `Updated watch status of ${childtype} ${tmdbId} successfully !!` });

@@ -115,7 +115,14 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWat
       });
 
     try {
-      const response = await axiosInstance.put(`servies/${tmdbId}/Season/${seasonNo}/toggle`);
+      const response = await axiosInstance.put(`servies/${tmdbId}/Season/${seasonNo}/watch`,
+        null,
+        {
+          params: {
+            newSeasonWatchState: newWatchState,
+          },
+        }
+      );
 
       if (response.status === 200)
         setAlert({ type: "success", message: `Updated watch status of S${seasonNo} successfully !!` });

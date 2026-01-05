@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from '../utils/axiosInstance';
 
@@ -53,38 +53,40 @@ interface Episode {
 const SeasonPage = () => {
     console.log(`SeasonsPage`);
 
+    // ✅ ALL useState
     const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
-
     const [loading, setLoading] = useState<boolean>(true);
-    const [, setError] = useState<string | null>(null); // Proper typing for error
-
-    const { tmdbId, seasonNo = "1" } = useParams<{ tmdbId: string, seasonNo?: string }>();
-    const currentSeasonNo = parseInt(seasonNo, 10);
-
-    if (isNaN(currentSeasonNo)) {
-        console.error("Invalid season number, defaulting to 1");
-        return <div>Invalid season number</div>;
-    }
-
-    if (tmdbId === undefined)
-        console.warn("SeasonPage -> WARN -> tmdbId is undefined. Please check your route parameters.");
-
+    const [, setError] = useState<string | null>(null);
     const [season, setSeason] = useState<Season | null>(null);
     const [seasonWatchState, setSeasonWatchState] = useState(false);
     const [epWatchState, setEpWatchState] = useState<{ [key: string]: boolean }>({});
     const [epWatchCount, setEpWatchedCount] = useState<number>(0);
-
     const [epRuntime, setEpRuntime] = useState<{ [key: string]: number }>({});
     const [seasonWatchRuntime, setSeasonWatchRuntime] = useState<number>(0);
     const [seasonRuntime, setSeasonRuntime] = useState<number>(0);
-
-    const totalEpisodes = season?.episodeCount || 1;
-
     const [totalSeasons, setTotalSeasons] = useState(0);
     const [hasSpecials, setHasSpecials] = useState(false);
-
     const [seasonCastActiveTab, setSeasonCastActiveTab] = useState<"regulars" | "guests">("regulars");
 
+    // ✅ ALL useRef hooks
+    const pendingTogglesRef = useRef<Map<number, boolean>>(new Map());
+    const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const DEBOUNCE_DELAY = 3000; // 3 seconds
+
+    // 🔑 KEY FIX: Capture snapshot BEFORE first toggle in a batch
+    const rollbackRef = useRef<{
+        epWatchState: { [key: string]: boolean };
+        epWatchCount: number;
+        seasonWatchRuntime: number;
+        seasonWatchState: boolean;
+    } | null>(null);
+
+    // ✅ NOW extract params and derived values (after all hooks)
+    const { tmdbId, seasonNo = "1" } = useParams<{ tmdbId: string, seasonNo?: string }>();
+    const currentSeasonNo = parseInt(seasonNo, 10);
+    const totalEpisodes = season?.episodeCount || 1;
+
+    // ✅ Define fetchSeasonData BEFORE useEffect uses it
     const fetchSeasonData = async (tmdbId: string, seasonNo: string) => {
         try {
             setLoading(true);
@@ -101,6 +103,75 @@ const SeasonPage = () => {
         }
     };
 
+    // ✅ useCallback hooks
+    // Flush pending toggles to backend
+    const flushPendingToggles = useCallback(async () => {
+        console.log(`SeasonPage -> flushPendingToggles -> batch-toggle`);
+
+        if (pendingTogglesRef.current.size === 0) {
+            console.log("No pending toggles to flush");
+            return;
+        }
+
+        // 🔍 Build diff-only payload
+        const episodes = Array.from(pendingTogglesRef.current.entries())
+            .filter(([episodeNo, watched]) => {
+                const currentState = epWatchState[String(episodeNo)] ?? false;
+                return currentState !== watched;
+            })
+            .map(([episodeNo, watched]) => ({
+                episodeNo,
+                watched,
+            }));
+
+        if (episodes.length === 0) {
+            console.log("No effective changes to flush");
+            pendingTogglesRef.current.clear();
+            return;
+        }
+
+        console.log("Flushing episodes:", episodes);
+
+        try {
+            const response = await axiosInstance.post(
+                `servies/${tmdbId}/Season/${seasonNo}/Episodes/batch-toggle`,
+                { episodes }
+            );
+
+            if (response.status === 200) {
+                setAlert({
+                    type: "success",
+                    message: `Updated watch status of ${episodes.length} episode(s) successfully!`,
+                });
+
+                // ✅ Clear rollback since API succeeded
+                rollbackRef.current = null;
+            }
+
+            pendingTogglesRef.current.clear();
+        } catch (error) {
+            console.error("Failed to update watch status", error);
+
+            // 🔄 ROLLBACK TO CAPTURED STATE
+            if (rollbackRef.current) {
+                console.log("Rolling back to:", rollbackRef.current);
+                setEpWatchState(rollbackRef.current.epWatchState);
+                setEpWatchedCount(rollbackRef.current.epWatchCount);
+                setSeasonWatchRuntime(rollbackRef.current.seasonWatchRuntime);
+                setSeasonWatchState(rollbackRef.current.seasonWatchState);
+                rollbackRef.current = null; // Clear after rollback
+            }
+
+            setAlert({
+                type: "danger",
+                message: "Failed to update watch status!!",
+            });
+
+            pendingTogglesRef.current.clear();
+        }
+    }, [tmdbId, seasonNo]);
+
+    // ✅ ALL useEffect hooks
     useEffect(() => {
         if (tmdbId) {
             console.log(
@@ -118,7 +189,7 @@ const SeasonPage = () => {
             console.log("SeasonPage -> useEffect(season) -> data :", season);
             if (!season) {
                 console.log("SeasonPage -> useEffect(season) -> data -> null/undefined");
-                return; // Early return if season is null or undefined
+                return;
             }
             setSeasonWatchState(season.watched);
 
@@ -137,11 +208,10 @@ const SeasonPage = () => {
             setEpRuntime(epRuntimes);
 
             const totalRuntime = Object.values(epRuntimes).reduce((sum, runtime) => {
-                return sum + (runtime || 0); // Add runtime, default to 0 if it's undefined
+                return sum + (runtime || 0);
             }, 0);
             setSeasonRuntime(totalRuntime);
 
-            // Calculate the sum of runtimes where the corresponding watch state is true
             const totalWatchRuntime = Object.entries(epWatchStates).reduce(
                 (sum, [episodeNo, watched]) => {
                     if (watched)
@@ -152,20 +222,39 @@ const SeasonPage = () => {
             );
             setSeasonWatchRuntime(totalWatchRuntime);
         } catch (err) {
-            // if (axios.isAxiosError(err))
-            //     setError(err.response?.data?.message || "Something went wrong");
-            // else
-            if (err instanceof Error) setError(err.message);
-            else setError("An unknown error occurred");
+            if (err instanceof Error)
+                setError(err.message);
+            else
+                setError("An unknown error occurred");
         } finally {
             setLoading(false);
         }
     }, [season]);
 
-    // which is better ?
+    // Force flush on component unmount or navigation
+    useEffect(() => {
+        return () => {
+            if (pendingTogglesRef.current.size > 0) {
+                if (debounceTimerRef.current)
+                    clearTimeout(debounceTimerRef.current);
+                flushPendingToggles();
+            }
+        };
+    }, [flushPendingToggles]);
+
+    // ✅ NOW you can have conditional returns AFTER all hooks
+    if (isNaN(currentSeasonNo)) {
+        console.error("Invalid season number, defaulting to 1");
+        return <div>Invalid season number</div>;
+    }
+
+    if (tmdbId === undefined)
+        console.warn("SeasonPage -> WARN -> tmdbId is undefined. Please check your route parameters.");
+
     if (!season) return <div>Loading...</div>;
     if (loading) return <div>Loading...</div>;
 
+    // ✅ Regular functions
     const toggleSeasonWatch = async () => {
         console.log(`SeasonPage -> toggleSeasonWatch -> tmdbId: ${tmdbId}, seasonNo: ${seasonNo}`);
 
@@ -188,7 +277,15 @@ const SeasonPage = () => {
         );
 
         try {
-            const response = await axiosInstance.put(`servies/${tmdbId}/Season/${seasonNo}/toggle`);
+            const response = await axiosInstance.put(
+                `servies/${tmdbId}/Season/${seasonNo}/watch`,
+                null,
+                {
+                    params: {
+                        newSeasonWatchState: newSeasonWatchState,
+                    },
+                }
+            );
             if (response.status === 200)
                 setAlert({
                     type: "success",
@@ -205,9 +302,20 @@ const SeasonPage = () => {
         }
     };
 
-    const toggleEpisodeWatch = async (episodeNo: number) => {
+    const toggleEpisodeWatch = (episodeNo: number) => {
         console.log(`SeasonPage -> toggleEpisodeWatch -> episodeNo: ${episodeNo}`);
         const key = `${episodeNo}`;
+
+        // 🔑 KEY FIX: Capture snapshot BEFORE first toggle
+        if (pendingTogglesRef.current.size === 0) {
+            console.log("📸 Capturing rollback snapshot");
+            rollbackRef.current = {
+                epWatchState: { ...epWatchState },
+                epWatchCount,
+                seasonWatchRuntime,
+                seasonWatchState,
+            };
+        }
 
         const currentWatchState = epWatchState[key];
         const newWatchState = !currentWatchState;
@@ -217,7 +325,6 @@ const SeasonPage = () => {
             [key]: newWatchState,
         });
 
-        const currentEpWatchedCount = epWatchCount;
         const newEpWatchedCount = newWatchState ? epWatchCount + 1 : epWatchCount - 1;
         setEpWatchedCount(newEpWatchedCount);
 
@@ -233,34 +340,22 @@ const SeasonPage = () => {
             setSeasonWatchState(false);
         }
 
-        const currentSeasonWatchRuntime = seasonWatchRuntime;
         const newSeasonWatchRuntime = newWatchState
             ? seasonWatchRuntime + epRuntime[key]
             : seasonWatchRuntime - epRuntime[key];
         setSeasonWatchRuntime(newSeasonWatchRuntime);
 
-        try {
-            const response = await axiosInstance.put(`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/toggle`
-            );
-            if (response.status === 200)
-                setAlert({
-                    type: "success",
-                    message: `Updated watch status of Ep${episodeNo} successfully !!`,
-                });
-        } catch (error) {
-            setEpWatchState({
-                ...epWatchState,
-                [key]: currentWatchState,
-            });
+        // Track this toggle
+        pendingTogglesRef.current.set(episodeNo, newWatchState);
 
-            setEpWatchedCount(currentEpWatchedCount);
+        // Reset debounce timer
+        if (debounceTimerRef.current)
+            clearTimeout(debounceTimerRef.current);
 
-            setSeasonWatchRuntime(currentSeasonWatchRuntime);
-
-            console.error("Failed to update watch status", error);
-
-            setAlert({ type: "danger", message: "Failed to update watch status !!" });
-        }
+        debounceTimerRef.current = setTimeout(() => {
+            console.log('⏰ Timer fired! Calling flushPendingToggles');
+            flushPendingToggles();
+        }, DEBOUNCE_DELAY);
     };
 
     function formatRuntime(totalMinutes: number): string {
