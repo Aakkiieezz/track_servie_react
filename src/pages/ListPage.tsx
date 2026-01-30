@@ -8,6 +8,7 @@ import PosterFanStack from "@/components/PosterFanStack";
 import { Trash2, Edit } from "lucide-react";
 import { EditListModal, DeleteListModal } from "@/components/ListPageModals";
 import type { Servie } from "@/types/servie";
+import { useAlert } from "../contexts/AlertContext";
 
 interface ListDto {
   id: number;
@@ -23,7 +24,7 @@ const ListPage: React.FC = () => {
 
   const [list, setList] = useState<ListDto | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+  const { setAlert } = useAlert();
   
   // Edit modal state
   const [showEditModal, setShowEditModal] = useState(false);
@@ -131,13 +132,6 @@ const ListPage: React.FC = () => {
 
       <div className={styles.pageContainer}>
         <div className={styles.container}>
-          {alert && (
-            <div className={`alert alert-${alert.type} alert-dismissible fade show`} role="alert">
-              {alert.message}
-              <button type="button" className="btn-close" onClick={() => setAlert(null)} aria-label="Close" />
-            </div>
-          )}
-
           <div className={styles.heroRow}>
             <div className={styles.posterHero}>
               <PosterFanStack posters={heroPosters} height={240} onClick={() => {}} />

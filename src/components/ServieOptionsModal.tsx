@@ -3,7 +3,7 @@ import axiosInstance from '../utils/axiosInstance';
 import { useServieListStore } from '../store/useServieListStore';
 import styles from './ServieOptionsModal.module.css';
 import HalfStarRating from './HalfStarRating';
-import Alert from './Alert';
+import { useAlert } from "../contexts/AlertContext";
 import { useNavigate } from "react-router-dom";
 import type { Servie } from "@/types/servie";
 import MovieReviewModal from '@/components/MovieReviewModal';
@@ -27,7 +27,7 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
 
     const navigate = useNavigate();
 
-    const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+    const { setAlert } = useAlert();
 
     const [showListModal, setShowListModal] = useState(false);
     const [loadingLists, setLoadingLists] = useState(false);
@@ -179,16 +179,6 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
 
     return (
         <>
-
-            {/* Alert Component */}
-            {alert && (
-                <Alert
-                    type={alert.type}
-                    message={alert.message}
-                    onClose={() => setAlert(null)}
-                />
-            )}
-
             {/* Main Options Modal */}
             {!showListModal && (
                 <div className={styles.backdrop} onClick={onClose}>

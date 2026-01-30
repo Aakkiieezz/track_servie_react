@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
-import Alert from '../components/Alert';
 import AppHeader from '@/components/AppHeader';
 import styles from "./PersonPage.module.css";
+import { useLocation } from 'react-router-dom';
+import { useAlert } from "../contexts/AlertContext";
+
+interface LocationState {
+    personData?: PersonResponse;
+}
 
 interface PersonResponse {
     name: string;
@@ -35,31 +40,42 @@ interface Servie {
 }
 
 const PersonPage: React.FC = () => {
+    const { setAlert } = useAlert();
+
+    const location = useLocation() as { state: LocationState };
+    const [personData, setPersonData] = useState<PersonResponse | null>(location.state?.personData || null);
+
     const [filterType, setFilterType] = useState<string>("Servie");
-    const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+
     const { personId } = useParams<{ personId: string }>();
-    const [personData, setPersonData] = useState<PersonResponse | null>(null);
+
     const [servieWatchState, setServieWatchState] = useState<{ [key: string]: boolean }>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [blurCompleted, setBlurCompleted] = useState<boolean>(false);
     const [sortOrder, setSortOrder] = useState<string>('title');
 
     useEffect(() => {
-        if (personId) {
+        if (personData)
+            setLoading(false);
+    }, [personData]);
+
+    useEffect(() => {
+        if (!personData && personId) {
             axiosInstance.get(`person/${personId}`)
                 .then((response) => {
                     setPersonData(response.data);
                     setLoading(false);
                 })
                 .catch((error) => {
-                    console.error('Error fetching person data:', error);
+                    const message = error?.response?.data?.message || 'Error fetching person data. Please try again later.';
                     setLoading(false);
+                    setAlert({ type: "danger", message });
                 });
         }
     }, [personId]);
 
     useEffect(() => {
-        if (personData && personData.servies) {
+        if (personData?.servies) {
             const watchState = personData.servies.reduce((acc, servie) => {
                 acc[`${servie.childtype}-${servie.tmdbId}`] = servie.completed;
                 return acc;
@@ -99,14 +115,16 @@ const PersonPage: React.FC = () => {
     if (!personData) return <div className={styles.loadingContainer}>Person data not found</div>;
 
     const sortedServies = [...personData.servies].sort((a, b) => {
-        if (sortOrder === 'popularity')
-            return b.popularity - a.popularity;
+        if (sortOrder === 'popularity') return b.popularity - a.popularity;
         return a.title.localeCompare(b.title);
     });
 
-    const filteredServies = sortedServies.filter(servie =>
-        filterType === "Servie" || servie.childtype === filterType.toLowerCase()
-    );
+    const filteredServies = sortedServies.filter(servie => {
+        if (filterType === "Servie") return true;
+        if (filterType === "Movie") return servie.childtype === "movie";
+        if (filterType === "TV") return servie.childtype === "tv";
+        return true;
+    });
 
     const calculateAge = (birthday: string) => {
         if (!birthday) return null;
@@ -114,9 +132,7 @@ const PersonPage: React.FC = () => {
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
         return age;
     };
 
@@ -125,14 +141,6 @@ const PersonPage: React.FC = () => {
     return (
         <>
             <AppHeader />
-
-            {alert && (
-                <Alert
-                    type={alert.type}
-                    message={alert.message}
-                    onClose={() => setAlert(null)}
-                />
-            )}
 
             <div className={styles.pageContainer}>
                 {/* Hero Section */}

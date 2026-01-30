@@ -5,8 +5,7 @@ import ProgressBar from '../components/ProgressBar';
 import CastListSlider from '../components/CastListSlider';
 import SeasonsList from '../components/ServiePage/SeasonsList';
 import { format } from 'date-fns';
-import Alert from '../components/Alert';
-// import styles from "../components/ImageModules/Image.module.css";
+import { useAlert } from "../contexts/AlertContext";
 import HalfStarRating from '@/components/HalfStarRating';
 import VideoPopup from './VideoPopup';
 import MovieReviewModal from '@/components/MovieReviewModal';
@@ -55,7 +54,7 @@ interface ServieDto {
     runtime: number;
     collectionId: number | null;
     collectionName: string | null;
-    colleactionPosterPath: string | null;
+    collectionPosterPath: string | null;
     totalSeasons: number | null;
     totalEpisodes: number | null;
     totalRuntime: number;
@@ -78,7 +77,7 @@ interface ServieDto {
 
 const ServiePage = () => {
     const navigate = useNavigate();
-    const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+    const { setAlert } = useAlert();
 
     const location = useLocation();
     const { childType, tmdbId } = location.state || {};
@@ -148,7 +147,22 @@ const ServiePage = () => {
 
     }, [tmdbId, childType]);
 
+    const movieCast = data?.cast ?? [];
+    const hasMovieCast = movieCast.length > 0;
     const [seriesCastActiveTab, setSeriesCastActiveTab] = useState<"regulars" | "guests">("regulars");
+    const regulars = data?.seriesCastRegulars ?? [];
+    const guests = data?.seriesCastGuests ?? [];
+    const hasRegulars = regulars.length > 0;
+    const hasGuests = guests.length > 0;
+    const hasAnyCast = hasRegulars || hasGuests;
+
+    useEffect(() => {
+        if (seriesCastActiveTab === "regulars" && !hasRegulars && hasGuests) {
+            setSeriesCastActiveTab("guests");
+        } else if (seriesCastActiveTab === "guests" && !hasGuests && hasRegulars) {
+            setSeriesCastActiveTab("regulars");
+        }
+    }, [hasRegulars, hasGuests, seriesCastActiveTab]);
 
     const lastModified: string | Date = new Date();
 
@@ -268,15 +282,6 @@ const ServiePage = () => {
 
     return (
         <>
-            {/* Alert Component */}
-            {alert && (
-                <Alert
-                    type={alert.type}
-                    message={alert.message}
-                    onClose={() => setAlert(null)}
-                />
-            )}
-
             <div className={styles.serviePageWrapper}>
                 {/* Full-page background */}
                 <div className={styles.fullPageBackdrop}>
@@ -299,6 +304,7 @@ const ServiePage = () => {
                         <div className={styles.contentGrid}>
                             {/* Left Column - Main Content */}
                             <div className={styles.mainContent}>
+
                                 {/* Title/Logo Section */}
                                 <div className={styles.titleLogo}>
                                     {!isImageError && data?.logoPath ? (
@@ -313,6 +319,8 @@ const ServiePage = () => {
                                         </h1>
                                     )}
                                 </div>
+
+                                {/* ---------------------------------------------------------------------------- */}
 
                                 {/* Release Year Section */}
                                 {childType === 'movie' && data?.releaseDate && (
@@ -334,12 +342,16 @@ const ServiePage = () => {
                                     </div>
                                 )}
 
+                                {/* ---------------------------------------------------------------------------- */}
+
                                 {/* Trailer Section */}
                                 <div className={styles.trailerSection}>
                                     {(data?.trailerSite === "YouTube" || data?.trailerSite === "Vimeo") && (
                                         <VideoPopup videoSite={data.trailerSite} videoKey={data.trailerKey} />
                                     )}
                                 </div>
+
+                                {/* ---------------------------------------------------------------------------- */}
 
                                 {/* Action Buttons */}
                                 <div className={styles.actionButtons}>
@@ -369,10 +381,14 @@ const ServiePage = () => {
                                     </button>
                                 </div>
 
+                                {/* ---------------------------------------------------------------------------- */}
+
                                 {/* Rating */}
                                 <div className={styles.ratingSection}>
                                     <HalfStarRating maxStars={5} initialRating={rating} onRatingChange={handleRatingChange} />
                                 </div>
+
+                                {/* ---------------------------------------------------------------------------- */}
 
                                 {/* Overview Section */}
                                 {data?.overview && (
@@ -383,38 +399,52 @@ const ServiePage = () => {
                                     </div>
                                 )}
 
+                                {/* ---------------------------------------------------------------------------- */}
+
                                 {/* Cast Section */}
-                                {childType === "movie" && (
+                                {childType === "movie" && hasMovieCast && (
                                     <div className={styles.castSection}>
                                         <h4>Cast</h4>
-                                        <CastListSlider profiles={data?.cast} childType={childType} />
+                                        <CastListSlider profiles={movieCast} childType={childType} />
                                     </div>
                                 )}
 
-                                {childType === "tv" && (
+                                {childType === "tv" && hasAnyCast && (
                                     <div className={styles.castSection}>
                                         <h4>Cast</h4>
+
                                         <div className={styles.castTabs}>
-                                            <button
-                                                className={`${styles.btnTranslucent} ${styles.tabBtn} ${seriesCastActiveTab === "regulars" ? styles.active : ""}`}
-                                                onClick={() => setSeriesCastActiveTab("regulars")}
-                                            >
-                                                Series Regulars ({data?.seriesCastRegulars?.length ?? 0})
-                                            </button>
-                                            <button
-                                                className={`${styles.btnTranslucent} ${styles.tabBtn} ${seriesCastActiveTab === "guests" ? styles.active : ""}`}
-                                                onClick={() => setSeriesCastActiveTab("guests")}
-                                            >
-                                                Guest Stars ({data?.seriesCastGuests?.length ?? 0})
-                                            </button>
+                                            {hasRegulars && (
+                                                <button
+                                                    className={`${styles.btnTranslucent} ${styles.tabBtn} ${seriesCastActiveTab === "regulars" ? styles.active : ""}`}
+                                                    onClick={() => setSeriesCastActiveTab("regulars")}
+                                                >
+                                                    Series Regulars ({regulars.length})
+                                                </button>
+                                            )}
+
+                                            {hasGuests && (
+                                                <button
+                                                    className={`${styles.btnTranslucent} ${styles.tabBtn} ${seriesCastActiveTab === "guests" ? styles.active : ""}`}
+                                                    onClick={() => setSeriesCastActiveTab("guests")}
+                                                >
+                                                    Guest Stars ({guests.length})
+                                                </button>
+                                            )}
                                         </div>
-                                        {seriesCastActiveTab === "regulars" ? (
-                                            <CastListSlider profiles={data?.seriesCastRegulars} childType={childType} />
-                                        ) : (
-                                            <CastListSlider profiles={data?.seriesCastGuests} childType={childType} />
+
+                                        {seriesCastActiveTab === "regulars" && hasRegulars && (
+                                            <CastListSlider profiles={regulars} childType={childType} />
+                                        )}
+
+                                        {seriesCastActiveTab === "guests" && hasGuests && (
+                                            <CastListSlider profiles={guests} childType={childType} />
                                         )}
                                     </div>
                                 )}
+
+                                {/* ---------------------------------------------------------------------------- */}
+
 
                                 {/* Movie Collection */}
                                 {data?.collectionId && (
@@ -422,13 +452,16 @@ const ServiePage = () => {
                                         <h5>{data.collectionName}</h5>
                                         <img
                                             className="rounded"
-                                            src={`https://www.themoviedb.org/t/p/original${data.colleactionPosterPath}`}
+                                            src={`https://www.themoviedb.org/t/p/original${data.collectionPosterPath}`}
                                             alt="Poster Unavailable"
                                             style={{ width: "200px", height: "300px", cursor: "pointer" }}
                                             onClick={() => navigate(`/movie-collection/${data.collectionId}`)}
                                         />
                                     </div>
                                 )}
+
+                                {/* ---------------------------------------------------------------------------- */}
+
 
                                 {/* Seasons Section */}
                                 {childType === 'tv' && (

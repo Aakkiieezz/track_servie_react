@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from '../utils/axiosInstance';
 
-import Alert from "../components/Alert";
+import { useAlert } from "../contexts/AlertContext";
 import CastListSlider from "@/components/CastListSlider";
 import SeasonsNavBar from "@/components/SeasonPage/SeasonsNavBar";
 import ProgressBar from '../components/ProgressBar';
@@ -54,7 +54,7 @@ const SeasonPage = () => {
     console.log(`SeasonsPage`);
 
     // ✅ ALL useState
-    const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+    const { setAlert } = useAlert();
     const [loading, setLoading] = useState<boolean>(true);
     const [, setError] = useState<string | null>(null);
     const [season, setSeason] = useState<Season | null>(null);
@@ -375,16 +375,6 @@ const SeasonPage = () => {
     return (
         <>
             <AppHeader />
-
-            {/* Alert Component */}
-            {alert && (
-                <Alert
-                    type={alert.type}
-                    message={alert.message}
-                    onClose={() => setAlert(null)}
-                />
-            )}
-
             <div className={styles.pageContainer}>
 
                 {/* Hero Section */}

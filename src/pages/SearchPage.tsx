@@ -50,7 +50,7 @@ const SearchPage: React.FC = () => {
             console.log("SearchPage -> API Call -> request:", filters, pageNumber);
 
             const response = await axiosInstance.get(
-                "servies/search",
+                "search",
                 {
                     params: {
                         type: filters.type,

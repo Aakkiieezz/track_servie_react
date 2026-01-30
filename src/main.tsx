@@ -24,6 +24,8 @@ import ListPage from "./pages/ListPage.tsx";
 import ImageGalleryPage from "./pages/ImageGalleryPage.tsx";
 import "./index.css";
 import UserProfilePage from "./pages/UserProfilePage.tsx";
+import { AlertProvider, useAlert } from "./contexts/AlertContext";
+import Alert from "./components/Alert.tsx";
 
 const processToken = () => {
     const params = new URLSearchParams(window.location.search);
@@ -67,8 +69,29 @@ const router = createBrowserRouter([
     { path: "/profile/:userId", element: <UserProfilePage /> },
 ]);
 
+const RouterWithGlobalAlert: React.FC = () => {
+    const { alert, setAlert } = useAlert();
+
+    return (
+        <>
+            {alert && (
+                <Alert
+                    type={alert.type}
+                    message={alert.message}
+                    onClose={() => setAlert(null)}
+                />
+            )}
+
+            <RouterProvider router={router} />
+        </>
+    );
+};
+
 createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-        <RouterProvider router={router} />
-    </StrictMode>
+    // StrictMode double-invokes to detect bugs -> annoying, but it helps catch real issues before prod.
+    // <StrictMode>
+        <AlertProvider>
+            <RouterWithGlobalAlert />
+        </AlertProvider>
+    // </StrictMode>
 );

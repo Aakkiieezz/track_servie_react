@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import ProgressBar from "../ProgressBar";
 import axiosInstance from '../../utils/axiosInstance';
-import Alert from '../Alert';
+import { useAlert } from "../../contexts/AlertContext";
 import type { Servie } from "@/types/servie";
 import ServieOptionsModal from "../ServieOptionsModal";
 import styles from "../ImageModules/Image.module.css";
@@ -12,7 +12,7 @@ interface ServieGridProps {
 }
 
 const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
-  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+  const { setAlert } = useAlert();
 
   const [servieLikedState, setServieLikedState] = useState<{ [key: string]: boolean }>(
     servies.reduce((acc, servie) => {
@@ -269,14 +269,6 @@ const ServieGrid: React.FC<ServieGridProps> = ({ servies = [] }) => {
           );
         })}
       </div>
-
-      {alert && (
-        <Alert
-          type={alert.type}
-          message={alert.message}
-          onClose={() => setAlert(null)}
-        />
-      )}
 
       {showOptionsModal && selectedServie && (
         <ServieOptionsModal

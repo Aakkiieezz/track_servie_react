@@ -6,6 +6,7 @@ import styles from "./ListsPage.module.css";
 import { useNavigate } from "react-router-dom";
 import { Trash2, Edit } from "lucide-react";
 import { EditListModal, DeleteListModal } from "@/components/ListPageModals";
+import { useAlert } from "../contexts/AlertContext";
 
 interface ListItem {
   id: number;
@@ -17,7 +18,7 @@ interface ListItem {
 const ListsPage: React.FC = () => {
   const [lists, setLists] = useState<ListItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+  const { setAlert } = useAlert();
   
   // Edit modal state
   const [showEditModal, setShowEditModal] = useState(false);
@@ -191,13 +192,6 @@ const ListsPage: React.FC = () => {
               </button>
             </div>
           </div>
-
-          {alert && (
-            <div className={`alert alert-${alert.type} alert-dismissible fade show`} role="alert">
-              {alert.message}
-              <button type="button" className="btn-close" onClick={() => setAlert(null)} aria-label="Close" />
-            </div>
-          )}
 
           {loading ? (
             <p>Loading...</p>

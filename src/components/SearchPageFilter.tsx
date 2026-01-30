@@ -70,7 +70,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
         setIsLoading(true);
         lastApiCallTime.current = now;
 
-        axiosInstance.get(`servies/search-debound?type=${encodeURIComponent(type)}&partialSearchQuery=${encodeURIComponent(query)}`)
+        axiosInstance.get(`search/servie-debound?type=${encodeURIComponent(type)}&partialSearchQuery=${encodeURIComponent(query)}`)
           .then((res) => {
             setSearchResults(res.data);
             setShowDropdown(true);

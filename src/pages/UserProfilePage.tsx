@@ -7,6 +7,7 @@ import styles from "./UserProfilePage.module.css";
 import { UserPlus, UserCheck, MapPin, Mail, Check, Edit } from "lucide-react";
 import FavoritesManager from "@/components/FavouritesManager";
 import type { Servie } from "@/types/servie";
+import { useAlert } from "../contexts/AlertContext";
 
 interface UserProfile {
   id: number;
@@ -38,7 +39,7 @@ const UserProfilePage: React.FC = () => {
 
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+  const { setAlert } = useAlert();
   const [activeTab, setActiveTab] = useState<TabType>("profile");
   const [servies, setServies] = useState<Servie[]>([]);
   const [favoriteServies, setFavoriteServies] = useState<Servie[]>([]);
@@ -201,13 +202,6 @@ const UserProfilePage: React.FC = () => {
 
       <div className={styles.pageContainer}>
         <div className={styles.container}>
-          {alert && (
-            <div className={`alert alert-${alert.type} alert-dismissible fade show`} role="alert">
-              {alert.message}
-              <button type="button" className="btn-close" onClick={() => setAlert(null)} aria-label="Close" />
-            </div>
-          )}
-
           {/* Header Section */}
           <div className={styles.headerSection}>
             <div className={styles.profileHeader}>

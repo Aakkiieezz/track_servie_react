@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
-import Alert from '../components/Alert';
+import { useAlert } from "../contexts/AlertContext";
 import AppHeader from '@/components/AppHeader';
 import styles from "../components/ImageModules/Image.module.css";
 
@@ -25,7 +25,7 @@ interface MovieCollectionPageDto {
 const MovieCollection = () => {
     console.log("Movie-Collection Page");
 
-    const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+    const { setAlert } = useAlert();
 
     const { collectionId } = useParams<{ collectionId: string }>(); // Extract ID from the URL
 
@@ -139,7 +139,14 @@ const MovieCollection = () => {
         });
 
         try {
-            const response = await axiosInstance.put(`servies/${childtype}/${tmdbId}/toggle`);
+            const response = await axiosInstance.put(`servies/${childtype}/${tmdbId}/watch`,
+                null,
+                {
+                    params: {
+                        newServieWatchState: newWatchState,
+                    },
+                }
+            );
 
             if (response.status === 200)
                 setAlert({ type: "success", message: `Updated watch status of ${childtype} ${tmdbId} successfully !!` });
@@ -164,15 +171,6 @@ const MovieCollection = () => {
 
     return (
         <>
-            {/* Alert Component */}
-            {alert && (
-                <Alert
-                    type={alert.type}
-                    message={alert.message}
-                    onClose={() => setAlert(null)}
-                />
-            )}
-
             <AppHeader />
 
             <div className="container-fluid backdrop">

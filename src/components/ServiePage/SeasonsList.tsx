@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import ProgressBar from '../ProgressBar';
 import axiosInstance from '../../utils/axiosInstance';
-import Alert from '../Alert';
+import { useAlert } from "../../contexts/AlertContext";
 import styles from "../ImageModules/Image.module.css";
 import seasonStyles from "./SeasonsList.module.css";
 
@@ -27,7 +27,7 @@ interface SeasonsListProps {
 
 const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWatchCountChange: onEpWatchCountChange }) => {
 
-  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+  const { setAlert } = useAlert();
 
   const [seasonWatchRuntime, setSeasonWatchRuntime] = useState<{ [key: number]: number }>(
     seasons.reduce((acc, season) => {
@@ -181,122 +181,111 @@ const SeasonsList: React.FC<SeasonsListProps> = ({ seasons = [], tmdbId, onEpWat
   }
 
   return (
-    <>
-      <div className="row left">
-        {seasons.map((season) => {
-          const key = season.seasonNo;
-          const watchStateRender = seasonWatchState[key];
-          const epWatchCountRender = epWatchCount[key];
-          const seasonWatchRuntimeRender = seasonWatchRuntime[key];
+    <div className="row left">
+      {seasons.map((season) => {
+        const key = season.seasonNo;
+        const watchStateRender = seasonWatchState[key];
+        const epWatchCountRender = epWatchCount[key];
+        const seasonWatchRuntimeRender = seasonWatchRuntime[key];
 
-          return (
-            <div
-              key={key}
-              className={`col-xxl-2 col-sm-3 col-4 ${styles.imageContainer} ${styles.poster}`}
-            >
-              <div className={styles.posterWrapper}>
+        return (
+          <div
+            key={key}
+            className={`col-xxl-2 col-sm-3 col-4 ${styles.imageContainer} ${styles.poster}`}
+          >
+            <div className={styles.posterWrapper}>
 
-                {/* ===== TOP TITLE OVERLAY ===== */}
-                <div className={styles.titleOverlay}>
-                  <Link
-                    to={`/servies/${tmdbId}/Season/${season.seasonNo}`}
-                    state={{ season }}
-                    className={styles.titleLink}
-                  >
-                    <span className={styles.titleText}>{season.name}</span>
-                  </Link>
-                </div>
-
-                {/* POSTER IMAGE */}
+              {/* ===== TOP TITLE OVERLAY ===== */}
+              <div className={styles.titleOverlay}>
                 <Link
                   to={`/servies/${tmdbId}/Season/${season.seasonNo}`}
                   state={{ season }}
+                  className={styles.titleLink}
                 >
-                  <img
-                    className={`rounded ${styles.imageBorder}`}
-                    src={
-                      season.posterPath
-                        ? `https://www.themoviedb.org/t/p/w300${season.posterPath}`
-                        : `https://placehold.co/400x600?text=S${season.seasonNo}`
-                    }
-                    alt={season.name}
-                  />
+                  <span className={styles.titleText}>{season.name}</span>
                 </Link>
+              </div>
 
-                {/* ===== PROGRESS SECTION ===== */}
-                {season.episodeCount > 0 && (
-                  <div className={styles.progressBarWrapper}>
-                    <div className={styles.episodeCount}>
-                      <p>
-                        {epWatchCountRender}/{season.episodeCount}
-                      </p>
-                      {season.totalRuntime > 0 && (
-                        <span style={{ marginLeft: "6px" }}>
-                          ({formatRuntime(seasonWatchRuntimeRender)} / {formatRuntime(season.totalRuntime)})
-                        </span>
-                      )}
-                    </div>
+              {/* POSTER IMAGE */}
+              <Link
+                to={`/servies/${tmdbId}/Season/${season.seasonNo}`}
+                state={{ season }}
+              >
+                <img
+                  className={`rounded ${styles.imageBorder}`}
+                  src={
+                    season.posterPath
+                      ? `https://www.themoviedb.org/t/p/w300${season.posterPath}`
+                      : `https://placehold.co/400x600?text=S${season.seasonNo}`
+                  }
+                  alt={season.name}
+                />
+              </Link>
 
-                    <ProgressBar
-                      episodesWatched={epWatchCountRender}
-                      totalEpisodes={season.episodeCount}
-                    />
-                  </div>
-                )}
-
-                {/* ===== BOTTOM BUTTONS ===== */}
-                <div
-                  className={styles.buttonsContainer}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className={styles.iconGrid}>
-                    {/* Toggle Watched */}
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        toggleWatch(tmdbId, season.seasonNo);
-                      }}
-                      title={watchStateRender ? "Mark as Unwatched" : "Mark as Watched"}
-                    >
-                      {watchStateRender ? (
-                        <i className={`bi bi-eye-fill ${styles.eyeFill}`}></i>
-                      ) : (
-                        <i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>
-                      )}
-                    </a>
-
-                    {/* Open Poster Gallery */}
-                    {season.posterPath && (
-                      <Link
-                        to={`/servies/${tmdbId}/Season/${season.seasonNo}/posters`}
-                        title="Season Posters"
-                      >
-                        <i className={`bi bi-file-image ${styles.icon}`}></i>
-                      </Link>
+              {/* ===== PROGRESS SECTION ===== */}
+              {season.episodeCount > 0 && (
+                <div className={styles.progressBarWrapper}>
+                  <div className={styles.episodeCount}>
+                    <p>
+                      {epWatchCountRender}/{season.episodeCount}
+                    </p>
+                    {season.totalRuntime > 0 && (
+                      <span style={{ marginLeft: "6px" }}>
+                        ({formatRuntime(seasonWatchRuntimeRender)} / {formatRuntime(season.totalRuntime)})
+                      </span>
                     )}
                   </div>
+
+                  <ProgressBar
+                    episodesWatched={epWatchCountRender}
+                    totalEpisodes={season.episodeCount}
+                  />
+                </div>
+              )}
+
+              {/* ===== BOTTOM BUTTONS ===== */}
+              <div
+                className={styles.buttonsContainer}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className={styles.iconGrid}>
+                  {/* Toggle Watched */}
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleWatch(tmdbId, season.seasonNo);
+                    }}
+                    title={watchStateRender ? "Mark as Unwatched" : "Mark as Watched"}
+                  >
+                    {watchStateRender ? (
+                      <i className={`bi bi-eye-fill ${styles.eyeFill}`}></i>
+                    ) : (
+                      <i className={`bi bi-eye-slash-fill ${styles.eyeSlashFill}`}></i>
+                    )}
+                  </a>
+
+                  {/* Open Poster Gallery */}
+                  {season.posterPath && (
+                    <Link
+                      to={`/servies/${tmdbId}/Season/${season.seasonNo}/posters`}
+                      title="Season Posters"
+                    >
+                      <i className={`bi bi-file-image ${styles.icon}`}></i>
+                    </Link>
+                  )}
                 </div>
               </div>
-
-              {/* Static label under poster */}
-              <div className={seasonStyles.seasonLabel}>
-                <strong>{season.name}</strong>
-              </div>
             </div>
-          );
-        })}
-      </div>
 
-      {/* Alert */}
-      {alert && (
-        <Alert
-          type={alert.type}
-          message={alert.message}
-          onClose={() => setAlert(null)}
-        />
-      )}
-    </>
+            {/* Static label under poster */}
+            <div className={seasonStyles.seasonLabel}>
+              <strong>{season.name}</strong>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

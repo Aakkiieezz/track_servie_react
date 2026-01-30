@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from '../utils/axiosInstance';
 
 import styles from "./ProfilePage.module.css";
-import Alert from "../components/Alert";
+import { useAlert } from "../contexts/AlertContext";
 import { Link } from "react-router-dom";
 import NetworkTab from "@/components/NetworkTab";
 import AppHeader from "@/components/AppHeader";
@@ -13,7 +13,7 @@ const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Overview");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [profilePicUrl, setProfilePicUrl] = useState<string | null>(localStorage.getItem("profileImgUrl"));
-  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+  const { setAlert } = useAlert();
 
   const [watchedCounts, setWatchedCounts] = useState<{ movie: number; tv: number }>({ movie: 0, tv: 0 });
 
@@ -224,14 +224,6 @@ const ProfilePage: React.FC = () => {
   return (
     <>
       <AppHeader />
-
-      {alert && (
-        <Alert
-          type={alert.type}
-          message={alert.message}
-          onClose={() => setAlert(null)}
-        />
-      )}
 
       <div className={styles.pageContainer}>
         <div className={styles.container}>
