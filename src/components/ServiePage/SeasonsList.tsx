@@ -7,7 +7,7 @@ import styles from "../ImageModules/Image.module.css";
 import seasonStyles from "./SeasonsList.module.css";
 
 interface Season {
-  id: string;
+  id: number;
   name: string;
   seasonNo: number;
   posterPath: string | null;

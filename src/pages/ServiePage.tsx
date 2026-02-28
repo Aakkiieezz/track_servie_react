@@ -19,7 +19,7 @@ interface GenreDtoServiePage {
 }
 
 interface SeasonDtoServiePage {
-    id: string;
+    id: number;
     seasonNo: number;
     name: string;
     posterPath: string;

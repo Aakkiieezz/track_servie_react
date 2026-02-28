@@ -11,7 +11,7 @@ import AppHeader from "@/components/AppHeader";
 import styles from './SeasonPage.module.css';
 
 interface Season {
-    id: string;
+    id: number;
     name: string;
     tmdbId: number;
     episodeCount: number;
