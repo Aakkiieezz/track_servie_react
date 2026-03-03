@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import ProgressBar from '../components/ProgressBar';
@@ -82,6 +82,54 @@ const ServiePage = () => {
     const location = useLocation();
     const { childType, tmdbId } = location.state || {};
 
+    // ref to the seasons section wrapper so we can watch its position
+    const seasonsRef = useRef<HTMLDivElement | null>(null);
+    const [seasonsStuck, setSeasonsStuck] = useState<boolean>(false);
+    const prevSeasonsStuckRef = useRef<boolean>(false);
+
+    useEffect(() => {
+        // when transitioning from stuck -> unstuck, transfer the inner scroll
+        // into the page scroll so the visible content doesn't jump
+        if (prevSeasonsStuckRef.current && !seasonsStuck) {
+            const el = seasonsRef.current;
+            if (el) {
+                const innerScroll = el.scrollTop || 0;
+                if (innerScroll > 0) {
+                    // move the window down by the scrolled amount and reset inner scroll
+                    window.scrollBy({ top: innerScroll, left: 0 });
+                    el.scrollTop = 0;
+                }
+            }
+        }
+        prevSeasonsStuckRef.current = seasonsStuck;
+    }, [seasonsStuck]);
+
+    useEffect(() => {
+        // Use hysteresis to avoid rapid toggles between stuck/unstuck which
+        // cause visual jumps. We set stuck when section's top <= smallThreshold
+        // and only unset stuck when top > largeThreshold.
+        // Gap is 2.5rem (40px) below header, so thresholds account for this.
+        const smallThreshold = 40; // stick when within 40px of target
+        const largeThreshold = 80; // unstick when 80px+ away from target
+
+        const handleScroll = () => {
+            if (!seasonsRef.current) return;
+            const rect = seasonsRef.current.getBoundingClientRect();
+            const headerHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--appHeader-height')) || 0;
+
+            if (rect.top <= headerHeight + smallThreshold) {
+                if (!seasonsStuck) setSeasonsStuck(true);
+            } else if (rect.top > headerHeight + largeThreshold) {
+                if (seasonsStuck) setSeasonsStuck(false);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        // also invoke once to initialize
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     const [isImageError, setIsImageError] = useState(false);
 
     const [data, setData] = useState<ServieDto | null>(null); // Proper typing
@@ -163,6 +211,23 @@ const ServiePage = () => {
             setSeriesCastActiveTab("regulars");
         }
     }, [hasRegulars, hasGuests, seriesCastActiveTab]);
+
+    // logic to check if the seasons are many and to apply fade effect while scrolling or not
+    const seasonsScrollRef = useRef<HTMLDivElement | null>(null);
+    const [seasonsScrollable, setSeasonsScrollable] = useState(false);
+
+    useEffect(() => {
+        const el = seasonsScrollRef.current;
+        if (!el) return;
+
+        const check = () => setSeasonsScrollable(el.scrollHeight > el.clientHeight);
+
+        const observer = new ResizeObserver(check);
+        observer.observe(el);
+        check(); // run once on mount
+
+        return () => observer.disconnect();
+    }, [data?.seasons]);
 
     const lastModified: string | Date = new Date();
 
@@ -465,19 +530,34 @@ const ServiePage = () => {
 
                                 {/* Seasons Section */}
                                 {childType === 'tv' && (
-                                    <div className={styles.seasonsSection}>
-                                        <div className={styles.seasonsHeader}>
-                                            <h3>{data?.totalSeasons} Seasons</h3>
-                                            <ProgressBar episodesWatched={totalEpWatched} totalEpisodes={totalEpisodes} />
+                                    <div
+                                        ref={seasonsRef}
+                                        className={`${styles.seasonsSection} ${seasonsStuck ? styles.stuck : ''}`}
+                                    >
+
+
+                                        {/* sticky header wrapper — overlay anchors to its bottom edge */}
+                                        <div className={styles.seasonsHeaderWrapper}>
+                                            <div className={styles.seasonsHeader}>
+                                                <h3>{data?.totalSeasons} Seasons</h3>
+                                                <ProgressBar episodesWatched={totalEpWatched} totalEpisodes={totalEpisodes} />
+                                            </div>
+                                            {/* <div className={styles.fadeOverlay} /> */}
                                         </div>
                                         <div className={styles.episodesInfo}>
                                             <span>Total Episodes Watched: {totalEpWatched}/{data?.totalEpisodes}</span>
                                         </div>
-                                        <SeasonsList
-                                            seasons={data?.seasons}
-                                            tmdbId={tmdbId}
-                                            onEpWatchCountChange={handleEpWatchCountChange}
-                                        />
+                                        {/* <div className={styles.seasonsScroll}> */}
+                                        <div
+                                            ref={seasonsScrollRef}
+                                            className={`${styles.seasonsScroll} ${seasonsScrollable ? styles.seasonsScrollFade : ''}`}
+                                        >
+                                            <SeasonsList
+                                                seasons={data?.seasons}
+                                                tmdbId={tmdbId}
+                                                onEpWatchCountChange={handleEpWatchCountChange}
+                                            />
+                                        </div>
                                     </div>
                                 )}
                             </div>

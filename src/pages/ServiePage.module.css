@@ -22,6 +22,12 @@
   width: 100%;
 }
 
+.seasonsHeaderWrapper {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
 /* Full Page Background */
 .fullPageBackdrop {
   position: fixed;
@@ -57,7 +63,7 @@
   width: 100%;
   min-height: 100vh;
   padding-top: 2rem;
-  padding-bottom: 4rem;
+  padding-bottom: 1rem;
 }
 
 /* Content Grid Layout */
@@ -281,6 +287,50 @@
   border-radius: var(--border-radius);
   padding: 1.5rem;
   backdrop-filter: var(--blur-strength);
+
+  /* default: not sticky, list scroll disabled until container reaches top */
+  position: static;
+  overflow: visible;
+  max-height: none;
+  /* allow absolutely positioned overlay */
+  position: relative;
+}
+
+.seasonsSection.stuck {
+  position: sticky;
+  top: 95px;
+  z-index: 5;
+  max-height: calc(100vh - 115px);
+  overflow: visible;
+}
+
+.seasonsScroll {
+  overflow-y: auto;
+  max-height: calc(100vh - 115px - 6rem);
+  isolation: isolate;
+}
+
+.seasonsScrollFade {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40px);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 30px);
+}
+
+/* Light mode */
+:global(body:not(.dark)) .fadeOverlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(240, 240, 240, 1) 0%,
+    rgba(240, 240, 240, 0) 100%
+  );
+}
+
+/* Dark mode */
+:global(body.dark) .fadeOverlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(30, 30, 30, 1) 0%,
+    rgba(30, 30, 30, 0) 100%
+  );
 }
 
 .seasonsHeader {
@@ -289,6 +339,9 @@
   gap: 1.5rem;
   margin-bottom: 1rem;
   flex-wrap: wrap;
+  /* background: var(--modal-bg); */
+  padding-top: 0.5rem;
+  /* sticky is now handled by the wrapper above */
 }
 
 .seasonsHeader h3 {
