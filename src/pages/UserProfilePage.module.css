@@ -1,20 +1,45 @@
+:root {
+  --list-active-accent: #2979ff;      /* light mode */
+}
+
+:global(.dark) {
+  --list-active-accent: #82b1ff;      /* dark mode */
+}
+
 .pageContainer {
   min-height: 100vh;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: var(--text-secondary);
   padding-top: 20px;
   padding-bottom: 40px;
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
-/* --- Header Section --- */
 .headerSection {
+  max-height: 400px;        /* enough to fit full header */
+  opacity: 1;
+  overflow: hidden;
   margin-bottom: 32px;
+  transition:
+    max-height 0.4s ease,
+    opacity 0.3s ease,
+    margin-bottom 0.4s ease,
+    padding 0.4s ease;
+}
+
+.headerCollapsed {
+  max-height: 0;
+  opacity: 0;
+  margin-bottom: 0;
+  padding: 0;
 }
 
 .profileHeader {
@@ -151,14 +176,9 @@
 
 /* --- Tabs --- */
 .tabsContainer {
+  margin-top: 0;
   margin-bottom: 32px;
   border-bottom: 1px solid var(--border-color);
-}
-
-.tabs {
-  display: flex;
-  gap: 24px;
-  overflow-x: auto;
 }
 
 .tab {
@@ -184,9 +204,10 @@
 }
 
 .tabActive::after {
-  content: '';
+  content: "";
   position: absolute;
-  bottom: -1px;
+  /* bottom: -1px; */
+  bottom: 0;   /* change from -1px to 0 when inside sticky card */
   left: 0;
   right: 0;
   height: 2px;
@@ -196,6 +217,10 @@
 /* --- Tab Content --- */
 .tabContent {
   min-height: 400px;
+}
+
+.tabContentOffset {
+  padding-top: 10px; /* adjust this to match your sticky bar height */
 }
 
 .sectionTitle {
@@ -413,5 +438,123 @@
 
   .userGrid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+.userStats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-muted);
+  justify-content: center;
+}
+
+.userStat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.userStat i {
+  font-size: 16px;
+}
+
+.statsSeparator {
+  color: var(--text-muted);
+}
+
+/* Sticky tabs bar */
+.tabsSticky {
+  position: sticky;
+  top: 60px;
+  z-index: 10;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  margin-top: 0; 
+  margin-bottom: 32px;
+  transition: all 0.3s ease;
+}
+
+/* Row layout */
+.tabsRow {
+  display: flex;
+  align-items: center;
+}
+
+/* Tabs always centered */
+.tabs {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  gap: 24px;
+  overflow-x: auto;
+}
+
+/* Mini header — left side, animates in */
+.miniHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    width 0.4s ease,
+    opacity 0.3s ease;
+}
+
+.miniHeaderVisible {
+  width: 180px;     /* enough for avatar + username */
+  opacity: 1;
+  padding: 0 16px;
+}
+
+/* Right spacer — mirrors left side to keep tabs truly centered */
+.miniHeaderSpacer {
+  width: 0;
+  transition: width 0.4s ease;
+}
+
+.miniHeaderSpacer.miniHeaderVisible {
+  width: 180px;
+}
+
+.miniAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.miniUsername {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topSection {
+  position: relative;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .miniHeaderVisible {
+    width: 120px;
+  }
+
+  .miniHeaderSpacer.miniHeaderVisible {
+    width: 120px;
+  }
+
+  .tabs {
+    gap: 12px;
   }
 }

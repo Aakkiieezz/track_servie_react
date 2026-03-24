@@ -1,42 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
-import AppHeader from '@/components/AppHeader';
+import AppHeader from '@/components/common/AppHeader/AppHeader';
 import styles from "./PersonPage.module.css";
 import { useLocation } from 'react-router-dom';
 import { useAlert } from "../contexts/AlertContext";
+import ServieCard from "@/components/common/PosterCard/ServieCard";
+import type { PersonResponse } from "@/types/PersonResponse";
 
 interface LocationState {
     personData?: PersonResponse;
-}
-
-interface PersonResponse {
-    name: string;
-    knownForDepartment: string;
-    gender: number;
-    adult: boolean;
-    popularity: number;
-    birthday: string;
-    biography: string;
-    birthPlace: string;
-    homepage: string;
-    lastModified: string;
-    profilePath: string;
-    servies: Servie[];
-}
-
-interface Servie {
-    childtype: string;
-    tmdbId: number;
-    posterPath: string;
-    title: string;
-    releaseDate: string;
-    firstAirDate: string;
-    lastAirDate: string;
-    episodesWatched: number;
-    totalEpisodes: number;
-    completed: boolean;
-    popularity: number;
 }
 
 const PersonPage: React.FC = () => {
@@ -49,7 +22,6 @@ const PersonPage: React.FC = () => {
 
     const { personId } = useParams<{ personId: string }>();
 
-    const [servieWatchState, setServieWatchState] = useState<{ [key: string]: boolean }>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [blurCompleted, setBlurCompleted] = useState<boolean>(false);
     const [sortOrder, setSortOrder] = useState<string>('title');
@@ -76,46 +48,23 @@ const PersonPage: React.FC = () => {
 
     useEffect(() => {
         if (personData?.servies) {
-            const watchState = personData.servies.reduce((acc, servie) => {
-                acc[`${servie.childtype}-${servie.tmdbId}`] = servie.completed;
-                return acc;
-            }, {} as { [key: string]: boolean });
-            setServieWatchState(watchState);
+            setWatchedCount(personData.servies.filter(s => s.completed).length);
         }
     }, [personData]);
 
-    const toggleWatch = async (tmdbId: number, childtype: string) => {
-        const key = `${childtype}-${tmdbId}`;
-        const currentCompletedState = servieWatchState[key];
-        const newCompletedState = !currentCompletedState;
+    const [watchedCount, setWatchedCount] = useState(
+        personData?.servies?.filter(s => s.completed).length ?? 0
+    );
 
-        setServieWatchState({
-            ...servieWatchState,
-            [key]: newCompletedState,
-        });
-
-        try {
-            const response = await axiosInstance.put(`servies/${childtype}/${tmdbId}/toggle`);
-            const message = newCompletedState ?
-                `Marked ${childtype} as watched successfully !!` :
-                `Marked ${childtype} as un-watched successfully !!`
-            if (response.status === 200)
-                setAlert({ type: "success", message: message });
-        } catch (error) {
-            setServieWatchState({
-                ...servieWatchState,
-                [key]: currentCompletedState,
-            });
-            console.error("PersonPage -> toggleWatch -> Failed to update watch status", error);
-            setAlert({ type: "danger", message: "Failed to update watch status !!" });
-        }
+    const handleWatchChange = (tmdbId: number, childtype: string, newWatched: boolean) => {
+        setWatchedCount(prev => newWatched ? prev + 1 : prev - 1);
     };
 
     if (loading) return <div className={styles.loadingContainer}>Loading...</div>;
     if (!personData) return <div className={styles.loadingContainer}>Person data not found</div>;
 
-    const sortedServies = [...personData.servies].sort((a, b) => {
-        if (sortOrder === 'popularity') return b.popularity - a.popularity;
+    const sortedServies = [...(personData.servies ?? [])].sort((a, b) => {
+        if (sortOrder === 'popularity') return (b.popularity ?? 0) - (a.popularity ?? 0);
         return a.title.localeCompare(b.title);
     });
 
@@ -280,68 +229,13 @@ const PersonPage: React.FC = () => {
                         <div className={styles.worksGrid}>
                             {filteredServies.map(servie => {
                                 const key = `${servie.childtype}-${servie.tmdbId}`;
-                                const isCompleted = servieWatchState[key];
-
                                 return (
-                                    <div key={key} className={styles.workCard}>
-                                        <div className={styles.posterWrapper}>
-                                            <img
-                                                className={`${styles.posterImage} ${blurCompleted && isCompleted ? styles.blurred : ''}`}
-                                                src={`https://www.themoviedb.org/t/p/original${servie.posterPath}`}
-                                                alt={servie.title}
-                                                onError={(e) => {
-                                                    e.currentTarget.src = '/src/assets/defaultPoster.png';
-                                                }}
-                                            />
-
-                                            {/* Title Overlay */}
-                                            <div className={styles.titleOverlay}>
-                                                <Link
-                                                    to='/servie'
-                                                    state={{ childType: servie.childtype, tmdbId: servie.tmdbId }}
-                                                    className={styles.titleLink}
-                                                >
-                                                    <div className={styles.titleText}>{servie.title}</div>
-                                                    <div className={styles.yearText}>
-                                                        {servie.childtype === 'movie'
-                                                            ? new Date(servie.releaseDate).getFullYear()
-                                                            : `${new Date(servie.firstAirDate).getFullYear()} - ${servie.lastAirDate ? new Date(servie.lastAirDate).getFullYear() : 'Present'}`
-                                                        }
-                                                    </div>
-                                                </Link>
-                                            </div>
-
-                                            {/* Action Buttons */}
-                                            <div className={styles.actionsOverlay}>
-                                                <div className={styles.actionIcons}>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            toggleWatch(servie.tmdbId, servie.childtype);
-                                                        }}
-                                                        className={styles.iconButton}
-                                                        title={isCompleted ? 'Mark as unwatched' : 'Mark as watched'}
-                                                    >
-                                                        {isCompleted ? (
-                                                            <i className={`bi bi-eye-fill ${styles.icon} ${styles.eyeFill}`}></i>
-                                                        ) : (
-                                                            <i className={`bi bi-eye-slash-fill ${styles.icon} ${styles.eyeSlashFill}`}></i>
-                                                        )}
-                                                    </button>
-
-                                                    {servie.childtype === 'tv' && (
-                                                        <span className={styles.episodeCount}>
-                                                            {servie.episodesWatched}/{servie.totalEpisodes}
-                                                        </span>
-                                                    )}
-
-                                                    <span className={styles.popularityBadge}>
-                                                        ★ {servie.popularity.toFixed(1)}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <ServieCard
+                                        key={key}
+                                        servie={servie}
+                                        blurCompleted={blurCompleted}
+                                        onWatchChange={handleWatchChange}
+                                    />
                                 );
                             })}
                         </div>

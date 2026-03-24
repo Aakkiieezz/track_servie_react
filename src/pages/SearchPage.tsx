@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useSearchParams } from 'react-router-dom';
-import AppHeader from "../components/AppHeader";
-import PaginationBar from "../components/PaginationBar";
+import AppHeader from "../components/common/AppHeader/AppHeader";
+import PaginationBar from "../components/common/PaginationBar/PaginationBar";
 import axiosInstance from '../utils/axiosInstance';
-import ServieGrid from "@/components/HomePage/ServieGrid";
+import ServieGrid from "@/components/common/ServieGrid/ServieGrid";
 import type { Servie } from "@/types/servie";
 
 type SearchType = 'movie' | 'tv' | 'servie' | 'person' | 'collection';
@@ -47,8 +47,6 @@ const SearchPage: React.FC = () => {
         try {
             setLoading(true);
 
-            console.log("SearchPage -> API Call -> request:", filters, pageNumber);
-
             const response = await axiosInstance.get(
                 "search",
                 {
@@ -59,8 +57,6 @@ const SearchPage: React.FC = () => {
                     },
                 }
             );
-
-            console.log("SearchPage -> API Call -> response:", response.data);
 
             setServies(response.data.servies);
 

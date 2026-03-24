@@ -1,0 +1,97 @@
+.filtersWrapper {
+  /* margin-bottom: 24px; */
+  display: flex;
+  align-items: center;
+}
+
+/* Light mode dropdown */
+:global(body:not(.dark)) .filtersWrapper :global(.dropdown-menu) {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: #222 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Dark mode dropdown */
+:global(body.dark) .filtersWrapper :global(.dropdown-menu) {
+  background: rgba(8, 8, 8, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #eee !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Dropdown items light */
+:global(body:not(.dark)) .filtersWrapper :global(.dropdown-item),
+:global(body:not(.dark)) .filtersWrapper button[class*="dropdownItem"] {
+  color: #222 !important;
+}
+
+:global(body:not(.dark)) .filtersWrapper :global(.dropdown-item):hover,
+:global(body:not(.dark)) .filtersWrapper button[class*="dropdownItem"]:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: #111 !important;
+}
+
+/* Dropdown items dark */
+:global(body.dark) .filtersWrapper :global(.dropdown-item),
+:global(body.dark) .filtersWrapper button[class*="dropdownItem"] {
+  color: #eee !important;
+  background: transparent !important;
+}
+
+:global(body.dark) .filtersWrapper :global(.dropdown-item):hover,
+:global(body.dark) .filtersWrapper button[class*="dropdownItem"]:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
+}
+
+/* Filter button text - light mode */
+:global(body:not(.dark)) .filtersWrapper button {
+  color: #222 !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+}
+
+:global(body:not(.dark)) .filtersWrapper button:hover {
+  background: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Filter button text - dark mode */
+:global(body.dark) .filtersWrapper button {
+  color: #eee !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+:global(body.dark) .filtersWrapper button:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.filterBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.countText {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.countText i {
+  font-size: 16px;
+}
+
+.separator {
+  color: var(--text-muted);
+  margin: 0 4px;
+}

@@ -1,5 +1,3 @@
-/* Re-uses many style idioms from SeasonPage.module.css (variables, dark mode) */
-
 .pageContainer {
   min-height: 100vh;
   font-family: system-ui, -apple-system, sans-serif;
@@ -27,12 +25,48 @@
 
 .posterHero {
   flex-shrink: 0;
+  width: 480px;
+  height: 240px;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.posterHero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.01)
+  );
+  z-index: 0;
+}
+
+.posterHero > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* infoSection is a column that fills the hero row height */
 .infoSection {
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  min-height: 240px; /* matches PosterFanStack height so bottom row truly anchors */
+}
+
+/* --- Top row: title left, badge right --- */
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 12px;
 }
 
@@ -41,51 +75,105 @@
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
-}
-
-.metaRow {
-  display: flex;
-  gap: 12px;
-  align-items: center;
+  line-height: 1.2;
 }
 
 .countBadge {
-  padding: 6px 12px;
+  flex-shrink: 0;
+  padding: 5px 12px;
   background: var(--overlay-light);
   border-radius: 999px;
   font-weight: 600;
   color: var(--text-secondary);
   font-size: 13px;
   white-space: nowrap;
+  /* nudge it inline with the title cap-height */
+  margin-top: 6px;
 }
 
+/* Description fills the middle space */
 .description {
+  flex: 1;
   margin: 0;
   color: var(--text-tertiary);
   font-size: 15px;
   line-height: 1.6;
-  max-width: 600px;
+  max-width: 560px;
 }
 
+/* --- Bottom row: progress left, actions right --- */
+.bottomRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-top: auto; /* pushes the whole row to the bottom of infoSection */
+}
+
+/* Progress block */
+.progressBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 180px;
+}
+
+.watchedLabel {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.watchedCount {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.watchedLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.watchedMain {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.watchedOf {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.watchedPct {
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+
+/* Action buttons */
 .heroActions {
   display: flex;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .actionBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border: none;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   background: var(--overlay-light);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -96,12 +184,13 @@
 }
 
 .actionBtnDanger {
-  background: rgba(220, 53, 69, 0.1);
+  background: rgba(220, 53, 69, 0.08);
   color: #dc3545;
+  border-color: rgba(220, 53, 69, 0.25);
 }
 
 .actionBtnDanger:hover {
-  background: rgba(220, 53, 69, 0.2);
+  background: rgba(220, 53, 69, 0.18);
   color: #dc3545;
   transform: translateY(-1px);
 }
@@ -127,11 +216,24 @@
   }
 
   .posterHero {
+    width: 100%;
+    height: 180px;
     align-self: center;
   }
 
+  .infoSection {
+    min-height: unset;
+    gap: 12px;
+  }
+
   .listTitle {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  .bottomRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
   }
 
   .heroActions {

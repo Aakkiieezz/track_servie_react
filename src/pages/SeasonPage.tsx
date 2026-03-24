@@ -3,10 +3,10 @@ import { useParams } from "react-router-dom";
 import axiosInstance from '../utils/axiosInstance';
 
 import { useAlert } from "../contexts/AlertContext";
-import CastListSlider from "@/components/CastListSlider";
+import CastListSlider from "@/components/common/CastListSlider/CastListSlider";
 import SeasonsNavBar from "@/components/SeasonPage/SeasonsNavBar";
-import ProgressBar from '../components/ProgressBar';
-import AppHeader from "@/components/AppHeader";
+import ProgressBar from '../components/common/ProgressBar/ProgressBar';
+import AppHeader from "@/components/common/AppHeader/AppHeader";
 
 import styles from './SeasonPage.module.css';
 
@@ -51,8 +51,6 @@ interface Episode {
 }
 
 const SeasonPage = () => {
-    console.log(`SeasonsPage`);
-
     // ✅ ALL useState
     const { setAlert } = useAlert();
     const [loading, setLoading] = useState<boolean>(true);
@@ -90,9 +88,7 @@ const SeasonPage = () => {
     const fetchSeasonData = async (tmdbId: string, seasonNo: string) => {
         try {
             setLoading(true);
-            console.log("SeasonPage -> API Call -> request:", tmdbId, seasonNo);
             const response = await axiosInstance.get(`servies/${tmdbId}/Season/${seasonNo}`);
-            console.log("SeasonPage -> API Call -> response:", response.data);
             setSeason(response.data);
             setTotalSeasons(response.data.totalSeasons);
             setHasSpecials(response.data.hasSpecials);
@@ -106,18 +102,17 @@ const SeasonPage = () => {
     // ✅ useCallback hooks
     // Flush pending toggles to backend
     const flushPendingToggles = useCallback(async () => {
-        console.log(`SeasonPage -> flushPendingToggles -> batch-toggle`);
-
         if (pendingTogglesRef.current.size === 0) {
             console.log("No pending toggles to flush");
+            rollbackRef.current = null; // cleanup safety
             return;
         }
 
         // 🔍 Build diff-only payload
         const episodes = Array.from(pendingTogglesRef.current.entries())
             .filter(([episodeNo, watched]) => {
-                const currentState = epWatchState[String(episodeNo)] ?? false;
-                return currentState !== watched;
+                const originalState = rollbackRef.current?.epWatchState[String(episodeNo)] ?? false;
+                return originalState !== watched;
             })
             .map(([episodeNo, watched]) => ({
                 episodeNo,
@@ -127,6 +122,7 @@ const SeasonPage = () => {
         if (episodes.length === 0) {
             console.log("No effective changes to flush");
             pendingTogglesRef.current.clear();
+            rollbackRef.current = null;
             return;
         }
 
@@ -174,11 +170,6 @@ const SeasonPage = () => {
     // ✅ ALL useEffect hooks
     useEffect(() => {
         if (tmdbId) {
-            console.log(
-                "SeasonPage -> useEffect(tmdbId, seasonNo) -> data :",
-                tmdbId,
-                seasonNo
-            );
             fetchSeasonData(tmdbId, seasonNo);
         }
     }, [tmdbId, seasonNo]);
@@ -186,11 +177,8 @@ const SeasonPage = () => {
     useEffect(() => {
         try {
             setLoading(true);
-            console.log("SeasonPage -> useEffect(season) -> data :", season);
-            if (!season) {
-                console.log("SeasonPage -> useEffect(season) -> data -> null/undefined");
+            if (!season)
                 return;
-            }
             setSeasonWatchState(season.watched);
 
             const epWatchStates = season.episodes.reduce((acc, episode) => {
@@ -256,8 +244,6 @@ const SeasonPage = () => {
 
     // ✅ Regular functions
     const toggleSeasonWatch = async () => {
-        console.log(`SeasonPage -> toggleSeasonWatch -> tmdbId: ${tmdbId}, seasonNo: ${seasonNo}`);
-
         const currentSeasonWatchState = seasonWatchState;
         const newSeasonWatchState = !currentSeasonWatchState;
 
@@ -303,11 +289,10 @@ const SeasonPage = () => {
     };
 
     const toggleEpisodeWatch = (episodeNo: number) => {
-        console.log(`SeasonPage -> toggleEpisodeWatch -> episodeNo: ${episodeNo}`);
         const key = `${episodeNo}`;
 
         // 🔑 KEY FIX: Capture snapshot BEFORE first toggle
-        if (pendingTogglesRef.current.size === 0) {
+        if (pendingTogglesRef.current.size === 0 && !rollbackRef.current) {
             console.log("📸 Capturing rollback snapshot");
             rollbackRef.current = {
                 epWatchState: { ...epWatchState },
@@ -320,33 +305,33 @@ const SeasonPage = () => {
         const currentWatchState = epWatchState[key];
         const newWatchState = !currentWatchState;
 
-        setEpWatchState({
-            ...epWatchState,
+        setEpWatchState(prev => ({
+            ...prev,
             [key]: newWatchState,
+        }));
+
+        setEpWatchedCount(prev => {
+            const nextCount = newWatchState
+                ? prev + 1
+                : Math.max(prev - 1, 0);
+
+            setSeasonWatchState(nextCount === season.episodeCount);
+
+            return nextCount;
         });
 
-        const newEpWatchedCount = newWatchState ? epWatchCount + 1 : epWatchCount - 1;
-        setEpWatchedCount(newEpWatchedCount);
-
-        if (newWatchState && newEpWatchedCount === season.episodeCount) {
-            console.log("seems last episode was watched, toggling season watch to true");
-            setSeasonWatchState(true);
-        }
-
-        if (!newWatchState && seasonWatchState) {
-            console.log(
-                "seems an episode was un-watched and seasonWatch status was still true, toggling season watch to false"
-            );
-            setSeasonWatchState(false);
-        }
-
-        const newSeasonWatchRuntime = newWatchState
-            ? seasonWatchRuntime + epRuntime[key]
-            : seasonWatchRuntime - epRuntime[key];
-        setSeasonWatchRuntime(newSeasonWatchRuntime);
+        setSeasonWatchRuntime(prev =>
+            newWatchState
+                ? prev + epRuntime[key]
+                : prev - epRuntime[key]
+        );
 
         // Track this toggle
-        pendingTogglesRef.current.set(episodeNo, newWatchState);
+        const originalState = rollbackRef.current?.epWatchState[String(episodeNo)] ?? false;
+        if (originalState === newWatchState)
+            pendingTogglesRef.current.delete(episodeNo);
+        else
+            pendingTogglesRef.current.set(episodeNo, newWatchState);
 
         // Reset debounce timer
         if (debounceTimerRef.current)

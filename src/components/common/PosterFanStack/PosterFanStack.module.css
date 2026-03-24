@@ -1,0 +1,82 @@
+:root {
+  --fan-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  --fan-border-radius: 8px;
+}
+
+/* wrapper controls overall area and relative positioning */
+.wrapper {
+  position: relative;
+  display: inline-block;
+  user-select: none;
+  cursor: pointer;
+  overflow: hidden; /* Clip posters to container bounds */
+}
+
+/* each poster wrapper absolutely positioned inside wrapper */
+.posterWrap {
+  position: absolute;
+  top: 0;
+  border-radius: var(--fan-border-radius);
+  overflow: hidden;
+  box-shadow: var(--fan-shadow);
+  will-change: left, z-index;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+}
+
+/* image fills wrapper */
+.posterImg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: var(--fan-border-radius);
+  transition: box-shadow 0.3s ease;
+}
+
+/* active poster (hovered) - no scaling, just better shadow */
+.posterActive {
+  box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+}
+
+
+
+/* Empty state wrapper (glass effect) */
+.emptyWrapper {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Skeleton poster slots */
+.skeletonPoster {
+  position: absolute;
+  top: 0;
+  border-radius: var(--fan-border-radius);
+
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+
+  /* subtle inner highlight */
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.02),
+    0 4px 12px rgba(0,0,0,0.15);
+}
+
+
+
+/* responsive: allow the wrapper width to shrink on mobile */
+@media (max-width: 768px) {
+  .wrapper {
+    width: 100%;
+  }
+  .posterWrap {
+    transition: left 0.25s ease, z-index 0.25s ease;
+  }
+}

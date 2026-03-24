@@ -15,12 +15,12 @@ interface ServieListStore {
     hasFetched: boolean;
 
     fetchAllServieLists: () => Promise<void>;
-    fetchListDetails: () => Promise<void>; // New method to fetch list details
+    fetchListDetails: () => Promise<void>;
     setServieListIds: (servieKey: string, listIds: number[]) => void;
     addListId: (servieKey: string, listId: number) => void;
     removeListId: (servieKey: string, listId: number) => void;
     updateListCount: (listId: number, change: number) => void;
-    setListDetails: (lists: ListDto2[]) => void; // New method to set list details
+    setListDetails: (lists: ListDto2[]) => void;
     clearAll: () => void;
 }
 
@@ -34,15 +34,15 @@ export const useServieListStore = create<ServieListStore>()(
             hasFetched: false,
 
             fetchAllServieLists: async () => {
-                if (get().hasFetched) {
-                    console.log('Already fetched servie list map from backend, therefore not fetching again');
+                if (get().hasFetched)
                     return; // ✅ already fetched, skip
-                }
 
                 try {
                     const response = await axiosInstance.get<Record<string, number[]>>('/list/servie-mappings');
-                    set({ servieListMap: response.data, hasFetched: true });
-                    console.log('Fetched servie list map from backend');
+                    set({ 
+                        servieListMap: response.data, 
+                        hasFetched: true
+                    });
                 } catch (error) {
                     console.error('Failed to fetch servie list map:', error);
                 }
@@ -52,7 +52,6 @@ export const useServieListStore = create<ServieListStore>()(
                 try {
                     const response = await axiosInstance.get<{ lists: ListDto2[] }>('/list/all');
                     set({ listDetails: response.data.lists });
-                    console.log('Fetched list details from backend');
                 } catch (error) {
                     console.error('Failed to fetch list details:', error);
                 }

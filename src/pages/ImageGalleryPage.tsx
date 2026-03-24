@@ -3,7 +3,7 @@ import { Download, Image as ImageIcon } from 'lucide-react';
 import axiosInstance from '../utils/axiosInstance';
 import { useLocation } from 'react-router-dom';
 import styles from './ImageGalleryPage.module.css';
-import AppHeader from '@/components/AppHeader';
+import AppHeader from '@/components/common/AppHeader/AppHeader';
 
 interface ImageData {
   iso_639_1: string | null;
@@ -84,8 +84,6 @@ const ImageGalleryPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-
-      console.log("ImageGalleryPage -> API Call -> request:", childType, tmdbId);
 
       const response = await axiosInstance.get<BackendResponse>(`/images/${childType}/${tmdbId}`);
       const data = response.data;
@@ -178,8 +176,6 @@ const ImageGalleryPage: React.FC = () => {
         imageType,
         filePath,
       };
-
-      console.log("Set Custom Image ->", payload);
 
       await axiosInstance.post(`images/${childType}/${tmdbId}/set-custom`,
         null,

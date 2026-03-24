@@ -1,15 +1,15 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
-import ProgressBar from '../components/ProgressBar';
-import CastListSlider from '../components/CastListSlider';
+import ProgressBar from '../components/common/ProgressBar/ProgressBar';
+import CastListSlider from '../components/common/CastListSlider/CastListSlider';
 import SeasonsList from '../components/ServiePage/SeasonsList';
 import { format } from 'date-fns';
 import { useAlert } from "../contexts/AlertContext";
-import HalfStarRating from '@/components/HalfStarRating';
+import HalfStarRating from '@/components/common/HalfStarRating';
 import VideoPopup from './VideoPopup';
-import MovieReviewModal from '@/components/MovieReviewModal';
-import AppHeader from '@/components/AppHeader';
+import MovieReviewModal from '@/components/common/MovieReviewModal/Modal';
+import AppHeader from '@/components/common/AppHeader/AppHeader';
 import styles from './ServiePage.module.css';
 import type { ReviewData } from "@/types/servie";
 
@@ -131,31 +131,20 @@ const ServiePage = () => {
     }, []);
 
     const [isImageError, setIsImageError] = useState(false);
-
     const [data, setData] = useState<ServieDto | null>(null); // Proper typing
-
     const [rating, setRating] = useState<number>(0); // State to hold the rating
-
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null); // Proper typing for error
-
+    const [error, setError] = useState<string | null>(null);
     const [servieWatchState, setServieWatchState] = useState<boolean>(false);
-
     const [totalEpWatched, setTotalEpWatched] = useState<number>(0);
-    // Initialize the states for season watch runtime and season runtime
     const [servieWatchRuntime, setServieWatchRuntime] = useState<number>(0);
-
     const [servieRuntime, setServieRuntime] = useState<number>(0);
-
-    // const [seasonRuntime, setSeasonRuntime] = useState<{ [key: string]: number }>({});
     const totalEpisodes = data?.totalEpisodes || 1;
-
     const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
 
-            console.log("ServiePage -> useEffect() -> ApiCall -> request : ", childType, tmdbId);
             try {
                 setLoading(true);
                 const response = await axiosInstance.get<ServieDto>(`servies/${tmdbId}`,
@@ -164,8 +153,6 @@ const ServiePage = () => {
                             type: childType,
                         },
                     });
-
-                console.log("ServiePage -> useEffect() -> ApiCall -> response :", response);
 
                 setData(response.data);
 
@@ -205,11 +192,10 @@ const ServiePage = () => {
     const hasAnyCast = hasRegulars || hasGuests;
 
     useEffect(() => {
-        if (seriesCastActiveTab === "regulars" && !hasRegulars && hasGuests) {
+        if (seriesCastActiveTab === "regulars" && !hasRegulars && hasGuests)
             setSeriesCastActiveTab("guests");
-        } else if (seriesCastActiveTab === "guests" && !hasGuests && hasRegulars) {
+        else if (seriesCastActiveTab === "guests" && !hasGuests && hasRegulars)
             setSeriesCastActiveTab("regulars");
-        }
     }, [hasRegulars, hasGuests, seriesCastActiveTab]);
 
     // logic to check if the seasons are many and to apply fade effect while scrolling or not
@@ -510,7 +496,6 @@ const ServiePage = () => {
 
                                 {/* ---------------------------------------------------------------------------- */}
 
-
                                 {/* Movie Collection */}
                                 {data?.collectionId && (
                                     <div className={styles.overviewSection}>
@@ -527,15 +512,12 @@ const ServiePage = () => {
 
                                 {/* ---------------------------------------------------------------------------- */}
 
-
                                 {/* Seasons Section */}
                                 {childType === 'tv' && (
                                     <div
                                         ref={seasonsRef}
                                         className={`${styles.seasonsSection} ${seasonsStuck ? styles.stuck : ''}`}
                                     >
-
-
                                         {/* sticky header wrapper — overlay anchors to its bottom edge */}
                                         <div className={styles.seasonsHeaderWrapper}>
                                             <div className={styles.seasonsHeader}>

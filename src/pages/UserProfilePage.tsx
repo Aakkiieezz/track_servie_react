@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
-import AppHeader from "@/components/AppHeader";
-import ServieGrid from "../components/HomePage/ServieGrid";
+import AppHeader from "@/components/common/AppHeader/AppHeader";
 import styles from "./UserProfilePage.module.css";
-import { UserPlus, UserCheck, MapPin, Mail, Check, Edit } from "lucide-react";
-import FavoritesManager from "@/components/FavouritesManager";
-import type { Servie } from "@/types/servie";
+import { UserPlus, UserCheck, MapPin, Mail } from "lucide-react";
 import { useAlert } from "../contexts/AlertContext";
+
+import ProfileOverviewTab from "@/components/ProfilePage/OverviewTab/OverviewTab";
+import ServiesTab from "@/components/ProfilePage/ServiesTab";
+import ProfileListsTab from "@/components/ProfilePage/ListsTab/ListsTab";
+import ProfileWatchlistTab from "@/components/ProfilePage/WatchlistTab";
+import ProfileNetworkTab from "@/components/ProfilePage/NetworkTab/NetworkTab";
+import ProfileStatsTab from "@/components/ProfilePage/StatsTab/StatsTab";
 
 interface UserProfile {
   id: number;
@@ -19,91 +23,94 @@ interface UserProfile {
   country: string;
   followerCount: number;
   followingCount: number;
-  following: boolean; // check to see if you following this user
+  following: boolean;
   totalServies: number;
 }
 
-interface List {
-  id: number;
-  name: string;
-  description?: string;
-  totalServiesCount: number;
-}
+type TabType = "overview" | "servies" | "lists" | "watchlist" | "network" | "stats";
 
-type TabType = "profile" | "servies" | "lists" | "watchlist" | "network";
+const tabs: TabType[] = [
+  "overview",
+  "servies",
+  "lists",
+  "watchlist",
+  "network",
+  "stats",
+];
 
 const UserProfilePage: React.FC = () => {
-  const { userId } = useParams<{ userId: string }>();
-  const id = Number(userId);
-  const navigate = useNavigate();
+
+  const { userId, tab } = useParams<{ userId: string; tab?: TabType }>();
+
+  const profileUserId = Number(
+    (userId === "me" || userId === undefined)
+      ? localStorage.getItem("userId")
+      : userId
+  );
+
+  const loggedInUserId = Number(localStorage.getItem("userId"));
+  const isOwnProfile = profileUserId === loggedInUserId;
+
+  const { setAlert } = useAlert();
 
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const { setAlert } = useAlert();
-  const [activeTab, setActiveTab] = useState<TabType>("profile");
-  const [servies, setServies] = useState<Servie[]>([]);
-  const [favoriteServies, setFavoriteServies] = useState<Servie[]>([]);
-  const [lists, setLists] = useState<List[]>([]);
-  const [watchlist, setWatchlist] = useState<Servie[]>([]);
-  const [following, setFollowing] = useState<UserProfile[]>([]);
-  const [followers, setFollowers] = useState<UserProfile[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const [activeTab, setActiveTab] = useState<TabType>(tab || "overview");
   const [tabLoading, setTabLoading] = useState(false);
 
-  const [isEditingFavorites, setIsEditingFavorites] = useState(false);
+  const [activeNetworkTab, setActiveNetworkTab] = useState<"Following" | "Followers">("Following");
 
+  const [watchedCounts, setWatchedCounts] = useState<{ movie: number; tv: number }>({ movie: 0, tv: 0 });
+
+  // -------------------------
+  // Fetch Watched Counts
+  // -------------------------
+  const fetchWatchedCounts = async () => {
+    try {
+      const res = await axiosInstance.get(`user/${profileUserId}/watched-counts`);
+      setWatchedCounts({ movie: res.data.movie, tv: res.data.tv });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // -------------------------
+  // Fetch Profile
+  // -------------------------
   const fetchUserProfile = async () => {
-    if (!id) return;
+    if (!profileUserId) return;
+
     try {
       setLoading(true);
-      const res = await axiosInstance.get<UserProfile>(`user/${id}/profile`);
-      console.log(res);
+
+      const res = await axiosInstance.get<UserProfile>(`user/${profileUserId}/overview`);
+
       if (res.status === 200) {
         setUser(res.data);
       }
     } catch (err) {
       console.error(err);
-      setAlert({ type: "danger", message: "Failed to fetch user profile" });
+
+      setAlert({ type: "danger", message: "Failed to fetch user overview" });
     } finally {
       setLoading(false);
     }
   };
 
+  // -------------------------
+  // Fetch Tab Data
+  // -------------------------
   const fetchTabData = async (tab: TabType) => {
-    if (!id) return;
+
+    if (!profileUserId) return;
+
     try {
       setTabLoading(true);
-      switch (tab) {
-        // case "profile":
-        //   const favoriteRes = await axiosInstance.get<Servie[]>(`user/${id}/servies/favorite?limit=5`);
-        //   if (favoriteRes.status === 200) {
-        //     setFavoriteServies(favoriteRes.data);
-        //   }
-        //   break;
-        case "servies":
-          const serviesRes = await axiosInstance.get<Servie[]>(`user/${id}/servies`);
-          if (serviesRes.status === 200) {
-            setServies(serviesRes.data);
-          }
-          break;
-        case "lists":
-          const listsRes = await axiosInstance.get<List[]>(`user/${id}/lists`);
-          if (listsRes.status === 200) {
-            setLists(listsRes.data);
-          }
-          break;
-        case "watchlist":
-          const watchlistRes = await axiosInstance.get<Servie[]>(`list/watchlist`);
-          if (watchlistRes.status === 200) {
-            setWatchlist(watchlistRes.data);
-          }
-          break;
-        case "network":
-          const followingRes = await axiosInstance.get<UserProfile[]>(`user/${id}/following`);
-          const followersRes = await axiosInstance.get<UserProfile[]>(`user/${id}/followers`);
-          if (followingRes.status === 200) setFollowing(followingRes.data);
-          if (followersRes.status === 200) setFollowers(followersRes.data);
-          break;
-      }
+
+      // No cases needed anymore
+      // Each tab fetches its own data
+
     } catch (err) {
       console.error(err);
       setAlert({ type: "danger", message: `Failed to fetch ${tab} data` });
@@ -112,25 +119,41 @@ const UserProfilePage: React.FC = () => {
     }
   };
 
+  // -------------------------
+  // Effects
+  // -------------------------
   useEffect(() => {
     fetchUserProfile();
+    fetchWatchedCounts();
   }, [userId]);
+
+  useEffect(() => {
+    if (tab) setActiveTab(tab);
+    else setActiveTab("overview");
+  }, [tab]);
 
   useEffect(() => {
     fetchTabData(activeTab);
   }, [activeTab, userId]);
 
+  // -------------------------
+  // Follow Toggle
+  // -------------------------
   const handleFollowToggle = async () => {
     if (!user) return;
+
     try {
-      if (user.following)
+      if (user.following) {
         await axiosInstance.delete(`follows/${user.id}`);
-      else
+        setUser({ ...user, following: false, followerCount: user.followerCount - 1 });
+      } else {
         await axiosInstance.post(`follows/${user.id}`);
-      setUser({ ...user, following: !user.following });
-      setAlert({ 
-        type: "success", 
-        message: user.following ? "Unfollowed successfully" : "Followed successfully" 
+        setUser({ ...user, following: true, followerCount: user.followerCount + 1 });
+      }
+
+      setAlert({
+        type: "success",
+        message: user.following ? "Unfollowed successfully" : "Followed successfully"
       });
     } catch (err) {
       console.error(err);
@@ -138,38 +161,27 @@ const UserProfilePage: React.FC = () => {
     }
   };
 
-  // Handler to add a favorite
-  const handleAddFavorite = async (index: number) => {
-    // You would typically open a modal or navigate to a search page
-    // For now, let's just log it
-    console.log(`Add favorite at position ${index}`);
-    
-    // Example: You might want to navigate to a search/selection page
-    // navigate('/select-favorite', { state: { userId: id, position: index } });
-    
-    // Or open a modal with a search interface
-    // setShowSearchModal(true);
+  // -------------------------
+  // Favorite handlers
+  // -------------------------
+  const handleAddFavorite = (index: number) => {
+    console.log("to implement Add favorite", index);
   };
 
-  // Handler to remove a favorite
   const handleRemoveFavorite = async (tmdbId: number) => {
-    if (!id) return;
     try {
-      // Call your API to remove from favorites
-      await axiosInstance.delete(`user/${id}/servies/${tmdbId}/favorite`);
-      
-      // Update the local state
-      setFavoriteServies(favoriteServies.filter(s => s.tmdbId !== tmdbId));
-      
-      setAlert({ 
-        type: "success", 
-        message: "Removed from favorites" 
+      await axiosInstance.delete(`user/${profileUserId}/servies/${tmdbId}/favorite`);
+
+      setAlert({
+        type: "success",
+        message: "Removed from favorites"
       });
     } catch (err) {
       console.error(err);
-      setAlert({ 
-        type: "danger", 
-        message: "Failed to remove from favorites" 
+
+      setAlert({
+        type: "danger",
+        message: "Failed to remove favorite",
       });
     }
   };
@@ -178,11 +190,16 @@ const UserProfilePage: React.FC = () => {
     setAlert({ type: "danger", message: error });
   };
 
+  // -------------------------
+  // Loading
+  // -------------------------
   if (loading) {
     return (
       <>
         <AppHeader />
-        <div className={styles.container}><p>Loading...</p></div>
+        <div className={styles.container}>
+          <p>Loading...</p>
+        </div>
       </>
     );
   }
@@ -191,7 +208,9 @@ const UserProfilePage: React.FC = () => {
     return (
       <>
         <AppHeader />
-        <div className={styles.container}><p>User not found</p></div>
+        <div className={styles.container}>
+          <p>User not found</p>
+        </div>
       </>
     );
   }
@@ -202,175 +221,186 @@ const UserProfilePage: React.FC = () => {
 
       <div className={styles.pageContainer}>
         <div className={styles.container}>
-          {/* Header Section */}
-          <div className={styles.headerSection}>
-            <div className={styles.profileHeader}>
-              <div className={styles.profileAvatar}>
-                <img
-                  src={user.profileImgUrl}
-                  alt={user.username}
-                  className={styles.userAvatar}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
-                  }}
-                />
-              </div>
 
-              <div className={styles.profileInfo}>
-                <h1 className={styles.username}>{user.username}</h1>
-                
-                <div className={styles.statsRow}>
-                  <div className={styles.stat}>
-                    <span className={styles.statValue}>{user.totalServies}</span>
-                    <span className={styles.statLabel}>Servies</span>
+          <div className={styles.topSection}>
+            {/* Profile Header - Full (overview only) */}
+            {activeTab === "overview" && (
+              <div className={`${styles.headerSection} ${activeTab !== "overview" ? styles.headerCollapsed : ""}`}>
+                <div className={styles.profileHeader}>
+                  <div className={styles.profileAvatar}>
+                    <img
+                      src={user.profileImgUrl}
+                      alt={user.username}
+                      className={styles.userAvatar}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+                      }}
+                    />
                   </div>
-                  <div className={styles.stat}>
-                    <span className={styles.statValue}>{user.followerCount}</span>
-                    <span className={styles.statLabel}>Followers</span>
-                  </div>
-                  <div className={styles.stat}>
-                    <span className={styles.statValue}>{user.followingCount}</span>
-                    <span className={styles.statLabel}>Following</span>
-                  </div>
-                </div>
-                
-                <button 
-                  className={`${styles.followBtn} ${user.following ? styles.followingBtn : ''}`}
-                  onClick={handleFollowToggle}
-                >
-                  {user.following ? (
-                    <>
-                      <UserCheck size={18} />
-                      <span>Following</span>
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus size={18} />
-                      <span>Follow</span>
-                    </>
-                  )}
-                </button>
-              </div>
 
-              <div className={styles.profileDetails}>
-                {user.bio && (
-                  <p className={styles.bio}>{user.bio}</p>
-                )}
-                <div className={styles.detailsRow}>
-                  {user.country && (
-                    <div className={styles.detail}>
-                      <MapPin size={16} />
-                      <span>{user.country}</span>
+                  <div className={styles.profileInfo}>
+                    <h1 className={styles.username}>
+                      {user.username}
+                    </h1>
+
+                    <div className={styles.statsRow}>
+                      <div className={styles.stat}>
+                        <span className={styles.statValue}>
+                          {user.totalServies}
+                        </span>
+                        <span className={styles.statLabel}>
+                          Servies
+                        </span>
+                      </div>
+
+                      <div className={styles.stat}>
+                        <span className={styles.statValue}>
+                          {user.followerCount}
+                        </span>
+                        <span className={styles.statLabel}>
+                          Followers
+                        </span>
+                      </div>
+
+                      <div className={styles.stat}>
+                        <span className={styles.statValue}>
+                          {user.followingCount}
+                        </span>
+                        <span className={styles.statLabel}>
+                          Following
+                        </span>
+                      </div>
                     </div>
-                  )}
-                  {user.email && (
-                    <div className={styles.detail}>
-                      <Mail size={16} />
-                      <span>{user.email}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Tabs */}
-          <div className={styles.tabsContainer}>
-            <div className={styles.tabs}>
-              {(['profile', 'servies', 'lists', 'watchlist', 'network'] as TabType[]).map((tab) => (
-                <button
-                  key={tab}
-                  className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className={styles.tabContent}>
-            {tabLoading ? (
-              <p>Loading...</p>
-            ) : activeTab === "profile" ? (
-              <div className={styles.profileTab}>
-              <h2 className={styles.sectionTitle}>Favorite Servies</h2>
-              
-              <FavoritesManager
-                userId={id}
-                onAdd={handleAddFavorite}
-                onRemove={handleRemoveFavorite}
-                onFetchError={handleFetchError}
-                isEditable={isEditingFavorites}
-              />
-            </div>
-            ) : activeTab === "servies" ? (
-              <div className={styles.serviesTab}>
-                <h2 className={styles.sectionTitle}>All Servies ({servies.length})</h2>
-                <ServieGrid servies={servies} />
-              </div>
-            ) : activeTab === "lists" ? (
-              <div className={styles.listsTab}>
-                <h2 className={styles.sectionTitle}>Lists ({lists.length})</h2>
-                <div className={styles.listGrid}>
-                  {lists.length === 0 ? (
-                    <p>No lists created yet</p>
-                  ) : (
-                    lists.map((list) => (
-                      <div 
-                        key={list.id} 
-                        className={styles.listCard}
-                        onClick={() => navigate(`/list/${list.id}`)}
+                    {!isOwnProfile && (
+                      <button
+                        className={`${styles.followBtn} ${user.following ? styles.followingBtn : ""}`}
+                        onClick={handleFollowToggle}
                       >
-                        <h3>{list.name}</h3>
-                        <p className={styles.listDescription}>{list.description}</p>
-                        <span className={styles.listCount}>{list.totalServiesCount} servies</span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            ) : activeTab === "watchlist" ? (
-              <div className={styles.watchlistTab}>
-                <h2 className={styles.sectionTitle}>Watchlist ({watchlist.length})</h2>
-                <ServieGrid servies={watchlist} />
-              </div>
-            ) : (
-              <div className={styles.networkTab}>
-                <div className={styles.networkSection}>
-                  <h2 className={styles.sectionTitle}>Following ({following.length})</h2>
-                  <div className={styles.userGrid}>
-                    {following.map((f) => (
-                      <div 
-                        key={f.id} 
-                        className={styles.userCard}
-                        onClick={() => navigate(`/profile/${f.id}`)}
-                      >
-                        <div className={styles.userCardPlaceholder}>{f.username.charAt(0).toUpperCase()}</div>
-                        <h4>{f.username}</h4>
-                      </div>
-                    ))}
+                        {user.following ? (
+                          <>
+                            <UserCheck size={18} />
+                            Following
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus size={18} />
+                            Follow
+                          </>
+                        )}
+                      </button>
+                    )
+                    }
                   </div>
-                </div>
 
-                <div className={styles.networkSection}>
-                  <h2 className={styles.sectionTitle}>Followers ({followers.length})</h2>
-                  <div className={styles.userGrid}>
-                    {followers.map((f) => (
-                      <div 
-                        key={f.id} 
-                        className={styles.userCard}
-                        onClick={() => navigate(`/profile/${f.id}`)}
-                      >
-                        <div className={styles.userCardPlaceholder}>{f.username.charAt(0).toUpperCase()}</div>
-                        <h4>{f.username}</h4>
-                      </div>
-                    ))}
+                  <div className={styles.profileDetails}>
+                    {user.bio && (
+                      <p className={styles.bio}>{user.bio}</p>
+                    )}
+
+                    <div className={styles.detailsRow}>
+                      {user.country && (
+                        <div className={styles.detail}>
+                          <MapPin size={16} />
+                          {user.country}
+                        </div>
+                      )}
+
+                      {user.email && (
+                        <div className={styles.detail}>
+                          <Mail size={16} />
+                          {user.email}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             )}
+
+            {/* Tabs - with collapsed mini-header when not on overview */}
+            <div className={`${styles.tabsContainer} ${activeTab !== "overview" ? styles.tabsSticky : ""}`}>
+              <div className={styles.tabsRow}>
+
+                {/* Left — mini profile (animates in) */}
+                <div className={`${styles.miniHeader} ${activeTab !== "overview" ? styles.miniHeaderVisible : ""}`}>
+                  <img
+                    src={user.profileImgUrl}
+                    alt={user.username}
+                    className={styles.miniAvatar}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+                    }}
+                  />
+                  <span className={styles.miniUsername}>{user.username}</span>
+                </div>
+
+                {/* Center — tabs */}
+                <div className={styles.tabs}>
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab}
+                      className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ""}`}
+                      onClick={() => setActiveTab(tab)}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Right — spacer to keep tabs centered */}
+                <div className={`${styles.miniHeaderSpacer} ${activeTab !== "overview" ? styles.miniHeaderVisible : ""}`} />
+
+              </div>
+            </div>
+          </div>
+
+
+          {/* Tab Content */}
+          <div className={`${styles.tabContent} ${activeTab !== "overview" ? styles.tabContentOffset : ""}`}>
+
+            {tabLoading && <p>Loading...</p>}
+
+            {!tabLoading && activeTab === "overview" && (
+              <ProfileOverviewTab
+                userId={profileUserId}
+                watchedCounts={watchedCounts}
+                onAdd={handleAddFavorite}
+                onRemove={handleRemoveFavorite}
+                onFetchError={handleFetchError}
+              />
+            )}
+
+            {!tabLoading && activeTab === "servies" && (
+              <ServiesTab
+                userId={profileUserId}
+                watchedCounts={watchedCounts}
+              />
+            )}
+
+            {!tabLoading && activeTab === "lists" && (
+              <ProfileListsTab 
+                userId={profileUserId}
+                isOwnProfile={isOwnProfile}
+              />
+            )}
+
+            {!tabLoading && activeTab === "watchlist" && (
+              <ProfileWatchlistTab userId={profileUserId} />
+            )}
+
+            {!tabLoading && activeTab === "network" && (
+              <ProfileNetworkTab
+                activeNetworkTab={activeNetworkTab}
+                setActiveNetworkTab={setActiveNetworkTab}
+                userId={profileUserId}
+              />
+            )}
+
+            {!tabLoading && activeTab === "stats" && (
+              <ProfileStatsTab userId={profileUserId} onFetchError={handleFetchError} />
+            )}
+
           </div>
         </div>
       </div>

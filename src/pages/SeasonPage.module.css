@@ -333,9 +333,9 @@
 
 .thumbnailImage {
   width: 100%;
-  height: auto;
-  display: block;
-  aspect-ratio: 1.777;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
 }
 
 .watchedBadge {

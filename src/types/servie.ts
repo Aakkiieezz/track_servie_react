@@ -3,21 +3,22 @@ export interface Servie {
   tmdbId: number;
   childtype: "movie" | "tv";
   title: string;
-  posterPath: string;
+  posterPath?: string | null;
+  popularity?: number | null;
 
   // Movie fields
   releaseDate?: string;
 
   // Series fields
-  totalEpisodes: number | null;
+  totalEpisodes?: number | null;
   firstAirDate?: string;
   lastAirDate?: string;
 
   // UserServieData fields
-  episodesWatched: number;
+  episodesWatched?: number;
   completed: boolean;
   liked: boolean;
-  rated: number | null;
+  rated?: number | null;
 }
 
 export interface ReviewData {

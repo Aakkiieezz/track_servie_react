@@ -1,0 +1,243 @@
+/* ─────────────────────────────────────────────
+   PosterCard.module.css
+   ───────────────────────────────────────────── */
+
+/* ── Card root ────────────────────────────────── */
+.card {
+  position: relative;
+  width: 100%;
+  /* overflow visible so the top bubble can escape the card bounds */
+  overflow: visible;
+}
+
+/* ── Poster wrapper ───────────────────────────── */
+.posterWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 8px;
+  /* clips poster + all inner overlays cleanly */
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* ── Poster image ─────────────────────────────── */
+.poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover .poster {
+  filter: brightness(60%);
+  transform: scale(1.03);
+}
+
+/* Blur-if-completed */
+.blurred {
+  filter: blur(6px) brightness(50%) !important;
+}
+.card:hover .blurred {
+  filter: blur(6px) brightness(40%) !important;
+}
+
+/* ── Glass bubble — above tile, movie/tv only ─── */
+.topBubble {
+  position: absolute;
+  /* sits just above the posterWrapper */
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.94);
+
+  /* slightly wider than poster so long titles breathe */
+  width: calc(100% + 20px);
+  max-width: 180px;
+
+  padding: 8px 10px;
+  background: rgba(12, 12, 20, 0.70);
+  backdrop-filter: blur(16px) saturate(1.6);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  text-align: center;
+
+  opacity: 0;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.card:hover .topBubble {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.bubbleTitle {
+  /* 2-line clamp — prevents very long titles breaking layout */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.35;
+}
+
+.bubbleYear {
+  display: block;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.62);
+  margin-top: 3px;
+  white-space: nowrap;
+}
+
+/* ── Popularity badge — top-right corner, hover ─ */
+.popularityBadge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  /* gradient fades from corner, no hard edge */
+  padding: 7px 8px 14px 14px;
+  background: linear-gradient(
+    to bottom left,
+    rgba(0, 0, 0, 0.82) 0%,
+    transparent 65%
+  );
+  border-radius: 0 8px 0 0;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fbbf24;
+  line-height: 1;
+
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.card:hover .popularityBadge {
+  opacity: 1;
+}
+
+/* ── Progress area — above bottom overlay, on hover */
+.progressWrap {
+  position: absolute;
+  bottom: 46px;
+  left: 0;
+  right: 0;
+  padding: 0 10px 6px;
+
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 4;
+}
+
+.card:hover .progressWrap {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.epLabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  margin-bottom: 2px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.runtimeLabel {
+  font-size: 0.63rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  text-align: center;
+  margin-bottom: 5px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* ── Bottom overlay — eye + heart + three-dots ── */
+.bottomOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 8px 10px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.62) 55%,
+    transparent 100%
+  );
+  border-radius: 0 0 8px 8px;
+
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 5;
+}
+
+.card:hover .bottomOverlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.iconRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ── Icon buttons ─────────────────────────────── */
+.iconBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+.iconBtn:hover {
+  transform: scale(1.28);
+}
+
+.iconBtn i {
+  font-size: 1rem;
+}
+
+/* Eye */
+.eyeOn  { color: #00e676; }
+.eyeOff { color: #ff4444; }
+
+.iconBtn:hover .eyeOn  { color: #69f0ae; }
+.iconBtn:hover .eyeOff { color: #ff6666; }
+
+/* Heart */
+.heartLiked   { color: #ff6600; }
+.heartUnliked { color: #ffffff; }
+
+.iconBtn:hover .heartLiked   { color: #ff8a50; }
+.iconBtn:hover .heartUnliked { color: #ff1744; }
+
+/* Three-dots */
+.dotsIcon { color: #bbbbbb; }
+.iconBtn:hover .dotsIcon { color: #ffffff; }
+
+/* ── Responsive ───────────────────────────────── */
+@media (max-width: 768px) {
+  .bubbleTitle { font-size: 0.68rem; }
+  .bubbleYear  { font-size: 0.63rem; }
+  .iconBtn i   { font-size: 0.9rem;  }
+  .iconRow     { gap: 12px; }
+}

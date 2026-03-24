@@ -61,8 +61,6 @@ const mergedData = langTVShows
     })
     .filter(item => item !== null); // Filter out null values
 
-console.log(mergedData);
-
 const BarCharts: React.FC = () => {
     return (
         <div className="flex flex-col items-center justify-center bg-gray-100 min-h-screen p-6">

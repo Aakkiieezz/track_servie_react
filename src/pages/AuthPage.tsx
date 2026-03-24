@@ -47,8 +47,8 @@ const AuthPage: React.FC = () => {
                 );
                 if (response.status === 200) {
                     localStorage.setItem("token", response.data.token);
+                    localStorage.setItem("userId", String(response.data.userId));
                     localStorage.setItem("username", response.data.username);
-                    console.log("Fetching profile img from : ", "http://localhost:8080/track-servie/" + response.data.profileImgUrl)
                     localStorage.setItem("profileImgUrl", "http://localhost:8080/track-servie/" + response.data.profileImgUrl);
                     setAlert({ type: "success", message: "Logged in Successfully !!" });
                     navigate("/");
@@ -134,7 +134,6 @@ const AuthPage: React.FC = () => {
                             <img
                                 src="src/assets/google-logo.jpg"
                                 alt="Google Logo"
-                                // style={{ height: "90%", aspectRatio: "1 / 1", position: "absolute", left: "0", borderRadius: "4px" }} />
                                 style={{ height: "90%", aspectRatio: "1 / 1", position: "absolute", left: "2px", borderRadius: "4px" }} />
                             Login with Google
                         </button>
