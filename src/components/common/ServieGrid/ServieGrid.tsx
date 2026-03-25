@@ -6,24 +6,34 @@ interface ServieGridProps {
   servies: Servie[];
   blurCompleted?: boolean;
   onWatchChange?: (tmdbId: number, childtype: string, newWatched: boolean) => void;
+  fadedKeys?: Set<string>;
 }
 
-const ServieGrid: React.FC<ServieGridProps> = ({ servies = [], blurCompleted = false, onWatchChange }) => {
+const ServieGrid: React.FC<ServieGridProps> = ({
+  servies = [],
+  blurCompleted = false,
+  onWatchChange,
+  fadedKeys,
+}) => {
   return (
     <div className="row center">
-      {servies.map((servie) => (
-        <div
-          key={`${servie.childtype}-${servie.tmdbId}`}
-          className="col-xxl-1 col-sm-2 col-3"
-          style={{ padding: "0.2%" }}
-        >
-          <ServieCard
-            servie={servie}
-            blurCompleted={blurCompleted}
-            onWatchChange={onWatchChange}
-          />
-        </div>
-      ))}
+      {servies.map((servie) => {
+        const servieKey = `${servie.childtype}-${servie.tmdbId}`;
+        return (
+          <div
+            key={servieKey}
+            className="col-xxl-1 col-sm-2 col-3"
+            style={{ padding: "0.2%" }}
+          >
+            <ServieCard
+              servie={servie}
+              blurCompleted={blurCompleted}
+              onWatchChange={onWatchChange}
+              faded={fadedKeys?.has(servieKey) ?? false}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 };

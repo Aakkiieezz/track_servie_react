@@ -8,6 +8,7 @@ import HalfStarRating from '../HalfStarRating';
 import type { ReviewData, Servie } from "@/types/servie";
 import styles from './OptionsModal.module.css';
 import { useListPageContext } from '../../../contexts/ListPageContext';
+import { useWatchlistTabContext } from '../../../contexts/WatchlistTabContext';
 
 interface ServieOptionsModalProps {
     isOpen: boolean;
@@ -28,12 +29,11 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     onSuccess,
     onError
 }) => {
-
     const navigate = useNavigate();
     const { setAlert } = useAlert();
 
-    // null when rendered outside ListPage — all context calls are guarded
     const listPageContext = useListPageContext();
+    const watchlistPageContext = useWatchlistTabContext();
 
     const [showListModal, setShowListModal] = useState(false);
     const [loadingLists, setLoadingLists] = useState(false);
@@ -47,7 +47,14 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
         addListId,
         removeListId,
         fetchListDetails,
+        fetchWatchlistKeys,
+        isOnWatchlist,
+        addToWatchlist,
+        removeFromWatchlist,
     } = useServieListStore();
+
+    const servieKey = `${servie.childtype}-${servie.tmdbId}`;
+    const onWatchlist = isOnWatchlist(servieKey);
 
     useEffect(() => {
         if (!isOpen) setShowListModal(false);
@@ -57,12 +64,12 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
         if (isOpen) {
             fetchAllServieLists();
             fetchListDetails();
+            fetchWatchlistKeys();
         }
-    }, [isOpen, fetchAllServieLists, fetchListDetails]);
+    }, [isOpen, fetchAllServieLists, fetchListDetails, fetchWatchlistKeys]);
 
     if (!isOpen || !servie) return null;
 
-    const servieKey = `${servie.childtype}-${servie.tmdbId}`;
     const listIds = servieListMap[servieKey] || [];
 
     const openListModal = async () => {
@@ -97,11 +104,11 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     };
 
     const handleRemoveFromList = async (listId: number) => {
-        // If we're inside ListPage and removing from the current list, update optimistically
         const isCurrentList = listPageContext?.listId === listId;
 
-        if (isCurrentList)
+        if (isCurrentList) {
             listPageContext.onServieRemoved(servie);
+        }
 
         try {
             const response = await axiosInstance.delete(
@@ -112,10 +119,46 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                 onSuccess('Removed from list successfully !!');
             }
         } catch (error) {
-            if (isCurrentList)
+            if (isCurrentList) {
                 listPageContext!.onServieRollback(servie);
-
+            }
             onError('Failed to remove from list, changes reverted');
+        }
+    };
+
+    const toggleWatchList = async (tmdbId: number, childType: "movie" | "tv") => {
+        const wasOnWatchlist = onWatchlist;
+
+        // Optimistic update
+        if (wasOnWatchlist) {
+            removeFromWatchlist(servieKey);
+            watchlistPageContext?.onServieRemoved(servie);
+        } else {
+            addToWatchlist(servieKey);
+        }
+
+        try {
+            const response = await axiosInstance.put(
+                `list/watchlist/${tmdbId}`,
+                null,
+                { params: { childtype: childType } }
+            );
+            if (response.status === 200) {
+                onSuccess(wasOnWatchlist
+                    ? 'Removed from watchlist'
+                    : 'Added to watchlist'
+                );
+            }
+        } catch (error) {
+            // Rollback store
+            if (wasOnWatchlist) {
+                addToWatchlist(servieKey);
+                watchlistPageContext?.onServieRollback(servie);
+            } else {
+                removeFromWatchlist(servieKey);
+            }
+            console.error('Failed to update watchlist', error);
+            setAlert({ type: "danger", message: "Failed to update watchlist, changes reverted" });
         }
     };
 
@@ -126,50 +169,21 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
             await axiosInstance.put(
                 `servies/${servie.tmdbId}`,
                 null,
-                {
-                    params: {
-                        type: servie.childtype,
-                        rating: newRating,
-                    },
-                }
+                { params: { type: servie.childtype, rating: newRating } }
             );
         } catch (error) {
             setRating(ratingCurrent);
-            console.error('Failed to update watch status', error);
-            setAlert({ type: "danger", message: "Failed to update watch status !!" });
+            console.error('Failed to update rating', error);
+            setAlert({ type: "danger", message: "Failed to update rating !!" });
         }
     };
-
-    const toggleWatchList = async (tmdbId: number, childType: "movie" | "tv") => {
-        try {
-            const response = await axiosInstance.put(
-                `list/watchlist/${tmdbId}`,
-                null,
-                {
-                    params: {
-                        childtype: childType,
-                    }
-                },
-            );
-            if (response.status === 200)
-                setAlert({ type: "success", message: `Successfully added/removed from watchlist !!` });
-        } catch (error) {
-            console.error('Failed to add/remove from watchlist', error);
-            setAlert({ type: "danger", message: "Failed to add/remove from watchlist !!" });
-        }
-    }
 
     const handleSaveReview = async (reviewData: ReviewData) => {
         try {
             const response = await axiosInstance.post(
                 `/servies/review/${servie.tmdbId}`,
                 { review: reviewData.review },
-                {
-                    params: {
-                        type: reviewData.childType,
-                        rating: reviewData.rating,
-                    },
-                }
+                { params: { type: reviewData.childType, rating: reviewData.rating } }
             );
             if (response.status === 200 || response.status === 201) {
                 setAlert({ type: "success", message: "Review saved successfully!" });
@@ -186,7 +200,6 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
             {!showListModal && (
                 <div className={styles.backdrop} onClick={onClose}>
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-
                         <div className={styles.header}>
                             <div className={styles.ratingSection}>
                                 <HalfStarRating maxStars={5} initialRating={servie.rated} onRatingChange={handleRatingChange} />
@@ -196,14 +209,13 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
 
                         <div className={styles.body}>
                             <button className={styles.listItem} onClick={() => setIsReviewModalOpen(true)}>
-                                <i className="bi bi-pencil-square"></i>
-                                Add Review
+                                <i className="bi bi-pencil-square"></i> Add Review
                             </button>
 
                             {showWatchlist && (
                                 <button className={styles.listItem} onClick={() => toggleWatchList(servie.tmdbId, servie.childtype)}>
-                                    <i className={`bi bi-clock-fill ${styles.icon}`}></i>
-                                    Add / Remove from Watchlist
+                                    <i className={`bi bi-clock${onWatchlist ? '-fill' : ''} ${styles.icon}`}></i>
+                                    {onWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
                                 </button>
                             )}
 
@@ -270,7 +282,6 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                                                     </div>
                                                 )}
                                             </div>
-
                                             <div style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
                                                 <small style={{ opacity: 0.6, marginRight: "8px" }}>
                                                     {list.totalServiesCount} items

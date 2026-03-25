@@ -10,10 +10,16 @@ interface ListDto2 {
 }
 
 interface ServieListStore {
+    // List mappings
     servieListMap: Record<string, number[]>;
     listDetails: ListDto2[];
     hasFetched: boolean;
 
+    // Watchlist
+    watchlistKeys: string[];
+    hasWatchlistFetched: boolean;
+
+    // List actions
     fetchAllServieLists: () => Promise<void>;
     fetchListDetails: () => Promise<void>;
     setServieListIds: (servieKey: string, listIds: number[]) => void;
@@ -21,28 +27,33 @@ interface ServieListStore {
     removeListId: (servieKey: string, listId: number) => void;
     updateListCount: (listId: number, change: number) => void;
     setListDetails: (lists: ListDto2[]) => void;
+
+    // Watchlist actions
+    fetchWatchlistKeys: () => Promise<void>;
+    isOnWatchlist: (servieKey: string) => boolean;
+    addToWatchlist: (servieKey: string) => void;
+    removeFromWatchlist: (servieKey: string) => void;
+
     clearAll: () => void;
 }
 
 export const useServieListStore = create<ServieListStore>()(
     persist(
         (set, get) => ({
+            // List mappings
             servieListMap: {},
-            
-            listDetails: [], // Initialize as empty array
-
+            listDetails: [],
             hasFetched: false,
 
-            fetchAllServieLists: async () => {
-                if (get().hasFetched)
-                    return; // ✅ already fetched, skip
+            // Watchlist
+            watchlistKeys: [],
+            hasWatchlistFetched: false,
 
+            fetchAllServieLists: async () => {
+                if (get().hasFetched) return;
                 try {
                     const response = await axiosInstance.get<Record<string, number[]>>('/list/servie-mappings');
-                    set({ 
-                        servieListMap: response.data, 
-                        hasFetched: true
-                    });
+                    set({ servieListMap: response.data, hasFetched: true });
                 } catch (error) {
                     console.error('Failed to fetch servie list map:', error);
                 }
@@ -65,17 +76,13 @@ export const useServieListStore = create<ServieListStore>()(
             addListId: (servieKey, listId) => {
                 set((state) => {
                     const currentLists = state.servieListMap[servieKey] || [];
-                    const newLists = [...currentLists, listId];
-
-                    // Update counts
                     const updatedListDetails = state.listDetails.map(list =>
                         list.id === listId
                             ? { ...list, totalServiesCount: list.totalServiesCount + 1 }
                             : list
                     );
-
                     return {
-                        servieListMap: { ...state.servieListMap, [servieKey]: newLists },
+                        servieListMap: { ...state.servieListMap, [servieKey]: [...currentLists, listId] },
                         listDetails: updatedListDetails
                     };
                 });
@@ -84,17 +91,13 @@ export const useServieListStore = create<ServieListStore>()(
             removeListId: (servieKey, listId) => {
                 set((state) => {
                     const currentLists = state.servieListMap[servieKey] || [];
-                    const newLists = currentLists.filter(id => id !== listId);
-
-                    // Update counts
                     const updatedListDetails = state.listDetails.map(list =>
                         list.id === listId
                             ? { ...list, totalServiesCount: Math.max(0, list.totalServiesCount - 1) }
                             : list
                     );
-
                     return {
-                        servieListMap: { ...state.servieListMap, [servieKey]: newLists },
+                        servieListMap: { ...state.servieListMap, [servieKey]: currentLists.filter(id => id !== listId) },
                         listDetails: updatedListDetails
                     };
                 });
@@ -110,18 +113,43 @@ export const useServieListStore = create<ServieListStore>()(
                 }));
             },
 
-            setListDetails: (lists) => {
-                set({ listDetails: lists });
+            setListDetails: (lists) => set({ listDetails: lists }),
+
+            // Watchlist
+            fetchWatchlistKeys: async () => {
+                if (get().hasWatchlistFetched) return;
+                try {
+                    const response = await axiosInstance.get<string[]>('/list/watchlist-keys');
+                    set({ watchlistKeys: response.data, hasWatchlistFetched: true });
+                } catch (error) {
+                    console.error('Failed to fetch watchlist keys:', error);
+                }
             },
 
-            clearAll: () => set({ 
-                servieListMap: {}, 
-                listDetails: [], 
-                hasFetched: false 
+            isOnWatchlist: (servieKey) => get().watchlistKeys.includes(servieKey),
+
+            addToWatchlist: (servieKey) =>
+                set((state) => ({
+                    watchlistKeys: state.watchlistKeys.includes(servieKey)
+                        ? state.watchlistKeys
+                        : [...state.watchlistKeys, servieKey],
+                })),
+
+            removeFromWatchlist: (servieKey) =>
+                set((state) => ({
+                    watchlistKeys: state.watchlistKeys.filter(k => k !== servieKey),
+                })),
+
+            clearAll: () => set({
+                servieListMap: {},
+                listDetails: [],
+                hasFetched: false,
+                watchlistKeys: [],
+                hasWatchlistFetched: false,
             }),
         }),
         {
-            name: 'servie-list-storage', // LocalStorage key
+            name: 'servie-list-storage',
         }
     )
 );
