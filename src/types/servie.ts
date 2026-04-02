@@ -7,12 +7,12 @@ export interface Servie {
   popularity?: number | null;
 
   // Movie fields
-  releaseDate?: string;
+  releaseDate?: string | null;
 
   // Series fields
   totalEpisodes?: number | null;
-  firstAirDate?: string;
-  lastAirDate?: string;
+  firstAirDate?: string | null;
+  lastAirDate?: string | null;
 
   // UserServieData fields
   episodesWatched?: number;

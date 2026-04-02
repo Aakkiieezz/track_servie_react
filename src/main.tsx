@@ -5,7 +5,6 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap/dist/css/bootstrap.css";
 import './index.css';
 
-import HomePage from "./pages/HomePage.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
 import SetingsPage from "./pages/SettingsPage.tsx";
@@ -23,6 +22,8 @@ import "./index.css";
 import UserProfilePage from "./pages/UserProfilePage.tsx";
 import { AlertProvider, useAlert } from "./contexts/AlertContext";
 import Alert from "./components/common/Alert/Alert.tsx";
+import DiscoverPage from "./pages/DiscoveryPage.tsx";
+import HomePage from "./pages/HomePage.tsx";
 
 const processToken = () => {
     const params = new URLSearchParams(window.location.search);
@@ -84,7 +85,42 @@ const router = createBrowserRouter([
         path: "/profile/:userId/:tab?",
         element: <PrivateRoute element={<UserProfilePage />} />,
     },
-
+    {
+        path: "/trending/movies",
+        element: <DiscoverPage />
+    },
+    {
+        path: "/trending/tv",
+        element: <DiscoverPage />
+    },
+    {
+        path: "/trending/all",
+        element: <DiscoverPage />
+    },
+    {
+        path: "/popular/movies",
+        element: <DiscoverPage />
+    },
+    {
+        path: "/popular/tv",
+        element: <DiscoverPage />
+    },
+    {
+        path: "/popular/all",
+        element: <DiscoverPage />
+    },
+    {
+        path: "/top-rated/movies",
+        element: <DiscoverPage />
+    },
+    {
+        path: "/top-rated/tv",
+        element: <DiscoverPage />
+    },
+    {
+        path: "/upcoming/movies",
+        element: <DiscoverPage />
+    }
 ]);
 
 const RouterWithGlobalAlert: React.FC = () => {

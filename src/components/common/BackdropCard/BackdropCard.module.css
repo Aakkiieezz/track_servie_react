@@ -1,0 +1,274 @@
+/* ── Card link wrapper ── */
+.cardLink {
+  display: block;
+  text-decoration: none;
+  /* color: inherit; */
+}
+/* ── Shell ── */
+.card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  /* border: 0.5px solid var(--border-color, rgba(0, 0, 0, 0.1)); */
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card:hover .backdropImg {
+  transform: scale(1.03);
+}
+
+/* ── Backdrop layer ── */
+.backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.backdropImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.backdropFallback {
+  width: 100%;
+  height: 100%;
+  background: #1a1a2e;
+}
+
+/*
+  Two overlay layers stacked:
+
+  1. Base overlay — uniform rgba across the whole card.
+     Ensures text is always readable regardless of backdrop brightness.
+
+  2. Left gradient — extra darkness on the left where the poster
+     and text live, fades toward the right so the backdrop image
+     is more visible there. Gives a natural cinematic feel.
+*/
+.backdropOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.42);
+}
+
+.backdropGradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.50) 0%,
+    rgba(0, 0, 0, 0.30) 45%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+}
+
+/* ── Rank badge ── */
+.rank {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+  z-index: 2;
+  line-height: 1;
+}
+
+/* ── Status chip (top-right) ── */
+.statusChip {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  z-index: 2;
+  line-height: 1.4;
+}
+
+.chipWatched {
+  background: #1d9e75;
+  color: #e1f5ee;
+}
+
+.chipWatching {
+  background: #185fa5;
+  color: #e6f1fb;
+}
+
+/* ── Inner layout ── */
+.inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  z-index: 1;
+}
+
+/* ── Poster ── */
+.poster {
+  flex: 0 0 28%;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.posterImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.posterFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.posterFallbackText {
+  font-size: 28px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* ── Details ── */
+.details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.meta {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1;
+}
+
+/* ── Genres ── */
+.genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.genreTag {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 0.5px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* ── Rating ── */
+.rating {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 2px;
+}
+
+/* ── Action buttons ── */
+.actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  /* flex-wrap: wrap; */
+}
+
+.actionBtn {
+  font-size: 13px;
+  /* font-weight: 500; */
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 0.5px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  line-height: 1;
+}
+
+.actionBtn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+.actionBtnActive {
+  background: #1d9e75;
+  border-color: #1d9e75;
+  color: #e1f5ee;
+}
+
+.actionBtnActive:hover {
+  background: #0f6e56;
+  border-color: #0f6e56;
+}
+
+.actionBtnLiked {
+  background: rgba(212, 83, 126, 0.3);
+  border-color: rgba(212, 83, 126, 0.6);
+  color: #f4c0d1;
+}
+
+.actionBtnLiked:hover {
+  background: rgba(212, 83, 126, 0.45);
+}
+
+/* ── Progress bar ── */
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  z-index: 2;
+}
+
+.progressFill {
+  height: 100%;
+  background: #378add;
+  transition: width 0.3s ease;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .title   { font-size: 13px; }
+  .actions { display: none;   }
+  .genres  { display: none;   }
+}

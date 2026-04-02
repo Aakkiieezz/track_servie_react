@@ -1,0 +1,59 @@
+.page {
+  width: 100%;
+  padding: 16px 24px;
+  margin-top: 8px;
+}
+
+/* ── Header ── */
+.title {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.count {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-tertiary);
+}
+
+/* ── Backdrop grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 1200px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px)  { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .grid { grid-template-columns: 1fr; } }
+
+/* ── Skeleton ── */
+@keyframes shimmer {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.skeleton {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border-radius: 10px;
+  background: var(--color-background-secondary);
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* ── Error ── */
+.error {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  padding: 16px 0;
+}
+
+@media (max-width: 768px) {
+  .page { padding: 20px 16px; }
+}
