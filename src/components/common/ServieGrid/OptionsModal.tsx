@@ -53,6 +53,15 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
         removeFromWatchlist,
     } = useServieListStore();
 
+    useEffect(() => {
+        if (isOpen && showLists)
+            fetchListDetails();
+        if (isOpen && showWatchlist)
+            fetchWatchlistKeys();
+    }, [isOpen, showLists, showWatchlist, fetchListDetails, fetchWatchlistKeys]);
+
+    const safeListDetails = listDetails ?? [];
+
     const servieKey = `${servie.childtype}-${servie.tmdbId}`;
     const onWatchlist = isOnWatchlist(servieKey);
 
@@ -259,10 +268,10 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                         </div>
 
                         <div className={styles.body}>
-                            {listDetails.length === 0 ? (
+                            {safeListDetails.length === 0 ? (
                                 <p style={{ textAlign: "center", opacity: 0.7 }}>No lists available</p>
                             ) : (
-                                listDetails.map((list) => {
+                                safeListDetails.map((list) => {
                                     const isAlreadyAdded = listIds.includes(list.id);
                                     return (
                                         <button

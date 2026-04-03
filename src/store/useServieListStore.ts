@@ -61,8 +61,8 @@ export const useServieListStore = create<ServieListStore>()(
 
             fetchListDetails: async () => {
                 try {
-                    const response = await axiosInstance.get<{ lists: ListDto2[] }>('/list/all');
-                    set({ listDetails: response.data.lists });
+                    const response = await axiosInstance.get<ListDto2[]>('/list/all');
+                    set({ listDetails: response.data });
                 } catch (error) {
                     console.error('Failed to fetch list details:', error);
                 }
