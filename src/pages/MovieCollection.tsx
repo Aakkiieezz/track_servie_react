@@ -63,7 +63,7 @@ const MovieCollection = () => {
             <div className="container-fluid backdrop">
                 <img
                     className={styles.backgroundImage}
-                    src={`https://www.themoviedb.org/t/p/original${data?.backdropPath}`}
+                    src={`https://image.tmdb.org/t/p/original${data?.backdropPath}`}
                     alt={"Backdrop Unavailable"}
                     onError={(e) => {
                         e.currentTarget.src = 'src/assets/defaultBackground.png';

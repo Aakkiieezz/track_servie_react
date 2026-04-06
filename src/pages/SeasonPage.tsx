@@ -377,7 +377,7 @@ const SeasonPage = () => {
                             {/* Poster */}
                             <div className={styles.posterContainer}>
                                 <img
-                                    src={`https://www.themoviedb.org/t/p/original${season.posterPath}`}
+                                    src={`https://image.tmdb.org/t/p/original${season.posterPath}`}
                                     alt={season.name}
                                     className={styles.posterImage}
                                 />
@@ -485,7 +485,7 @@ const SeasonPage = () => {
                                             <div className={styles.episodeThumbnail}>
                                                 <img
                                                     src={episode.stillPath
-                                                        ? `https://www.themoviedb.org/t/p/original${episode.stillPath}`
+                                                        ? `https://image.tmdb.org/t/p/original${episode.stillPath}`
                                                         : `https://placehold.co/428x240?text=Ep. ${episode.episodeNo}`
                                                     }
                                                     alt={`Episode ${episode.episodeNo}`}

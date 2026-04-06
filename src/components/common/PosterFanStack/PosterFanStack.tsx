@@ -121,7 +121,7 @@ const PosterFanStack: React.FC<PosterFanStackProps> = ({ posters = [], height = 
                             className={`${styles.posterImg} ${idx === (hoverIndex ?? 0) ? styles.posterActive : ""}`}
                             onError={(ev) => {
                                 (ev.currentTarget as HTMLImageElement).onerror = null;
-                                (ev.currentTarget as HTMLImageElement).src = `https://www.themoviedb.org/t/p/original${p || ""}`;
+                                (ev.currentTarget as HTMLImageElement).src = `https://image.tmdb.org/t/p/original${p || ""}`;
                             }}
                         />
                     </div>

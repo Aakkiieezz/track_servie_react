@@ -13,7 +13,6 @@ import ServiePage from "./pages/ServiePage.tsx";
 import SearchPage from "./pages/SearchPage.tsx";
 import SeasonPage from "./pages/SeasonPage.tsx";
 import PersonPage from "./pages/PersonPage.tsx";
-import Stats from "./pages/Stats.tsx";
 import StatsLangBarLog from "./pages/StatsLangBarLog.tsx";
 import MovieCollection from "./pages/MovieCollection.tsx";
 import ListPage from "./pages/ListPage.tsx";
@@ -70,9 +69,9 @@ const router = createBrowserRouter([
     },
 
     { path: "/servie", element: <ServiePage /> },
+    
     { path: "/images", element: <ImageGalleryPage /> },
 
-    { path: "/stats", element: <PrivateRoute element={<Stats />} /> },
     { path: "/statslangbarlog", element: <PrivateRoute element={<StatsLangBarLog />} /> },
 
     { path: "/list/:listId", element: <ListPage /> },

@@ -26,7 +26,7 @@ const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childTyp
 
     const getProfileImage = (profile: Cast) => {
         if (profile.profilePath)
-            return `https://www.themoviedb.org/t/p/original${profile.profilePath}`;
+            return `https://image.tmdb.org/t/p/original${profile.profilePath}`;
         else {
             return profile.gender === 1
                 ? '/src/assets/profile_icon_female.png'

@@ -99,7 +99,7 @@ const PersonPage: React.FC = () => {
                             {/* Profile Image */}
                             <div className={styles.profileContainer}>
                                 <img
-                                    src={`https://www.themoviedb.org/t/p/original/${personData.profilePath}`}
+                                    src={`https://image.tmdb.org/t/p/original/${personData.profilePath}`}
                                     alt={personData.name}
                                     className={styles.profileImage}
                                 />

@@ -208,7 +208,7 @@ const SearchPageFilter: React.FC<SearchPageFilterProps> = ({
                       src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${result.posterPath.replace('.jpg', '.webp')}`}
                       onError={(e) => {
                         e.currentTarget.onerror = null;
-                        e.currentTarget.src = `https://www.themoviedb.org/t/p/original${result.posterPath}`;
+                        e.currentTarget.src = `https://image.tmdb.org/t/p/original${result.posterPath}`;
                       }}
                       alt={result.title}
                       style={{

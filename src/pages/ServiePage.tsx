@@ -338,7 +338,7 @@ const ServiePage = () => {
                 <div className={styles.fullPageBackdrop}>
                     <img
                         className={styles.backgroundImage}
-                        src={`https://www.themoviedb.org/t/p/original${data?.backdropPath}`}
+                        src={`https://image.tmdb.org/t/p/original${data?.backdropPath}`}
                         alt={"Backdrop Unavailable"}
                         onError={(e) => {
                             e.currentTarget.src = 'src/assets/defaultBackground.png';
@@ -360,7 +360,7 @@ const ServiePage = () => {
                                 <div className={styles.titleLogo}>
                                     {!isImageError && data?.logoPath ? (
                                         <img
-                                            src={`https://www.themoviedb.org/t/p/original${data.logoPath}`}
+                                            src={`https://image.tmdb.org/t/p/original${data.logoPath}`}
                                             alt={data?.title || "logo"}
                                             onError={() => setIsImageError(true)}
                                         />
@@ -502,7 +502,7 @@ const ServiePage = () => {
                                         <h5>{data.collectionName}</h5>
                                         <img
                                             className="rounded"
-                                            src={`https://www.themoviedb.org/t/p/original${data.collectionPosterPath}`}
+                                            src={`https://image.tmdb.org/t/p/original${data.collectionPosterPath}`}
                                             alt="Poster Unavailable"
                                             style={{ width: "200px", height: "300px", cursor: "pointer" }}
                                             onClick={() => navigate(`/movie-collection/${data.collectionId}`)}
@@ -640,7 +640,7 @@ const ServiePage = () => {
                     ? (data?.releaseDate ? new Date(data.releaseDate).getFullYear().toString() : '')
                     : (data?.firstAirDate ? new Date(data.firstAirDate).getFullYear().toString() : '')
                 }
-                posterPath={`https://www.themoviedb.org/t/p/w500${data?.backdropPath || ''}`}
+                posterPath={`https://image.tmdb.org/t/p/w500${data?.backdropPath || ''}`}
             />
         </>
     );

@@ -322,7 +322,7 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                     ? (servie.releaseDate ? new Date(servie.releaseDate).getFullYear().toString() : '')
                     : (servie.firstAirDate ? new Date(servie.firstAirDate).getFullYear().toString() : '')
                 }
-                posterPath={`https://www.themoviedb.org/t/p/w500${servie.posterPath || ''}`}
+                posterPath={`https://image.tmdb.org/t/p/w500${servie.posterPath || ''}`}
             />
         </>
     );
