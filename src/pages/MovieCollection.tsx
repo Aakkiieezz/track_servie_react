@@ -24,17 +24,17 @@ interface MovieCollectionProps {
 }
 
 const MovieCollection = () => {
-    const { collectionId } = useParams<{ collectionId: string }>(); // Extract ID from the URL
-    const [data, setData] = useState<MovieCollectionProps | null>(null); // Proper typing
+    const { collectionId } = useParams<{ collectionId: string }>();
+    const [data, setData] = useState<MovieCollectionProps | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null); // Proper typing for error
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
 
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await axiosInstance.get<MovieCollectionProps>(`/servies/movie-collection/${collectionId}`);
+                const response = await axiosInstance.get<MovieCollectionProps>(`/movie-collection/${collectionId}`);
                 setData(response.data);
             } catch (err) {
                 if (err instanceof Error)
@@ -74,7 +74,7 @@ const MovieCollection = () => {
                     <div className="container">
                         <h1>{data?.name}</h1>
                         <br />
-                        
+
                         {/* Overview Section */}
                         {data?.overview && (
                             <>
@@ -84,19 +84,19 @@ const MovieCollection = () => {
                         )}
 
                         <br />
-                        
+
                         {/* Movies Grid Section */}
                         <h4>Movies</h4>
                         <div className="row center">
                             {data?.movies.map((movie) => (
                                 <div key={movie.tmdbId} className="col-lg-2 col-md-3 col-sm-4 col-6" style={{ padding: "0.2%" }}>
-                                <ServieCard
-                                    servie={{
-                                        ...movie,
-                                        childtype: "movie",
-                                        completed: movie.watched,
-                                    }}
-                                />
+                                    <ServieCard
+                                        servie={{
+                                            ...movie,
+                                            childtype: "movie",
+                                            completed: movie.watched,
+                                        }}
+                                    />
                                 </div>
                             ))}
                         </div>

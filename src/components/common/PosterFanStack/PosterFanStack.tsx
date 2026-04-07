@@ -30,9 +30,6 @@ const PosterFanStack: React.FC<PosterFanStackProps> = ({ posters = [], height = 
     // Offset for each poster to show 50% of next poster
     const posterOffset = Math.round(posterWidth * 0.5);
 
-    // Container width: shows 1st poster fully + 50% of each remaining poster
-    const containerWidth = posterWidth + (finalPosters.length - 1) * posterOffset;
-
     if (finalPosters.length === 0) {
         const skeletonCount = 5;
 

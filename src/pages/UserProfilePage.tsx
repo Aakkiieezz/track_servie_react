@@ -12,6 +12,7 @@ import ProfileListsTab from "@/components/ProfilePage/ListsTab/ListsTab";
 import ProfileWatchlistTab from "@/components/ProfilePage/WatchlistTab";
 import ProfileNetworkTab from "@/components/ProfilePage/NetworkTab/NetworkTab";
 import ProfileStatsTab from "@/components/ProfilePage/StatsTab/StatsTab";
+import MovieCollectionsTab from "@/components/ProfilePage/MovieCollectionsTab/MovieCollectionsTab";
 
 interface UserProfile {
   id: number;
@@ -27,13 +28,14 @@ interface UserProfile {
   totalServies: number;
 }
 
-type TabType = "overview" | "servies" | "lists" | "watchlist" | "network" | "stats";
+type TabType = "overview" | "servies" | "lists" | "watchlist" |  "movie-collections" | "network" | "stats";
 
 const tabs: TabType[] = [
   "overview",
   "servies",
   "lists",
   "watchlist",
+  "movie-collections",
   "network",
   "stats",
 ];
@@ -387,6 +389,10 @@ const UserProfilePage: React.FC = () => {
 
             {!tabLoading && activeTab === "watchlist" && (
               <ProfileWatchlistTab userId={profileUserId} />
+            )}
+
+            {!tabLoading && activeTab === "movie-collections" && (
+              <MovieCollectionsTab userId={profileUserId} />
             )}
 
             {!tabLoading && activeTab === "network" && (

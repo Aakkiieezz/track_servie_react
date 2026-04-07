@@ -1,0 +1,248 @@
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 2rem;
+}
+
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+  color: #fff;
+}
+
+.sortContainer {
+  position: relative;
+}
+
+.sortButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.sortButton:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.sortButton:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.sortLabel {
+  white-space: nowrap;
+}
+
+.sortIcon {
+  transition: transform 0.2s ease;
+  opacity: 0.7;
+}
+
+.sortIconOpen {
+  transform: rotate(180deg);
+}
+
+.sortDropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  min-width: 200px;
+  z-index: 1000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sortOption {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.15s ease;
+}
+
+.sortOption:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.sortOptionActive {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-weight: 500;
+}
+
+.countRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 0.5rem;
+}
+
+.countText {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.collectionsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 360px);
+  gap: 2rem;
+  margin-bottom: 3rem;
+  justify-content: start;
+}
+
+@media (max-width: 1600px) {
+  .collectionsGrid {
+    grid-template-columns: repeat(3, 360px);
+  }
+}
+
+@media (max-width: 1200px) {
+  .collectionsGrid {
+    grid-template-columns: repeat(2, 360px);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .collectionsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.collectionCard {
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+}
+
+.posterArea {
+  width: 360px;
+  height: 180px;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.posterArea::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+  z-index: 0;
+}
+
+.posterArea > * {
+  position: relative;
+  z-index: 1;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.collectionName {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #fff;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  cursor: pointer;
+  word-break: break-word;
+}
+
+.watchCount {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.loadingText,
+.emptyText {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  padding: 3rem 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .headerRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+
+  .sortButton {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.875rem;
+  }
+
+  .sortLabel {
+    font-size: 0.85rem;
+  }
+
+  .collectionCard {
+    width: 100%;
+  }
+
+  .posterArea {
+    width: 100%;
+  }
+}
