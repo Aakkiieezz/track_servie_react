@@ -1,0 +1,202 @@
+/* =========================
+   CSS Variables for Theming
+   ========================= */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+:global(.dark) {
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #e5e7eb;
+  --text-muted: #9ca3af;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* =========================
+   Navigation Bar Container
+   ========================= */
+.navBarContainer {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  padding: 12px 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* =========================
+   Nav Content Layout
+   ========================= */
+.navContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* =========================
+   Episode Info
+   ========================= */
+.episodeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.episodeLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.episodeName {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================
+   Episode Counter
+   ========================= */
+.episodeCounter {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* =========================
+   Navigation Buttons
+   ========================= */
+.navButtons {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.navButton:hover:not(:disabled) {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.navButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.navButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.prevButton i,
+.nextButton i {
+  font-size: 16px;
+}
+
+.buttonText {
+  display: inline;
+}
+
+/* =========================
+   Responsive Design
+   ========================= */
+@media (max-width: 768px) {
+  .navContent {
+    gap: 12px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .navBarContainer {
+    padding: 8px 0;
+  }
+
+  .episodeName {
+    font-size: 14px;
+  }
+
+  .navButton {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .episodeCounter {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .buttonText {
+    display: none;
+  }
+
+  .navButton i {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navContent {
+    gap: 8px;
+  }
+
+  .episodeInfo {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .episodeCounter {
+    display: none;
+  }
+
+  .navButton {
+    padding: 6px 8px;
+  }
+}

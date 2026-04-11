@@ -1,0 +1,353 @@
+.authTabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px 0;
+}
+
+.centeredContent {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 700px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 900px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.sectionTitle i {
+  font-size: 20px;
+  color: var(--text-muted);
+}
+
+/* Auth Card */
+.authCardWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.authCard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 28px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.authCard:hover {
+  background: var(--bg-elevated);
+  border-color: rgba(63, 113, 174, 0.3);
+}
+
+/* Form Group */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Password Input */
+.passwordInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 40px 12px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(63, 113, 174, 0.6);
+  background: var(--bg-secondary);
+  box-shadow: 0 0 0 3px rgba(63, 113, 174, 0.1);
+}
+
+.input:disabled {
+  background: var(--overlay-light);
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+}
+
+.inputError {
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.inputError:focus {
+  border-color: #ff6b6b;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.togglePassword {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: all 0.2s ease;
+}
+
+.togglePassword:hover {
+  color: var(--text-primary);
+}
+
+.togglePassword:active {
+  transform: scale(0.9);
+}
+
+/* Error Text */
+.errorText {
+  font-size: 12px;
+  color: #ff6b6b;
+  font-weight: 500;
+}
+
+/* Password Strength */
+.strengthContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.strengthBar {
+  flex: 1;
+  height: 4px;
+  background: var(--overlay-light);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strengthFill {
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.strengthLabel {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Password Requirements */
+.passwordRequirements {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: rgba(63, 113, 174, 0.05);
+  border: 1px solid rgba(63, 113, 174, 0.15);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.requirementsTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.requirementsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.requirementsList li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.requirementsList i {
+  font-size: 14px;
+  color: var(--text-tertiary);
+  transition: all 0.2s ease;
+}
+
+.requirementMet {
+  color: var(--text-primary);
+}
+
+.requirementMet i {
+  color: #2e7d32;
+}
+
+/* Change Password Button */
+.changePasswordButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, rgba(63, 113, 174, 0.8), rgba(82, 164, 216, 0.8));
+  color: #fff;
+  border: 1px solid rgba(63, 113, 174, 0.5);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(8px);
+  margin-top: 8px;
+}
+
+.changePasswordButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(63, 113, 174, 0.95), rgba(82, 164, 216, 0.95));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(63, 113, 174, 0.3);
+}
+
+.changePasswordButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.changePasswordButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.changePasswordButton i {
+  font-size: 16px;
+}
+
+/* Security Card */
+.securityCardWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.securityCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.securityCard:hover {
+  background: var(--bg-elevated);
+  border-color: rgba(63, 113, 174, 0.3);
+}
+
+.securityItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.securityItem i {
+  font-size: 20px;
+  color: var(--list-active-accent);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.securityContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.securityLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.securityDescription {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .authCard {
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .securityCard {
+    padding: 20px;
+  }
+
+  .strengthContainer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .strengthLabel {
+    width: 100%;
+  }
+
+  .sectionTitle {
+    font-size: 16px;
+  }
+}

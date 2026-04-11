@@ -7,13 +7,11 @@ import './index.css';
 
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
-import SetingsPage from "./pages/SettingsPage.tsx";
 import { isAuthenticated } from "./utils/auth";
 import ServiePage from "./pages/ServiePage.tsx";
 import SearchPage from "./pages/SearchPage.tsx";
 import SeasonPage from "./pages/SeasonPage.tsx";
 import PersonPage from "./pages/PersonPage.tsx";
-import StatsLangBarLog from "./pages/StatsLangBarLog.tsx";
 import MovieCollection from "./pages/MovieCollection.tsx";
 import ListPage from "./pages/ListPage.tsx";
 import ImageGalleryPage from "./pages/ImageGalleryPage.tsx";
@@ -23,6 +21,8 @@ import { AlertProvider, useAlert } from "./contexts/AlertContext";
 import Alert from "./components/common/Alert/Alert.tsx";
 import DiscoverPage from "./pages/DiscoveryPage.tsx";
 import HomePage from "./pages/HomePage.tsx";
+import EpisodePage from "./pages/EpisodePage.tsx";
+import SettingsPage from "./pages/SettingsPage.tsx";
 
 const processToken = () => {
     const params = new URLSearchParams(window.location.search);
@@ -59,7 +59,7 @@ const router = createBrowserRouter([
     { path: "/movie-collection/:collectionId", element: <MovieCollection /> },
     { path: "/person/:personId", element: <PersonPage /> },
 
-    { path: "/settings", element: <PrivateRoute element={<SetingsPage />} /> },
+    { path: "/settings", element: <PrivateRoute element={<SettingsPage />} /> },
 
     { path: "/search", element: <PrivateRoute element={<SearchPage />} /> },
 
@@ -68,11 +68,14 @@ const router = createBrowserRouter([
         element: <PrivateRoute element={<SeasonPage />} />,
     },
 
-    { path: "/servie", element: <ServiePage /> },
-    
-    { path: "/images", element: <ImageGalleryPage /> },
+    {
+        path: "/servies/:tmdbId/Season/:seasonNo/Episode/:episodeNo",
+        element: <PrivateRoute element={<EpisodePage />} />,
+    },
 
-    { path: "/statslangbarlog", element: <PrivateRoute element={<StatsLangBarLog />} /> },
+    { path: "/servie", element: <ServiePage /> },
+
+    { path: "/images", element: <ImageGalleryPage /> },
 
     { path: "/list/:listId", element: <ListPage /> },
 

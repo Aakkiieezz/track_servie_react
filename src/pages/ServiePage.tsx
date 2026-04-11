@@ -316,17 +316,11 @@ const ServiePage = () => {
                 }
             );
 
-            if (response.status === 200 || response.status === 201) {
-                setAlert({
-                    type: "success",
-                    message: "Review saved successfully!"
-                });
-            }
+            if (response.status === 200 || response.status === 201)
+                setAlert({ type: "success", message: "Review saved successfully!" });
         } catch (error) {
             console.error('Failed to save review', error);
-            setAlert({
-                type: "danger",
-                message: "Failed to save review!"
+            setAlert({ type: "danger", message: "Failed to save review!"
             });
         }
     };

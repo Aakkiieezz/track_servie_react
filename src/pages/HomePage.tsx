@@ -163,10 +163,10 @@ export default function HomePage() {
         loadSection("popularAll", fetchPopularAll);
         loadSection("popularMovies", fetchPopularMovies);
         loadSection("popularTv", fetchPopularTv);
-        
+
         loadSection("topRatedMovies", fetchTopRatedMovies);
         loadSection("topRatedTv", fetchTopRatedTv);
-        
+
         loadSection("upcomingMovies", fetchUpcomingMovies);
     }, [genreMap, interactionsLoaded]);
 
@@ -178,8 +178,11 @@ export default function HomePage() {
     // ── Merge + render a section ──────────────────────────────────────────
 
     function renderSection(section: SectionData) {
-        if (section.loading) return <PosterSkeleton count={POSTER_LIMIT} />;
-        if (section.error) return <SectionError />;
+        if (section.loading)
+            return <PosterSkeleton count={POSTER_LIMIT} />;
+
+        if (section.error)
+            return <SectionError />;
 
         return mergeMediaWithUserState(section.items, getInteraction, genreMap)
             .map((item) => (

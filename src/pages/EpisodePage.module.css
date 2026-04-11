@@ -1,0 +1,502 @@
+/* =========================
+   CSS Variables for Theming
+   ========================= */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f4f6;
+  --bg-tertiary: rgba(0, 0, 0, 0.03);
+  --bg-elevated: rgba(0, 0, 0, 0.06);
+  --bg-card: rgba(0, 0, 0, 0.08);
+
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-tertiary: #4b5563;
+  --text-muted: #6b7280;
+  --text-subtle: #9ca3af;
+
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-strong: rgba(0, 0, 0, 0.3);
+
+  --overlay-light: rgba(0, 0, 0, 0.08);
+  --overlay-medium: rgba(0, 0, 0, 0.1);
+}
+
+:global(.dark) {
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: rgba(255, 255, 255, 0.05);
+  --bg-elevated: rgba(255, 255, 255, 0.08);
+  --bg-card: rgba(255, 255, 255, 0.1);
+
+  --text-primary: #ffffff;
+  --text-secondary: #e5e7eb;
+  --text-tertiary: #d1d5db;
+  --text-muted: #9ca3af;
+  --text-subtle: #6b7280;
+
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-strong: rgba(0, 0, 0, 0.6);
+
+  --overlay-light: rgba(255, 255, 255, 0.1);
+  --overlay-medium: rgba(255, 255, 255, 0.1);
+}
+
+/* =========================
+   Page Container
+   ========================= */
+.pageContainer {
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--text-secondary);
+  padding: 32px 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* =========================
+   Loading & Error States
+   ========================= */
+.loadingState,
+.errorState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  font-size: 16px;
+  color: var(--text-secondary);
+  flex-direction: column;
+  gap: 16px;
+}
+
+.errorState {
+  color: #ef4444;
+}
+
+.retryButton {
+  padding: 10px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retryButton:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   Hero Section
+   ========================= */
+.heroSection {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.stillContainer {
+  flex: 0 0 356px;
+}
+
+.stillImageWrapper {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px var(--shadow-strong);
+}
+
+.stillImage {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.watchedBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #10b981;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.infoSection {
+  flex: 1;
+}
+
+.episodeLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.episodeTitle {
+  font-size: 48px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.metaInfo {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.metaItem {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.metaSeparator {
+  color: var(--text-muted);
+}
+
+.ratingDisplay {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 12px;
+  background: var(--overlay-light);
+  border-radius: 8px;
+  margin-top: 12px;
+  width: fit-content;
+}
+
+.ratingLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.ratingValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* =========================
+   Stats & Actions Bar
+   ========================= */
+.statsBar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  padding: 20px;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.actionButton.watched {
+  background: #10b981;
+}
+
+.actionButton.unwatched {
+  background: #ef4444;
+}
+
+.actionButton.liked {
+  background: #ec4899;
+}
+
+.actionButton:not(.watched):not(.unwatched):not(.liked) {
+  background: #3b82f6;
+}
+
+.actionButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.actionButton:active {
+  transform: translateY(0);
+}
+
+.actionButton i {
+  font-size: 16px;
+}
+
+.ratingSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ratingSection :global(.star-rating) {
+  display: flex;
+  gap: 4px;
+}
+
+/* =========================
+   Overview Section
+   ========================= */
+.overviewSection {
+  margin-bottom: 32px;
+  padding: 20px;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.overviewText {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0 0 12px 0;
+}
+
+.lastModified {
+  font-size: 12px;
+  color: var(--text-subtle);
+  margin: 0;
+}
+
+/* =========================
+   Cast Section
+   ========================= */
+.castSection {
+  margin-bottom: 48px;
+}
+
+.castSection :global(.cast-slider) {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+}
+
+.castSection :global(.cast-card) {
+  min-width: 140px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.castSection :global(.actor-avatar) {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: var(--bg-secondary);
+}
+
+.castSection :global(.avatar-image) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.castSection :global(.actor-name) {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.castSection :global(.actor-character) {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* =========================
+   Responsive Design
+   ========================= */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 20px;
+  }
+
+  .heroSection {
+    gap: 24px;
+  }
+
+  .stillContainer {
+    flex: 0 0 300px;
+  }
+
+  .episodeTitle {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 24px 0;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .heroSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stillContainer {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .episodeTitle {
+    font-size: 28px;
+  }
+
+  .statsBar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .actionButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ratingSection {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .overviewSection {
+    padding: 16px;
+  }
+
+  .sectionTitle {
+    font-size: 22px;
+  }
+
+  .metaInfo {
+    gap: 8px;
+  }
+
+  .metaItem {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 12px;
+  }
+
+  .heroSection {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stillImageWrapper {
+    border-radius: 8px;
+  }
+
+  .episodeTitle {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+
+  .episodeLabel {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .watchedBadge {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    top: 8px;
+    right: 8px;
+  }
+
+  .statsBar {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .actionButton {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .actionButton i {
+    font-size: 14px;
+  }
+
+  .ratingDisplay {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .ratingLabel {
+    font-size: 10px;
+  }
+
+  .ratingValue {
+    font-size: 14px;
+  }
+
+  .sectionTitle {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .overviewText {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .castSection {
+    margin-bottom: 24px;
+  }
+}

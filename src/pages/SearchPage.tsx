@@ -135,7 +135,7 @@ export default function SearchPage() {
     );
 
     // ── Unsupported types ──
-    if (filters.type === "person" || filters.type === "collection") {
+    if (filters.type === "person" || filters.type === "collection")
         return (
             <>
                 <AppHeader />
@@ -147,7 +147,6 @@ export default function SearchPage() {
                 </main>
             </>
         );
-    }
 
     // ── Loading ──
     if (loading)

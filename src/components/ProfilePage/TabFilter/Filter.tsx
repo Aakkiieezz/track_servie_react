@@ -171,7 +171,7 @@ const HomePageFilter: React.FC<FilterProps> = ({ handleFilterChange }) => {
 
     return (
         <form onSubmit={handleSubmit} className="d-flex flex-row align-items-center gap-1 flex-wrap">
- 
+
             {/* Clear Button */}
             <button
                 type="button"

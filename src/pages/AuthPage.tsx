@@ -39,7 +39,7 @@ const AuthPage: React.FC = () => {
             } catch (error) {
                 setAlert({ type: "danger", message: "Registration failed !!" });
             }
-        } else {
+        } else
             try {
                 const response = await axiosInstance.post(
                     "auth/login",
@@ -52,13 +52,11 @@ const AuthPage: React.FC = () => {
                     localStorage.setItem("profileImgUrl", "http://localhost:8080/track-servie/" + response.data.profileImgUrl);
                     setAlert({ type: "success", message: "Logged in Successfully !!" });
                     navigate("/");
-                } else {
+                } else
                     setAlert({ type: "warning", message: `${response.status} : ${response.data}` });
-                }
             } catch (error) {
                 setAlert({ type: "danger", message: "Login failed !!" });
             }
-        }
     };
 
     return (

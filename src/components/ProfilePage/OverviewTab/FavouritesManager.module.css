@@ -3,6 +3,17 @@
   gap: 32px;
 }
 
+/* Side-by-side layout (default) */
+.favoritesContainer[data-layout="side-by-side"] {
+  flex-direction: row;
+}
+
+/* Stacked layout (for ProfileTab) */
+.favoritesContainer[data-layout="stacked"] {
+  flex-direction: column;
+  gap: 24px;
+}
+
 .column {
   flex: 1;
   min-width: 0;

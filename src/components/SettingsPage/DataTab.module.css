@@ -1,0 +1,223 @@
+.dataTabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px 0;
+}
+
+.centeredContent {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 900px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 900px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.sectionTitle i {
+  font-size: 20px;
+  color: var(--text-muted);
+}
+
+.sectionDescription {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 8px 0;
+}
+
+/* Card Wrapper */
+.cardWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 28px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  background: var(--bg-elevated);
+  border-color: rgba(63, 113, 174, 0.3);
+}
+
+.cardContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.cardContent i {
+  font-size: 32px;
+  color: var(--list-active-accent);
+  flex-shrink: 0;
+}
+
+.cardText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.cardDescription {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Action Button */
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, rgba(63, 113, 174, 0.8), rgba(82, 164, 216, 0.8));
+  color: #fff;
+  border: 1px solid rgba(63, 113, 174, 0.5);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.actionButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(63, 113, 174, 0.95), rgba(82, 164, 216, 0.95));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(63, 113, 174, 0.3);
+}
+
+.actionButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.actionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actionButton i {
+  font-size: 16px;
+}
+
+/* Privacy Card */
+.privacyCardWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.privacyCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.privacyCard:hover {
+  background: var(--bg-elevated);
+  border-color: rgba(63, 113, 174, 0.3);
+}
+
+.privacyItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.privacyItem i {
+  font-size: 20px;
+  color: var(--list-active-accent);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.privacyContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.privacyLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.privacyDescription {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .cardContent {
+    width: 100%;
+  }
+
+  .actionButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .privacyCard {
+    padding: 20px;
+  }
+
+  .sectionTitle {
+    font-size: 16px;
+  }
+}

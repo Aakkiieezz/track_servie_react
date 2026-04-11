@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from '../utils/axiosInstance';
 
 import { useAlert } from "../contexts/AlertContext";
@@ -68,7 +68,7 @@ const SeasonPage = () => {
 
     // ✅ ALL useRef hooks
     const pendingTogglesRef = useRef<Map<number, boolean>>(new Map());
-    const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const DEBOUNCE_DELAY = 3000; // 3 seconds
 
     // 🔑 KEY FIX: Capture snapshot BEFORE first toggle in a batch
@@ -78,6 +78,8 @@ const SeasonPage = () => {
         seasonWatchRuntime: number;
         seasonWatchState: boolean;
     } | null>(null);
+
+    const navigate = useNavigate();
 
     // ✅ NOW extract params and derived values (after all hooks)
     const { tmdbId, seasonNo = "1" } = useParams<{ tmdbId: string, seasonNo?: string }>();
@@ -135,8 +137,7 @@ const SeasonPage = () => {
             );
 
             if (response.status === 200) {
-                setAlert({
-                    type: "success",
+                setAlert({ type: "success",
                     message: `Updated watch status of ${episodes.length} episode(s) successfully!`,
                 });
 
@@ -157,21 +158,15 @@ const SeasonPage = () => {
                 setSeasonWatchState(rollbackRef.current.seasonWatchState);
                 rollbackRef.current = null; // Clear after rollback
             }
-
-            setAlert({
-                type: "danger",
-                message: "Failed to update watch status!!",
-            });
-
+            setAlert({ type: "danger", message: "Failed to update watch status!!" });
             pendingTogglesRef.current.clear();
         }
     }, [tmdbId, seasonNo]);
 
     // ✅ ALL useEffect hooks
     useEffect(() => {
-        if (tmdbId) {
+        if (tmdbId)
             fetchSeasonData(tmdbId, seasonNo);
-        }
     }, [tmdbId, seasonNo]);
 
     useEffect(() => {
@@ -273,10 +268,7 @@ const SeasonPage = () => {
                 }
             );
             if (response.status === 200)
-                setAlert({
-                    type: "success",
-                    message: `Updated watch status of S${seasonNo} successfully !!`,
-                });
+                setAlert({ type: "success", message: `Updated watch status of S${seasonNo} successfully !!` });
         } catch (error) {
             setSeasonWatchState(currentSeasonWatchState);
             setEpWatchedCount(currentEpWatchCount);
@@ -479,7 +471,12 @@ const SeasonPage = () => {
                                 const isWatched = epWatchState[episode.episodeNo];
 
                                 return (
-                                    <div key={episode.episodeNo} className={styles.episodeCard}>
+                                    <div
+                                        key={episode.episodeNo}
+                                        className={styles.episodeCard}
+                                        onClick={() => navigate(`/servies/${tmdbId}/Season/${currentSeasonNo}/Episode/${episode.episodeNo}`)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
                                         <div className={styles.episodeContent}>
                                             {/* Episode Thumbnail */}
                                             <div className={styles.episodeThumbnail}>
