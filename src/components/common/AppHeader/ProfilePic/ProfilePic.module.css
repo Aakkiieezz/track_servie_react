@@ -2,15 +2,50 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  position: relative;
 }
 
 .username {
-  font-size: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--header-text);
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
 }
 
-.dropdownMenu {
-  right: auto !important;
-  left: auto !important;
-  margin-left: -95px !important; /* Adjust this value */
+.profilePicContainer:hover .username {
+  opacity: 1;
+}
+
+/* 👇 Reuse SAME style language as SearchFilter */
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+
+  background: transparent;
+  border: none;
+  color: var(--dd-text);
+
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  text-align: left;
+}
+
+.dropdownItem:hover {
+  background: var(--dd-hover-bg);
+  color: #fff;
+}
+
+.logout {
+  color: #ff6b6b;
+}
+
+.logout:hover {
+  background: rgba(255, 107, 107, 0.15);
 }
