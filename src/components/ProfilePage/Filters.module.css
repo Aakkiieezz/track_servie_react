@@ -60,17 +60,6 @@
   background: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* Filter button text - dark mode */
-:global(body.dark) .filtersWrapper button {
-  color: #eee !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-}
-
-:global(body.dark) .filtersWrapper button:hover {
-  background: rgba(255, 255, 255, 0.15) !important;
-}
-
 .filterBar {
   display: flex;
   align-items: center;

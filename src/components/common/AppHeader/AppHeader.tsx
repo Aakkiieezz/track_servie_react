@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import SearchPageFilter from "../../SearchPage/SearchPageFilter";
+import SearchFilter from "./SearchFilter";
 import ProfilePic from "./ProfilePic/ProfilePic";
 import styles from "./AppHeader.module.css";
 
@@ -38,7 +38,7 @@ const AppHeader: React.FC = () => {
       {/* CENTER: HomePageFilter (optional) + SearchPageFilter (always) */}
       <div className={styles.headerCenter}>
         <div className={styles.headerSearch}>
-          <SearchPageFilter
+          <SearchFilter
             handleFilterChange={handleSearchFilterChange}
             expanded={isSearchFilterExpanded}
             onExpand={handleExpandSearchFilter}

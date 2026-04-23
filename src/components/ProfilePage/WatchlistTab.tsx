@@ -83,7 +83,7 @@ const ProfileWatchlistTab: React.FC<Props> = ({ userId }) => {
 				{loading ? (
 					<p>Loading...</p>
 				) : (
-					<ServieGrid servies={servies} fadedKeys={fadedKeys} />
+					<ServieGrid servies={servies} columnsPerRow={12} fadedKeys={fadedKeys} />
 				)}
 
 				<PaginationBar

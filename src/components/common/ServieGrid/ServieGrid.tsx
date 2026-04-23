@@ -7,6 +7,7 @@ interface ServieGridProps {
   blurCompleted?: boolean;
   onWatchChange?: (tmdbId: number, childtype: string, newWatched: boolean) => void;
   fadedKeys?: Set<string>;
+  columnsPerRow?: number;
 }
 
 const ServieGrid: React.FC<ServieGridProps> = ({
@@ -14,7 +15,9 @@ const ServieGrid: React.FC<ServieGridProps> = ({
   blurCompleted = false,
   onWatchChange,
   fadedKeys,
+  columnsPerRow = 6
 }) => {
+  const itemWidth = `${100 / columnsPerRow}%`;
   return (
     <div className="row center">
       {servies.map((servie) => {
@@ -22,8 +25,11 @@ const ServieGrid: React.FC<ServieGridProps> = ({
         return (
           <div
             key={servieKey}
-            className="col-xxl-1 col-sm-2 col-3"
-            style={{ padding: "0.2%" }}
+            style={{ 
+              flex: `0 0 ${itemWidth}`,
+              maxWidth: itemWidth,
+              padding: "0.2%" 
+            }}
           >
             <ServieCard
               servie={servie}

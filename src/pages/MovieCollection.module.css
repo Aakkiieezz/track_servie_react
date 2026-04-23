@@ -1,3 +1,10 @@
+.pageContainer {
+  min-height: 100vh;
+  position: relative;
+  padding: 20px 0 40px;
+}
+
+/* Background */
 .backgroundImage {
   position: fixed;
   top: 0;
@@ -6,5 +13,159 @@
   height: 100%;
   object-fit: cover;
   z-index: -1;
-  filter: blur(3px) brightness(40%);
+  filter: blur(4px) brightness(35%);
+}
+
+/* MAIN LAYOUT */
+.mainLayout {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  gap: 32px;
+  padding: 0 24px;
+}
+
+/* LEFT COLUMN */
+.posterColumn {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.posterImage {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Stats below poster */
+.posterStats {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.statPill {
+  display: inline-block;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+}
+
+/* should be mostly same as PosterCard.module.css -> .posterWrapper */
+.posterFrame {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.statText {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* RIGHT COLUMN */
+.rightColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* INFO CARD */
+.infoCard {
+  padding: 28px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+}
+
+.collectionTitle {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.collectionOverview {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* MOVIES CARD */
+.moviesCard {
+  padding: 28px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+}
+
+.moviesHeader {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.moviesGridWrapper .row {
+  justify-content: center;
+}
+
+.moviesGridWrapper .col-xxl-1 {
+  flex: 0 0 calc(16.666% - 3px) !important;
+}
+
+.moviesGridWrapper .col-sm-2 {
+  flex: 0 0 calc(50% - 3px) !important;
+}
+
+.moviesGridWrapper .col-3 {
+  flex: 0 0 calc(33.333% - 3px) !important;
+}
+
+/* EMPTY STATE */
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+/* LOADING / ERROR */
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .mainLayout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .posterColumn {
+    position: static;
+    width: 200px;
+  }
+
+  .rightColumn {
+    width: 100%;
+  }
 }

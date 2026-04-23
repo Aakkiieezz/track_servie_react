@@ -1,0 +1,206 @@
+/* ===============================
+   🎛 FILTER BUTTON (Glass Style)
+   =============================== */
+.customBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+
+  padding: 0.4rem 0.9rem;
+  border-radius: 12px;
+
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  color: rgba(255,255,255,0.92);
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.customBtn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
+}
+
+.customBtn:active {
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.20);
+}
+
+.customBtn:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(130, 177, 255, 0.35),
+    0 2px 6px rgba(0,0,0,0.25);
+}
+
+
+/* ===============================
+   ✨ ACTIVE FILTER STATE
+   =============================== */
+.activeFilter {
+  border-color: #82b1ff !important;
+  box-shadow: 0 0 8px rgba(130, 177, 255, 0.4);
+}
+
+
+/* ===============================
+   📂 DROPDOWN MENU
+   =============================== */
+.dropdownMenu {
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  left: 0 !important;
+  margin-top: 0.35rem !important;
+
+  color: var(--dd-text) !important;
+  background: var(--modal-bg) !important;
+  border: 1px solid var(--modal-border) !important;
+  border-radius: 12px;
+  backdrop-filter: var(--blur-strength);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45) !important;
+  padding: 0.4rem 0;
+  animation: dropdownFade 0.18s ease;
+}
+
+.dropdownMenuMatchButton {
+  width: 100%;
+  min-width: unset !important;
+}
+
+.dropdownMenuWide {
+  min-width: 220px; /* or whatever you had before */
+  width: auto;
+}
+
+/* ===============================
+   📄 DROPDOWN ITEMS
+   =============================== */
+.dropdownItem {
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.9rem;
+  background: transparent;
+  border: none;
+  color: #eee;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.dropdownItem:hover,
+.dropdownItem:focus {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
+}
+
+
+/* ===============================
+   🏷 DROPDOWN HEADERS
+   =============================== */
+.dropdownHeader {
+  color: var(--dd-header-text);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.45px;
+  padding: 0.3rem 0.9rem;
+}
+
+
+/* ===============================
+   🔽 DROPDOWN ARROW FIX
+   =============================== */
+:global(.dropdown-toggle)::after {
+  margin-left: 0.4rem;
+  opacity: 0.75;
+  transform: translateY(1px);
+  transition: transform 0.2s ease;
+}
+
+:global(.dropdown-toggle[aria-expanded="true"])::after {
+  transform: rotate(180deg) translateY(-1px);
+}
+
+
+/* ===============================
+   🎬 ANIMATION (Fix jump issue)
+   =============================== */
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ===============================
+   🔘 ACTION BUTTONS
+   =============================== */
+.btnPrimary {
+  border-radius: 12px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+
+  color: #fff;
+  background: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
+  border: none;
+
+  box-shadow: 0 0 10px var(--btn-primary-glow);
+}
+
+.btnPrimary:hover {
+  background: var(--btn-primary-bg-hover);
+  border-color: var(--btn-primary-border);
+  box-shadow: 0 0 14px var(--btn-primary-glow);
+}
+
+.btnOutlineDanger {
+  border-radius: 12px;
+  padding: 0.35rem 0.6rem;
+
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  background: transparent;
+}
+
+.btnOutlineDanger:hover {
+  background: rgba(255, 107, 107, 0.15);
+  color: #fff;
+}
+
+.filterDropdown {
+  width: 200px;
+}
+
+
+
+
+
+
+
+
+
+
+:global(.dropdown-menu) {
+  transform: none !important;
+}
+
+:global(.dropdown-menu.show) {
+  transform: none !important;
+}

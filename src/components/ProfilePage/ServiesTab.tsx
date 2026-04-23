@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import ServieGrid from "@/components/common/ServieGrid/ServieGrid";
 import PaginationBar from "@/components/common/PaginationBar/PaginationBar";
-import HomePageFilter from "@/components/ProfilePage/TabFilter/Filter";
+import Filter from "@/components/ProfilePage/TabFilter/Filter";
 import { useFilterStore } from "@/store/useFilterStore";
 import type { Servie } from "@/types/servie";
-import filterStyles from "./Filters.module.css";
+import styles from "./Filters.module.css";
 
 interface Filters {
 	type: string;
@@ -99,24 +99,25 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts }) => {
 
 	return (
 		<div>
-			<div className={filterStyles.filterBar}>
-				<span className={filterStyles.countText}>
+			<div className={styles.filterBar}>
+    
+				{/* LEFT */}
+				<div className={styles.leftSection}>
 					<i className="bi bi-film"></i> {watchedCounts.movie} movies
-					<span className={filterStyles.separator}>·</span>
+					<span className={styles.separator}>·</span>
 					<i className="bi bi-tv"></i> {watchedCounts.tv} series
-				</span>
+				</div>
 
-				<div className={filterStyles.filtersWrapper}>
-					<HomePageFilter
-						handleFilterChange={handleFilterChange}
-					/>
+				{/* CENTER */}
+				<div className={styles.centerSection}>
+					<Filter handleFilterChange={handleFilterChange} />
 				</div>
 			</div>
 
 			{loading ? (
 				<p>Loading...</p>
 			) : (
-				<ServieGrid servies={servies} />
+				<ServieGrid servies={servies} columnsPerRow={12} />
 			)}
 
 			<PaginationBar

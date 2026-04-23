@@ -237,7 +237,8 @@ body.dark {
   --surface-text-muted: #a3a3a3;
   --surface-overlay: rgba(0, 0, 0, 0.45); /* for translucent overlays in dark */
 
-  --dropdown-bg: rgba(0, 0, 0, 0.55);
+  /* --dropdown-bg: rgba(0, 0, 0, 0.55); */
+  --dropdown-bg: rgba(20, 20, 20, 0.800);
   --dropdown-border: rgba(255, 255, 255, 0.1);
   --dropdown-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
   --dropdown-border-width: 1px;

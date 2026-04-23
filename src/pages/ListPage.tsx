@@ -292,7 +292,7 @@ const ListPage: React.FC = () => {
 					<hr className={styles.divider} />
 
 					<div className={styles.serviesGrid}>
-						<ServieGrid servies={list.servies || []} />
+						<ServieGrid servies={list.servies || []} columnsPerRow={12} />
 					</div>
 				</div>
 			</div>

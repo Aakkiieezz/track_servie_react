@@ -1,0 +1,340 @@
+.dropdownContainer {
+  z-index: 9999;
+  position: absolute;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  /* background: var(--semi-transparency-bg); */
+  backdrop-filter: var(--blur-strength);
+  border-radius: var(--border-radius);
+  box-shadow: var(--dropdown-shadow);
+  border: var(--dropdown-border-width) solid var(--dropdown-border);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.dropdownContent {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: inherit;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.dropdownContent .border {
+  /* this looks good but has a flaw that the line for last item comes out of the curved content */
+  border-bottom: var(--dropdown-border-width) solid var(--dropdown-border);
+}
+
+.formControl {
+  
+  height: 34px;              /* 🔥 match button height */
+  padding: 0.35rem 0.75rem;  /* tighter like buttons */
+
+  border-radius: 12px;       /* match your buttons */
+  
+  background: var(--form-bg);
+  border: 1px solid var(--form-border);
+  color: var(--form-text);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  
+  backdrop-filter: blur(8px);
+  
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.formControl::placeholder {
+  color: var(--form-placeholder);
+}
+
+.formControl:focus {
+  background: var(--form-bg-focus);
+  border-color: var(--form-border-focus);
+  color: var(--form-text);
+  /* box-shadow: 0 0 0 0.2rem var(--form-focus-ring); */
+  box-shadow:
+    0 0 0 2px rgba(130, 177, 255, 0.25),
+    0 2px 6px rgba(0,0,0,0.25);
+
+  outline: none;
+}
+
+.imageBorder {
+  border: 1px solid var(--surface-border);
+}
+
+/* ✅ Enhanced scrollbar styling - DARK THEME */
+.dropdownContent::-webkit-scrollbar {
+  width: 10px;
+}
+
+.dropdownContent::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius);
+}
+
+.dropdownContent::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.5);
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.dropdownContent::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.7);
+}
+
+/* ✅ Light theme scrollbar */
+:global(body:not(.dark)) .dropdownContent::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+:global(body:not(.dark)) .dropdownContent::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+:global(body:not(.dark)) .dropdownContent::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* ✅ Hover effect for dropdown items - DARK THEME */
+.hoverBgLight {
+  transition: background-color 0.15s ease;
+}
+
+/* ✅ Text colors for dropdown items */
+:global(body.dark) .dropdownContainer {
+  color: #eee;
+}
+
+:global(body.dark) .dropdownContainer .childType {
+  color: #aaa; /* lighter gray for dark mode */
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+:global(body:not(.dark)) .dropdownContainer {
+  color: #222;
+}
+
+:global(body:not(.dark)) .dropdownContainer .childType {
+  color: #555; /* darker gray for light mode */
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+/* ✅ Border color for items */
+:global(body.dark) .dropdownContainer .border-bottom {
+  border-color: rgba(255, 0, 0, 0.1) !important;
+}
+
+:global(body:not(.dark)) .dropdownContainer .border-bottom {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.dropdownContainer {
+  z-index: 3000;
+  will-change: transform, opacity;
+
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+
+  animation: dropdownIn 0.16s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdownContent {
+  backdrop-filter: var(--blur-strength);
+  -webkit-backdrop-filter: var(--blur-strength);
+
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: 12px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+  overflow-y: auto;
+}
+
+/* Row container */
+.dropdownRow {
+  padding: 6px 10px;              /* ↓ reduced from ~8-10 */
+  border-bottom: 1px solid var(--dd-divider);
+  transition: background 0.15s ease;
+}
+
+.dropdownRow:last-child {
+  border-bottom: none;
+}
+
+.dropdownRow:hover {
+  background: var(--dd-hover-bg);
+}
+
+/* 🎬 Poster */
+.imageBorder {
+  width: 60px;                    /* ↑ bigger (was ~50) */
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* Fallback */
+.posterFallback {
+  width: 60px;
+  height: 90px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+/* 📝 Text */
+.textContainer {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Title */
+.title {
+  font-size: 0.92rem;
+  font-weight: 500;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Subtitle */
+.childType {
+  font-size: 0.72rem;
+  opacity: 0.75;
+  margin-top: 1px;
+}
+
+/* ✅ NEW: Type Dropdown Items */
+.typeDropdownItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.75rem;
+
+  background: transparent;
+  border: none;
+  color: var(--dd-text);
+
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  text-align: left;
+}
+
+.typeDropdownItem:hover {
+  background: var(--dd-hover-bg);
+  color: #fff;
+}
+
+.typeDropdownItem:first-child {
+  border-radius: 12px 12px 0 0;
+}
+
+.typeDropdownItem:last-child {
+  border-radius: 0 0 12px 12px;
+}
+
+/* ✅ Active state */
+.typeDropdownItemActive {
+  background: rgba(130, 177, 255, 0.2);
+  color: #82b1ff;
+  font-weight: 600;
+}
+
+.typeDropdownItemActive:hover {
+  background: rgba(130, 177, 255, 0.3);
+}
+
+/* Dark theme adjustments */
+:global(body.dark) .typeDropdownItem {
+  color: #eee;
+}
+
+:global(body:not(.dark)) .typeDropdownItem {
+  color: #222;
+}
+
+.searchContainer {
+  transition: width 0.3s ease;
+}
+
+.form {
+  width: 100%;
+}
+
+.typeButton {
+  width: 220px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0.4rem 0.9rem;
+  border-radius: 12px;
+
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  backdrop-filter: blur(10px);
+
+  transition: all 0.2s ease;
+}
+
+/* Hover like your filter button */
+.typeButton:hover {
+  transform: translateY(-1px);
+}
+
+/* Active press feel */
+.typeButton:active {
+  transform: translateY(0);
+}
+
+/* 🔥 When dropdown is open → glow */
+.typeButtonOpen {
+  border-color: #82b1ff !important;
+  box-shadow: 0 0 8px rgba(130, 177, 255, 0.4);
+}
+
+.caretIcon {
+  font-size: 0.7rem;
+  opacity: 0.75;
+
+  transform: translateY(1px);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* 🔽 Rotate when open */
+.typeButtonOpen .caretIcon {
+  transform: rotate(180deg) translateY(-1px);
+  opacity: 1;
+}

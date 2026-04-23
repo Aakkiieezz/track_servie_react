@@ -23,6 +23,17 @@
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
 }
 
+/* should be mostly same as PosterCard.module.css -> .posterWrapper */
+.posterFrame {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+
 /* image fills wrapper */
 .posterImg {
   width: 100%;

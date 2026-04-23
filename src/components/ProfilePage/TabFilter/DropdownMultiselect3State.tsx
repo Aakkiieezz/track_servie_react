@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./DropdownMultiselect3State.module.css";
-import stylesAppHeader from "../../common/AppHeader/AppHeader.module.css";
+import stylesAppHeader from "./Filter.module.css";
 
 interface DropdownMultiselect3StateProps {
 	label: string;
@@ -34,17 +34,19 @@ const DropdownMultiselect3State: React.FC<DropdownMultiselect3StateProps> = ({
 		});
 	};
 
+	const activeCount = Object.values(selected).filter(v => v !== "blank").length;
+
 	return (
 		<div className="dropdown">
 			{/* Dropdown toggle button */}
 			<button
-				className={`btn ${stylesAppHeader.btnOutlinePrimary} dropdown-toggle`}
+				className={`${stylesAppHeader.customBtn} dropdown-toggle ${activeCount > 0 ? stylesAppHeader.activeFilter : ""}`}
 				type="button"
 				id="dropdownMultiselect3StateButton"
 				data-bs-toggle="dropdown"
 				aria-expanded="false"
 			>
-				{label}
+				{activeCount > 0 ? `${label} (${activeCount})` : label}
 			</button>
 
 			{/* Dropdown menu */}

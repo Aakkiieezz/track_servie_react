@@ -115,6 +115,14 @@ const PosterCard: React.FC<PosterCardProps> = (props) => {
 
       {/* ── Poster wrapper ── */}
       <div className={styles.posterWrapper}>
+        {!isSeason && (
+          <div className={styles.topLeftInfo}>
+            <span className={styles.topLeftTitle}>{title}</span>
+            <span className={styles.topLeftYear}>
+              {formatYearRange(props)}
+            </span>
+          </div>
+        )}
 
         {/* Poster image */}
         <Link to={detailLink} state={detailState}>

@@ -112,15 +112,17 @@ const PosterFanStack: React.FC<PosterFanStackProps> = ({ posters = [], height = 
                         role="button"
                         aria-label={`poster-${idx}`}
                     >
-                        <img
-                            src={src}
-                            alt={`poster-${idx}`}
-                            className={`${styles.posterImg} ${idx === (hoverIndex ?? 0) ? styles.posterActive : ""}`}
-                            onError={(ev) => {
-                                (ev.currentTarget as HTMLImageElement).onerror = null;
-                                (ev.currentTarget as HTMLImageElement).src = `https://image.tmdb.org/t/p/original${p || ""}`;
-                            }}
-                        />
+                        <div className={styles.posterFrame}>
+                            <img
+                                src={src}
+                                alt={`poster-${idx}`}
+                                className={`${styles.posterImg} ${idx === (hoverIndex ?? 0) ? styles.posterActive : ""}`}
+                                onError={(ev) => {
+                                    (ev.currentTarget as HTMLImageElement).onerror = null;
+                                    (ev.currentTarget as HTMLImageElement).src = `https://image.tmdb.org/t/p/original${p || ""}`;
+                                }}
+                            />
+                        </div>
                     </div>
                 );
             })}

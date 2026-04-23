@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../../common/AppHeader/AppHeader.module.css";
+import styles from "./Filter.module.css";
 
 interface KeyValuePair {
 	id: string;
@@ -31,16 +31,18 @@ const DropdownMultiselect: React.FC<DropdownMultiselectProps> = ({
 		return typeof option !== "string";
 	};
 
+	const selectedCount = selected.length;
+
 	return (
 		<div className="dropdown">
 			<button
-				className={`btn ${styles.btnOutlinePrimary} dropdown-toggle`}
+				className={`${styles.customBtn} dropdown-toggle`}
 				type="button"
 				id="dropdownMultiselectButton"
 				data-bs-toggle="dropdown"
 				aria-expanded="false"
 			>
-				{label}
+				{selectedCount > 0 ? `${label} (${selectedCount})` : label}
 			</button>
 			<ul className={`dropdown-menu ${styles.dropdownMenu}`} aria-labelledby="dropdownMultiselectButton">
 				{options.map((option) => {
