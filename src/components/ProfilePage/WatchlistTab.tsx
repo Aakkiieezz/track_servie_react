@@ -2,8 +2,21 @@ import React, { useCallback, useEffect, useState } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import ServieGrid from "@/components/common/ServieGrid/ServieGrid";
 import PaginationBar from "@/components/common/PaginationBar/PaginationBar";
+import Filter from "@/components/ProfilePage/TabFilter/Filter";
+import { useWatchlistFilterStore } from "@/store/useWatchlistFilterStore";
 import type { Servie } from "@/types/servie";
 import { WatchlistTabContext } from "@/contexts/WatchlistTabContext";
+import styles from "./Filters.module.css";
+
+interface Filters {
+	type: string;
+	sortBy: string;
+	sortDir: "asc" | "desc";
+	tickedGenres: string[];
+	crossedGenres: string[];
+	languages: string[];
+	statuses: string[];
+}
 
 interface Pagination {
 	pageNumber: number;
@@ -15,6 +28,7 @@ interface Props {
 }
 
 const ProfileWatchlistTab: React.FC<Props> = ({ userId }) => {
+	const watchlistFilters = useWatchlistFilterStore();
 	const [servies, setServies] = useState<Servie[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [fadedKeys, setFadedKeys] = useState<Set<string>>(new Set());
@@ -24,16 +38,24 @@ const ProfileWatchlistTab: React.FC<Props> = ({ userId }) => {
 		totalPages: 0,
 	});
 
-	const fetchServies = async (pageNumber: number = 0) => {
+	const fetchServies = async (currentFilters: Filters, pageNumber: number = 0) => {
 		try {
 			setLoading(true);
-			const response = await axiosInstance.get(`list/${userId}/watchlist`, {
-				params: {
-					pageNumber,
-					sortBy: "title",
-					sortDir: "asc",
+			const response = await axiosInstance.post(
+				`list/${userId}/watchlist`,
+				{
+					type: currentFilters.type,
+					languages: currentFilters.languages,
+					statuses: currentFilters.statuses,
+					selectedGenres: currentFilters.tickedGenres,
+					rejectedGenres: currentFilters.crossedGenres,
+					sortBy: currentFilters.sortBy,
+					sortDir: currentFilters.sortDir,
 				},
-			});
+				{
+					params: { pageNumber }
+				}
+			);
 			setServies(response.data.servies);
 			setPagination({
 				pageNumber: response.data.pageNumber,
@@ -46,15 +68,40 @@ const ProfileWatchlistTab: React.FC<Props> = ({ userId }) => {
 		}
 	};
 
+	// Initialize with persisted filters on mount
+	useEffect(() => {
+		const currentFilters = {
+			type: watchlistFilters.type,
+			sortBy: watchlistFilters.sortBy,
+			sortDir: watchlistFilters.sortDir as "asc" | "desc",
+			tickedGenres: watchlistFilters.tickedGenres,
+			crossedGenres: watchlistFilters.crossedGenres,
+			languages: watchlistFilters.languages,
+			statuses: watchlistFilters.statuses,
+		};
+		fetchServies(currentFilters, 0);
+	}, []);
+
+	const handleFilterChange = (newFilters: Filters) => {
+		watchlistFilters.setFilters(newFilters);
+		fetchServies(newFilters, 0);
+	};
+
 	const handlePageChange = (newPgNumber: number) => {
 		// Clear faded keys on page change — fresh page, fresh state
 		setFadedKeys(new Set());
-		fetchServies(newPgNumber);
-	};
 
-	useEffect(() => {
-		fetchServies();
-	}, []);
+		const currentFilters = {
+			type: watchlistFilters.type,
+			sortBy: watchlistFilters.sortBy,
+			sortDir: watchlistFilters.sortDir as "asc" | "desc",
+			tickedGenres: watchlistFilters.tickedGenres,
+			crossedGenres: watchlistFilters.crossedGenres,
+			languages: watchlistFilters.languages,
+			statuses: watchlistFilters.statuses,
+		};
+		fetchServies(currentFilters, newPgNumber);
+	};
 
 	const handleServieRemoved = useCallback((servie: Servie) => {
 		const key = `${servie.childtype}-${servie.tmdbId}`;
@@ -76,9 +123,21 @@ const ProfileWatchlistTab: React.FC<Props> = ({ userId }) => {
 			onServieRollback: handleServieRollback,
 		}}>
 			<div>
-				<h2 style={{ fontSize: "28px", fontWeight: "700", marginBottom: "20px" }}>
-					Watchlist
-				</h2>
+				{/* Filter Bar - Same styling as ServiesTab */}
+				<div className={styles.filterBar}>
+    
+					{/* LEFT */}
+					<div className={styles.leftSection}>
+						<i className="bi bi-film"></i> 0 movies
+						<span className={styles.separator}>·</span>
+						<i className="bi bi-tv"></i> 0 series
+					</div>
+
+					{/* CENTER */}
+					<div className={styles.centerSection}>
+						<Filter handleFilterChange={handleFilterChange} />
+					</div>
+				</div>
 
 				{loading ? (
 					<p>Loading...</p>
