@@ -4,7 +4,7 @@ import axiosInstance from '../utils/axiosInstance';
 import { useAlert } from '../contexts/AlertContext';
 import CastListSlider from '@/components/common/CastListSlider/CastListSlider';
 import HalfStarRating from '@/components/common/HalfStarRating';
-import MovieReviewModal from '@/components/common/MovieReviewModal/Modal';
+import ReviewModal from '@/components/common/ReviewModal/ReviewModal';
 import AppHeader from '@/components/common/AppHeader/AppHeader';
 import EpisodeNavBar from '@/components/EpisodePage/EpisodeNavBar';
 import styles from './EpisodePage.module.css';
@@ -430,7 +430,7 @@ const EpisodePage = () => {
 			</div>
 
 			{/* Review Modal */}
-			<MovieReviewModal
+			<ReviewModal
 				isOpen={isReviewModalOpen}
 				onClose={() => setIsReviewModalOpen(false)}
 				onSave={handleSaveReview}

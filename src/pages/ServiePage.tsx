@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
+import axios from 'axios';
 import ProgressBar from '../components/common/ProgressBar/ProgressBar';
 import CastListSlider from '../components/common/CastListSlider/CastListSlider';
 import SeasonsList from '../components/ServiePage/SeasonsList';
@@ -8,7 +9,7 @@ import { format } from 'date-fns';
 import { useAlert } from "../contexts/AlertContext";
 import HalfStarRating from '@/components/common/HalfStarRating';
 import VideoPopup from './VideoPopup';
-import MovieReviewModal from '@/components/common/MovieReviewModal/Modal';
+import ReviewModal from '@/components/common/ReviewModal/ReviewModal';
 import AppHeader from '@/components/common/AppHeader/AppHeader';
 import styles from './ServiePage.module.css';
 import type { ReviewData } from "@/types/servie";
@@ -305,23 +306,44 @@ const ServiePage = () => {
 
     const handleSaveReview = async (reviewData: ReviewData) => {
         try {
-            const response = await axiosInstance.post(
-                `/servies/review/${tmdbId}`,
-                { review: reviewData.review },
-                {
-                    params: {
-                        type: reviewData.childType,
-                        rating: reviewData.rating,
-                    },
-                }
+
+            const payload: Partial<ReviewData> = {};
+
+            if (reviewData.watchedDate != null)
+                payload.watchedDate = reviewData.watchedDate;
+
+            if (reviewData.liked != null)
+                payload.liked = reviewData.liked;
+
+            if (reviewData.rating != null)
+                payload.rating = reviewData.rating;
+
+            if (reviewData.review != null)
+                payload.review = reviewData.review;
+
+            console.log(payload);
+
+            const response = await axiosInstance.patch(
+                `/servies/${childType}/${tmdbId}/review`,
+                payload
             );
 
-            if (response.status === 200 || response.status === 201)
-                setAlert({ type: "success", message: "Review saved successfully!" });
-        } catch (error) {
-            console.error('Failed to save review', error);
-            setAlert({ type: "danger", message: "Failed to save review!"
-            });
+            if (response.status === 200)
+                setAlert({ type: "success", message: "Saved successfully!" });
+
+        } catch (error: unknown) {
+            console.error('Failed to save user data', error);
+
+            if (axios.isAxiosError(error) && error.response?.data) {
+                const data = error.response.data as Record<string, string>;
+
+                const messages = Object.values(data).join(", ");
+
+                setAlert({ type: "danger", message: messages });
+                return;
+            }
+
+            setAlert({ type: "danger", message: "Failed to save!" });
         }
     };
 
@@ -623,7 +645,7 @@ const ServiePage = () => {
             </div>
 
             {/* Review Modal */}
-            <MovieReviewModal
+            <ReviewModal
                 isOpen={isReviewModalOpen}
                 onClose={() => setIsReviewModalOpen(false)}
                 onSave={handleSaveReview}

@@ -4,5 +4,6 @@ export interface UserInteractionDto {
     completed: boolean | null;  // null for tv — use episodesWatched instead
     liked: boolean | null;
     rated: number | null;
+    review: string | null;
     episodesWatched: number | null;  // null for movies
 }

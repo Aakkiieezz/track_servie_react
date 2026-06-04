@@ -10,6 +10,7 @@ export interface UserInteraction {
 	completed: boolean | null;
 	liked: boolean | null;
 	rated: number | null;
+	review: string | null;
 	episodesWatched: number | null;
 }
 
@@ -58,6 +59,7 @@ export const userInteractionStore = create<InteractionsStore>((set, get) => ({
 					completed: item.completed,
 					liked: item.liked,
 					rated: item.rated,
+					review: item.review,
 					episodesWatched: item.episodesWatched,
 				};
 			}
@@ -78,7 +80,7 @@ export const userInteractionStore = create<InteractionsStore>((set, get) => ({
 				...state.interactions,
 				[key]: {
 					...(state.interactions[key] ?? {
-						completed: null, liked: null, rated: null, episodesWatched: null,
+						completed: null, liked: null, rated: null, review:null, episodesWatched: null,
 					}),
 					...patch,
 				},

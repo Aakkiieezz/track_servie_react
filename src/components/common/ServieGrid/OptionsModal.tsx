@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../../utils/axiosInstance';
-import { useAlert } from "../../../contexts/AlertContext";
+import axiosInstance from '@/utils/axiosInstance';
 import { useNavigate } from "react-router-dom";
-import { useServieListStore } from '../../../store/useServieListStore';
-import MovieReviewModal from '@/components/common/MovieReviewModal/Modal';
-import HalfStarRating from '../HalfStarRating';
+import axios from 'axios';
+
+import { useAlert } from "@/contexts/AlertContext";
+import { useListPageContext } from '@/contexts/ListPageContext';
+import { useWatchlistTabContext } from '@/contexts/WatchlistTabContext';
+
+import ReviewModal from '@/components/common/ReviewModal/ReviewModal';
+import HalfStarRating from '@/components/common/HalfStarRating';
+
 import type { ReviewData, Servie } from "@/types/servie";
+
+import { useServieListStore } from '@/store/useServieListStore';
+import { userInteractionStore } from '@/store/UserInteractionStore';
+
 import styles from './OptionsModal.module.css';
-import { useListPageContext } from '../../../contexts/ListPageContext';
-import { useWatchlistTabContext } from '../../../contexts/WatchlistTabContext';
 
 interface ServieOptionsModalProps {
     isOpen: boolean;
@@ -38,7 +45,6 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     const [showListModal, setShowListModal] = useState(false);
     const [loadingLists, setLoadingLists] = useState(false);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
-    const [rating, setRating] = useState<number>(0);
 
     const {
         fetchAllServieLists,
@@ -65,6 +71,14 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     const servieKey = `${servie.childtype}-${servie.tmdbId}`;
     const onWatchlist = isOnWatchlist(servieKey);
 
+    const userInteraction = userInteractionStore((state) => state.get(servie.childtype, servie.tmdbId));
+
+    const { loaded } = userInteractionStore();
+
+    if (!loaded) return null;
+
+    const [rating, setRating] = useState<number | null>(userInteraction?.rated ?? null);
+
     useEffect(() => {
         if (!isOpen) setShowListModal(false);
     }, [isOpen]);
@@ -76,6 +90,11 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
             fetchWatchlistKeys();
         }
     }, [isOpen, fetchAllServieLists, fetchListDetails, fetchWatchlistKeys]);
+
+    useEffect(() => {
+        if (isOpen)
+            setRating(userInteraction?.rated ?? null);
+    }, [isOpen, userInteraction]);
 
     if (!isOpen || !servie) return null;
 
@@ -128,9 +147,8 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                 onSuccess('Removed from list successfully !!');
             }
         } catch (error) {
-            if (isCurrentList) {
+            if (isCurrentList)
                 listPageContext!.onServieRollback(servie);
-            }
             onError('Failed to remove from list, changes reverted');
         }
     };
@@ -142,9 +160,8 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
         if (wasOnWatchlist) {
             removeFromWatchlist(servieKey);
             watchlistPageContext?.onServieRemoved(servie);
-        } else {
+        } else
             addToWatchlist(servieKey);
-        }
 
         try {
             const response = await axiosInstance.put(
@@ -152,36 +169,45 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                 null,
                 { params: { childtype: childType } }
             );
-            if (response.status === 200) {
+            if (response.status === 200)
                 onSuccess(wasOnWatchlist
                     ? 'Removed from watchlist'
                     : 'Added to watchlist'
                 );
-            }
         } catch (error) {
             // Rollback store
             if (wasOnWatchlist) {
                 addToWatchlist(servieKey);
                 watchlistPageContext?.onServieRollback(servie);
-            } else {
+            } else
                 removeFromWatchlist(servieKey);
-            }
             console.error('Failed to update watchlist', error);
             setAlert({ type: "danger", message: "Failed to update watchlist, changes reverted" });
         }
     };
 
-    const handleRatingChange = async (newRating: number) => {
-        const ratingCurrent = rating;
+    const handleRatingChange = async (newRating: number | null) => {
+        const prev = userInteraction?.rated ?? null;
+
+        if (prev === newRating) return;
+
+        const prevUI = rating;
         setRating(newRating);
+
         try {
-            await axiosInstance.put(
-                `servies/${servie.tmdbId}`,
-                null,
-                { params: { type: servie.childtype, rating: newRating } }
+            await axiosInstance.patch(
+                `/servies/${servie.childtype}/${servie.tmdbId}/review`,
+                { rating: newRating }
             );
+
+            userInteractionStore.getState().update(
+                servie.childtype,
+                servie.tmdbId,
+                { rated: newRating }
+            );
+
         } catch (error) {
-            setRating(ratingCurrent);
+            setRating(prevUI);
             console.error('Failed to update rating', error);
             setAlert({ type: "danger", message: "Failed to update rating !!" });
         }
@@ -189,17 +215,42 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
 
     const handleSaveReview = async (reviewData: ReviewData) => {
         try {
-            const response = await axiosInstance.post(
-                `/servies/review/${servie.tmdbId}`,
-                { review: reviewData.review },
-                { params: { type: reviewData.childType, rating: reviewData.rating } }
+
+            const payload: Partial<ReviewData> = {};
+
+            if (reviewData.watchedDate != null)
+                payload.watchedDate = reviewData.watchedDate;
+
+            if (reviewData.liked != null)
+                payload.liked = reviewData.liked;
+
+            if (reviewData.rating != null)
+                payload.rating = reviewData.rating;
+
+            if (reviewData.review != null)
+                payload.review = reviewData.review;
+
+            console.log(payload);
+
+            const response = await axiosInstance.patch(
+                `/servies/${servie.childtype}/${servie.tmdbId}/review`,
+                payload
             );
-            if (response.status === 200 || response.status === 201) {
-                setAlert({ type: "success", message: "Review saved successfully!" });
+
+            if (response.status === 200)
+                setAlert({ type: "success", message: "Saved successfully!" });
+
+        } catch (error: unknown) {
+            console.error('Failed to save user data', error);
+
+            if (axios.isAxiosError(error) && error.response?.data) {
+                const data = error.response.data as Record<string, string>;
+                const messages = Object.values(data).join(", ");
+                setAlert({ type: "danger", message: messages });
+                return;
             }
-        } catch (error) {
-            console.error('Failed to save review', error);
-            setAlert({ type: "danger", message: "Failed to save review!" });
+
+            setAlert({ type: "danger", message: "Failed to save!" });
         }
     };
 
@@ -211,7 +262,7 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                         <div className={styles.header}>
                             <div className={styles.ratingSection}>
-                                <HalfStarRating maxStars={5} initialRating={servie.rated} onRatingChange={handleRatingChange} />
+                                <HalfStarRating maxStars={5} initialRating={rating} onRatingChange={handleRatingChange} />
                             </div>
                             <button className={styles.closeBtn} onClick={onClose}>×</button>
                         </div>
@@ -311,7 +362,7 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
             )}
 
             {/* Review Modal */}
-            <MovieReviewModal
+            <ReviewModal
                 isOpen={isReviewModalOpen}
                 onClose={() => setIsReviewModalOpen(false)}
                 onSave={handleSaveReview}

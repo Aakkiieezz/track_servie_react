@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 
 interface HalfStarRatingProps {
     maxStars?: number;
     initialRating?: number | null;
-    onRatingChange?: (rating: number) => void;
+    onRatingChange?: (rating: number | null) => void;
 }
 
 const HalfStarRating: React.FC<HalfStarRatingProps> = ({
@@ -12,16 +12,23 @@ const HalfStarRating: React.FC<HalfStarRatingProps> = ({
     onRatingChange,
 }) => {
     const [hoverRating, setHoverRating] = useState<number | null>(null);
-    const [rating, setRating] = useState<number>(initialRating ?? 0);
+    const [rating, setRating] = useState<number | null>(initialRating ?? null);
     const [showRemove, setShowRemove] = useState(false);
+
+    useEffect(() => {
+        setRating(initialRating ?? null);
+    }, [initialRating]);
+
+    const displayRating = hoverRating ?? rating ?? 0;
 
     const handleMouseOver = (value: number) => {
         setHoverRating(value);
     };
 
     const handleClick = (value: number) => {
-        setRating(value);
-        if (onRatingChange) onRatingChange(value);
+        const next = value === rating ? null : value;
+        setRating(next);
+        onRatingChange?.(next);
     };
 
     const handleMouseLeave = () => {
@@ -31,9 +38,9 @@ const HalfStarRating: React.FC<HalfStarRatingProps> = ({
 
     const handleRemoveRating = (event: React.MouseEvent) => {
         event.stopPropagation(); // Prevent interference with star clicks
-        setRating(0); // Reset rating to 0
-        setHoverRating(null); // Ensure stars are cleared visually
-        if (onRatingChange) onRatingChange(0); // Notify parent of the reset
+        setRating(null);
+        setHoverRating(null);
+        onRatingChange?.(null);
         setShowRemove(false); // Hide the cross button
     };
 
@@ -49,7 +56,7 @@ const HalfStarRating: React.FC<HalfStarRatingProps> = ({
             onMouseLeave={handleMouseLeave} // Reset hover state on mouse leave
         >
             {/* Hidden Cross Button */}
-            {showRemove && (initialRating ?? 0) > 0 && (
+            {showRemove && rating != null && (
                 <span
                     onClick={handleRemoveRating}
                     style={{
@@ -96,20 +103,17 @@ const HalfStarRating: React.FC<HalfStarRatingProps> = ({
                         onMouseMove={(e) => {
                             const rect = e.currentTarget.getBoundingClientRect();
                             const mouseX = e.clientX - rect.left;
-                            if (mouseX < 12) {
-                                // If mouse is on the left half of the star
+                            if (mouseX < 12) // If mouse is on the left half of the star
                                 handleMouseOver(starValue - 0.5);
-                            } else {
-                                // If mouse is on the right half of the star
+                            else // If mouse is on the right half of the star
                                 handleMouseOver(starValue);
-                            }
                         }}
                     >
                         {/* Full Star */}
                         <span
                             onClick={() => handleClick(starValue)}
                             style={{
-                                color: (hoverRating ?? rating) >= starValue ? "gold" : "lightgray",
+                                color: displayRating >= starValue ? "gold" : "lightgray",
                                 zIndex: 1,
                             }}
                         >
@@ -119,7 +123,7 @@ const HalfStarRating: React.FC<HalfStarRatingProps> = ({
                         <span
                             onClick={() => handleClick(starValue - 0.5)}
                             style={{
-                                color: (hoverRating ?? rating) >= starValue - 0.5 ? "gold" : "lightgray",
+                                color: displayRating >= starValue - 0.5 ? "gold" : "lightgray",
                                 position: "absolute",
                                 width: "50%",
                                 overflow: "hidden",
