@@ -117,6 +117,21 @@ const AuthPage: React.FC = () => {
                         </div>
                     )}
 
+                    {/* Forgot password link — login view only */}
+                    {!isRegister && (
+                        <div className="text-end mb-3">
+                            <a
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    navigate("/forgot-password");
+                                }}
+                            >
+                                Forgot password?
+                            </a>
+                        </div>
+                    )}
+
                     <div className="d-grid gap-2 mb-3">
                         <button type="submit" className="btn btn-primary">
                             {isRegister ? "Register" : "Login"}

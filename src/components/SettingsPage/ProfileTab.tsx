@@ -4,12 +4,16 @@ import styles from "./ProfileTab.module.css";
 import FavoritesManager from "@/components/ProfilePage/OverviewTab/FavouritesManager";
 import { useAlert } from '@/contexts/AlertContext';
 
+type AuthProvider = "JWT" | "GOOGLE" | "JWT_AND_GOOGLE";
+
 interface UserProfile {
     username: string;
     email: string;
-    bio: string;
-    location: string;
+    bio: string | null;       // null is valid from backend
+    location: string | null;
     profileImgUrl?: string;
+    emailVerified: boolean;
+    authProvider: AuthProvider;
 }
 
 interface ProfileTabProps {
@@ -17,6 +21,15 @@ interface ProfileTabProps {
     profilePicUrl: string | null;
     setProfilePicUrl: (url: string | null) => void;
 }
+
+const emptyProfile: UserProfile = {
+    username: "",
+    email: "",
+    bio: "",
+    location: "",
+    emailVerified: false,
+    authProvider: "JWT",
+};
 
 const ProfileTab: React.FC<ProfileTabProps> = ({
     userId,
@@ -28,37 +41,28 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
     const [saving, setSaving] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    const [formData, setFormData] = useState<UserProfile>({
-        username: "",
-        email: "",
-        bio: "",
-        location: "",
-    });
-
-    const [originalData, setOriginalData] = useState<UserProfile>({
-        username: "",
-        email: "",
-        bio: "",
-        location: "",
-    });
-
+    const [formData, setFormData] = useState<UserProfile>(emptyProfile);
+    const [originalData, setOriginalData] = useState<UserProfile>(emptyProfile);
     const [hasChanges, setHasChanges] = useState(false);
+
+    // true for GOOGLE and JWT_AND_GOOGLE users — email is read-only and always verified
+    const isOAuthUser =
+        formData.authProvider === "GOOGLE" ||
+        formData.authProvider === "JWT_AND_GOOGLE";
 
     // Fetch user profile
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
                 setLoading(true);
-                const response = await axiosInstance.get<UserProfile>(
-                    `user/profile`
-                );
+                const response = await axiosInstance.get<UserProfile>("user/profile");
                 setFormData(response.data);
                 setOriginalData(response.data);
             } catch (error) {
                 console.error("Failed to fetch profile:", error);
                 setAlert({
-                    type: 'danger',
-                    message: 'Failed to load profile information',
+                    type: "danger",
+                    message: "Failed to load profile information",
                 });
             } finally {
                 setLoading(false);
@@ -78,21 +82,41 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
     };
 
     const handleSaveChanges = async () => {
+        // Guard: email must not be empty for JWT users
+        if (!isOAuthUser && !formData.email.trim()) {
+            setAlert({ type: "warning", message: "Email cannot be empty" });
+            return;
+        }
         try {
             setSaving(true);
-            await axiosInstance.put(`user/profile`, {
-                bio: formData.bio,
-                location: formData.location,
+            await axiosInstance.put("user/profile", {
+                email: formData.email,
+                bio: formData.bio || null,
+                location: formData.location || null,
             });
 
-            setOriginalData(formData);
+            // If email changed, backend will send verification silently.
+            // Reflect that locally — email is now unverified until user clicks the link.
+            const emailChanged = formData.email !== originalData.email;
+            const updatedData = {
+                ...formData,
+                emailVerified: emailChanged ? false : formData.emailVerified,
+            };
+            setOriginalData(updatedData);
+            setFormData(updatedData);
             setHasChanges(false);
             setAlert({ type: "success", message: "Profile updated successfully" });
-
-        } catch (error) {
+        }
+        catch (error: any) {
             console.error("Failed to save profile:", error);
-            setAlert({ type: "danger", message: "Failed to save profile changes" });
-        } finally {
+            const data = error.response?.data;
+            if (data && typeof data === "object") {
+                const firstMessage = Object.values(data)[0] as string;
+                setAlert({ type: "danger", message: firstMessage });
+            } else
+                setAlert({ type: "danger", message: "Failed to save profile changes" });
+        }
+        finally {
             setSaving(false);
         }
     };
@@ -105,9 +129,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
     const deleteImage = async () => {
         try {
             const response = await axiosInstance.post("user/image/delete", {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
+                headers: { "Content-Type": "multipart/form-data" },
             });
 
             if (response.status === 200) {
@@ -132,11 +154,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
                 const response = await axiosInstance.post(
                     "user/image/upload",
                     formDataToSend,
-                    {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        },
-                    }
+                    { headers: { "Content-Type": "multipart/form-data" } }
                 );
 
                 if (response.status === 200) {
@@ -155,8 +173,12 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-            if (!target.closest(`.${styles.profilePictureWrapper}`) && !target.closest(`.${styles.dropdownMenu}`))
+            if (
+                !target.closest(`.${styles.profilePictureWrapper}`) &&
+                !target.closest(`.${styles.dropdownMenu}`)
+            ) {
                 setIsDropdownOpen(false);
+            }
         };
 
         if (isDropdownOpen) {
@@ -176,6 +198,10 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
         );
     }
 
+    // Determine email verification icon
+    // OAuth users → always verified; JWT users → based on emailVerified field
+    const showVerifiedIcon = isOAuthUser || formData.emailVerified;
+
     return (
         <div className={styles.profileTabContent}>
             {/* Two Column Layout: Profile Details (Left) + Favorites (Right) */}
@@ -190,13 +216,10 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
 
                     <div className={styles.profileCardWrapper}>
                         <div className={styles.profileCard}>
+
                             {/* Profile Picture */}
                             <div className={styles.profilePictureSection}>
-
-                                {/* NEW container (this controls dropdown positioning) */}
                                 <div className={styles.profilePictureContainer}>
-
-                                    {/* KEEP this only for image */}
                                     <div className={styles.profilePictureWrapper}>
                                         <img
                                             src={profilePicUrl || "src/assets/defaultProfileImg.jpg"}
@@ -208,7 +231,6 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
                                         />
                                     </div>
 
-                                    {/* Move button OUTSIDE wrapper */}
                                     <button
                                         className={styles.editButton}
                                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -217,10 +239,8 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
                                         <i className="bi bi-camera"></i>
                                     </button>
 
-                                    {/* Dropdown also OUTSIDE wrapper */}
                                     {isDropdownOpen && (
                                         <div className={styles.dropdownMenu}>
-
                                             <input
                                                 type="file"
                                                 id="uploadImage"
@@ -228,12 +248,10 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
                                                 onChange={uploadImage}
                                                 accept="image/*"
                                             />
-
                                             <label htmlFor="uploadImage" className={styles.dropdownItem}>
                                                 <i className="bi bi-upload"></i>
                                                 Upload Image
                                             </label>
-
                                             <button
                                                 className={styles.dropdownItem}
                                                 onClick={deleteImage}
@@ -241,17 +259,16 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
                                                 <i className="bi bi-trash"></i>
                                                 Delete Image
                                             </button>
-
                                         </div>
                                     )}
                                 </div>
-
                                 <p className={styles.pictureHint}>Click to upload or change</p>
                             </div>
 
                             {/* Form Fields */}
                             <div className={styles.formFields}>
-                                {/* Username (Read-only) */}
+
+                                {/* Username — always read-only */}
                                 <div className={styles.formGroup}>
                                     <label className={styles.label}>Username</label>
                                     <input
@@ -263,41 +280,56 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
                                     />
                                 </div>
 
-                                {/* Email (Read-only) */}
+                                {/* Email — editable for JWT users, read-only for OAuth users */}
                                 <div className={styles.formGroup}>
                                     <label className={styles.label}>Email</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        disabled
-                                        className={`${styles.input} ${styles.readOnly}`}
-                                    />
+                                    <div className={styles.emailFieldWrapper}>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            disabled={isOAuthUser}
+                                            className={`${styles.input} ${isOAuthUser ? styles.readOnly : ""}`}
+                                            placeholder="Enter your email"
+                                        />
+                                        {showVerifiedIcon ? (
+                                            <i
+                                                className={`bi bi-patch-check-fill ${styles.verifiedIcon}`}
+                                                title="Email verified"
+                                            />
+                                        ) : (
+                                            <i
+                                                className={`bi bi-exclamation-circle-fill ${styles.unverifiedIcon}`}
+                                                title="Email not verified"
+                                            />
+                                        )}
+                                    </div>
                                 </div>
 
-                                {/* Bio (Editable) */}
+                                {/* Bio */}
                                 <div className={styles.formGroup}>
                                     <label className={styles.label}>Bio</label>
                                     <textarea
                                         name="bio"
-                                        value={formData.bio}
+                                        value={formData.bio ?? ""}
                                         onChange={handleInputChange}
                                         className={styles.textarea}
                                         placeholder="Tell us about yourself..."
                                         rows={4}
                                     />
                                     <span className={styles.charCount}>
-                                        {formData.bio.length} / 500
+                                        {(formData.bio ?? "").length} / 500
                                     </span>
                                 </div>
 
-                                {/* Country (Editable) */}
+                                {/* Country */}
                                 <div className={styles.formGroup}>
                                     <label className={styles.label}>Country</label>
                                     <input
                                         type="text"
                                         name="location"
-                                        value={formData.location}
+                                        value={formData.location ?? ""}
                                         onChange={handleInputChange}
                                         className={styles.input}
                                         placeholder="Enter your location"
@@ -340,7 +372,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
                     </div>
                 </div>
 
-                {/* Right Column: Favorite Servies */}
+                {/* Right Column: Favorite Series */}
                 <div className={styles.rightColumn}>
                     <h3 className={styles.sectionTitle}>
                         <i className="bi bi-star-fill"></i>

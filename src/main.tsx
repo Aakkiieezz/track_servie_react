@@ -23,6 +23,8 @@ import DiscoverPage from "./pages/DiscoveryPage.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import EpisodePage from "./pages/EpisodePage.tsx";
 import SettingsPage from "./pages/SettingsPage.tsx";
+import ForgotPasswordPage from "./pages/ForgetPasswordPage.tsx";
+import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 
 const processToken = () => {
     const params = new URLSearchParams(window.location.search);
@@ -49,6 +51,8 @@ const PrivateRoute = ({ element }: { element: JSX.Element }) => {
 const router = createBrowserRouter([
 
     { path: "/login", element: <AuthPage /> },
+    { path: "/forgot-password", element: <ForgotPasswordPage /> },
+    { path: "/reset-password", element: <ResetPasswordPage /> },
 
     {
         path: "/",
