@@ -45,6 +45,13 @@
   position: relative;
 }
 
+.addButton,
+.emptySlot {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  box-sizing: border-box;
+}
+
 .removeButton {
   position: absolute;
   top: 6px;
@@ -62,40 +69,35 @@
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.2s ease;
-  z-index: 30;  /* above PosterCard's z-index 20 bubble */
+  z-index: 30; /* above PosterCard's z-index 20 bubble */
 }
 
 .favoriteCard:hover .removeButton {
   opacity: 1;
 }
 
-/* Empty slot - blurred tile */
-.emptySlot {
-  flex: 1;
-  aspect-ratio: 2/3;
-  border-radius: 8px;
-  background: var(--bg-tertiary);
-  border: 1px dashed var(--border-color);
-  backdrop-filter: blur(8px);
-}
-
-/* Add button - editable empty slot */
 .addButton {
-  flex: 1;
-  aspect-ratio: 2/3;
-  height: 160px;
   border-radius: 8px;
   background: var(--bg-tertiary);
   border: 1px dashed var(--border-color);
   backdrop-filter: blur(8px);
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 6px;
+
   cursor: pointer;
   color: var(--text-muted);
   transition: all 0.2s ease;
+}
+
+.emptySlot {
+  border-radius: 8px;
+  background: var(--bg-tertiary);
+  border: 1px dashed var(--border-color);
+  backdrop-filter: blur(8px);
 }
 
 .addButton:hover {

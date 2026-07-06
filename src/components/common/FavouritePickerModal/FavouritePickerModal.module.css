@@ -1,0 +1,139 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.4);
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.modal {
+    position: relative;
+    width: 420px;
+    max-width: 90vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    border-radius: 14px;
+    background: rgba(30, 30, 30, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.closeButton {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.closeButton:hover {
+    color: #fff;
+}
+
+.heading {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+}
+
+.searchInput {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+
+.searchInput::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: rgba(130, 177, 255, 0.6);
+}
+
+.error {
+    margin: 0 0 10px 0;
+    font-size: 13px;
+    color: #ff8080;
+    text-align: center;
+}
+
+.resultsList {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.status {
+    text-align: center;
+    padding: 16px 0;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.resultRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.resultRow:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.poster {
+    width: 40px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.posterFallback {
+    width: 40px;
+    height: 60px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+.resultTitle {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.addingLabel {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    flex-shrink: 0;
+}
