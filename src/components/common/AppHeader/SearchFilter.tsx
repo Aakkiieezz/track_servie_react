@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../utils/axiosInstance';
+import { useAlert } from '../../../contexts/AlertContext';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import styles from "./SearchFilter.module.css";
@@ -34,6 +35,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 	onExpand,
 	onCollapse,
 }) => {
+	const navigate = useNavigate();
+	const { setAlert } = useAlert();
 
 	const [query, setQuery] = useState('');
 	const [type, setType] = useState<SearchType>('movie');
@@ -174,6 +177,26 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 		setShowTypeDropdown(false);
 	};
 
+	// Person needs a detail fetch before navigating, since PersonPage expects
+	// pre-loaded data via route state (same pattern as CastListSlider/SearchPage).
+	async function navigateToPersonPage(personId: number): Promise<void> {
+		setShowDropdown(false);
+		try {
+			const response = await axiosInstance.get(`person/${personId}`);
+			navigate(`/person/${personId}`, {
+				state: { personData: response.data },
+			});
+		} catch (error: any) {
+			console.error('Error fetching person data:', error);
+
+			const message =
+				error?.response?.data?.message ||
+				"Something went wrong. Please try again later.";
+
+			setAlert({ type: "danger", message });
+		}
+	}
+
 	const viewportHeight = window.innerHeight;
 	const spaceBelow = viewportHeight - dropdownPosition.top;
 	const maxHeight = Math.min(400, spaceBelow - 20);
@@ -188,6 +211,35 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 	// Button is 196px with box-sizing: border-box (border included)
 	// Dropdown needs to be 194px so border adds 2px = 196px total
 	const DROPDOWN_WIDTH = 120;
+
+	// Shared row markup, reused across all three navigation strategies below
+	const renderRow = (result: ServieDto3) => (
+		<div
+			className={`d-flex align-items-center ${styles.dropdownRow}`}
+			style={{ cursor: "pointer", gap: "10px" }}
+		>
+			{/* 🎬 Poster */}
+			{result.posterPath ? (
+				<img
+					className={styles.imageBorder}
+					src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${result.posterPath.replace('.jpg', '.webp')}`}
+					alt={result.title}
+					onError={(e) => {
+						e.currentTarget.onerror = null;
+						e.currentTarget.src = `https://image.tmdb.org/t/p/original${result.posterPath}`;
+					}}
+				/>
+			) : (
+				<div className={styles.posterFallback} />
+			)}
+
+			{/* 📝 Text */}
+			<div className={styles.textContainer}>
+				<div className={styles.title}>{result.title}</div>
+				<div className={styles.childType}>{result.childtype}</div>
+			</div>
+		</div>
+	);
 
 	return (
 		<div
@@ -284,41 +336,47 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 						)}
 
 						{!isLoading &&
-							searchResults.map((result) => (
-								<Link
-									to="/servie"
-									state={{ childType: result.childtype, tmdbId: result.tmdbId, }}
-									key={result.tmdbId}
-									onClick={() => setShowDropdown(false)}
-									style={{ textDecoration: "none", color: "inherit" }}
-								>
-									<div
-										className={`d-flex align-items-center ${styles.dropdownRow}`}
-										style={{ cursor: "pointer", gap: "10px" }}
-									>
-										{/* 🎬 Poster */}
-										{result.posterPath ? (
-											<img
-												className={styles.imageBorder}
-												src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${result.posterPath.replace('.jpg', '.webp')}`}
-												alt={result.title}
-												onError={(e) => {
-													e.currentTarget.onerror = null;
-													e.currentTarget.src = `https://image.tmdb.org/t/p/original${result.posterPath}`;
-												}}
-											/>
-										) : (
-											<div className={styles.posterFallback} />
-										)}
-
-										{/* 📝 Text */}
-										<div className={styles.textContainer}>
-											<div className={styles.title}>{result.title}</div>
-											<div className={styles.childType}>{result.childtype}</div>
+							searchResults.map((result) => {
+								// Person needs an async pre-fetch before navigating, so it
+								// can't be a plain <Link> the way the others are.
+								if (result.childtype === 'person') {
+									return (
+										<div
+											key={`person-${result.tmdbId}`}
+											onClick={() => navigateToPersonPage(result.tmdbId)}
+										>
+											{renderRow(result)}
 										</div>
-									</div>
-								</Link>
-							))}
+									);
+								}
+
+								// Collection routes to its own detail page, no state needed.
+								if (result.childtype === 'collection') {
+									return (
+										<Link
+											to={`/movie-collection/${result.tmdbId}`}
+											key={`collection-${result.tmdbId}`}
+											onClick={() => setShowDropdown(false)}
+											style={{ textDecoration: "none", color: "inherit" }}
+										>
+											{renderRow(result)}
+										</Link>
+									);
+								}
+
+								// movie / tv / servie — unchanged existing behavior
+								return (
+									<Link
+										to="/servie"
+										state={{ childType: result.childtype, tmdbId: result.tmdbId }}
+										key={`${result.childtype}-${result.tmdbId}`}
+										onClick={() => setShowDropdown(false)}
+										style={{ textDecoration: "none", color: "inherit" }}
+									>
+										{renderRow(result)}
+									</Link>
+								);
+							})}
 					</PortalDropdown>
 				</>
 			)}

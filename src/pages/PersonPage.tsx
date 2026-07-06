@@ -13,26 +13,32 @@ interface LocationState {
 }
 
 const PersonPage: React.FC = () => {
+
+    // const [personData, setPersonData] = useState<PersonResponse | null>(location.state?.personData || null);
     const { setAlert } = useAlert();
 
     const location = useLocation() as { state: LocationState };
-    const [personData, setPersonData] = useState<PersonResponse | null>(location.state?.personData || null);
-
-    const [filterType, setFilterType] = useState<string>("Servie");
-
     const { personId } = useParams<{ personId: string }>();
 
+    const [personData, setPersonData] = useState<PersonResponse | null>(null);
+    const [filterType, setFilterType] = useState<string>("Servie");
     const [loading, setLoading] = useState<boolean>(true);
     const [blurCompleted, setBlurCompleted] = useState<boolean>(false);
     const [sortOrder, setSortOrder] = useState<string>('title');
+    const [watchedCount, setWatchedCount] = useState(0);
 
+    // Re-sync whenever the route changes to a different person, whether
+    // navigating fresh or moving between two already-mounted PersonPage views.
     useEffect(() => {
-        if (personData)
+        setLoading(true);
+
+        if (location.state?.personData) {
+            setPersonData(location.state.personData);
             setLoading(false);
-    }, [personData]);
+            return;
+        }
 
-    useEffect(() => {
-        if (!personData && personId) {
+        if (personId) {
             axiosInstance.get(`person/${personId}`)
                 .then((response) => {
                     setPersonData(response.data);
@@ -44,17 +50,13 @@ const PersonPage: React.FC = () => {
                     setAlert({ type: "danger", message });
                 });
         }
-    }, [personId]);
+    }, [personId, location.state]);
 
     useEffect(() => {
         if (personData?.servies) {
             setWatchedCount(personData.servies.filter(s => s.completed).length);
         }
     }, [personData]);
-
-    const [watchedCount, setWatchedCount] = useState(
-        personData?.servies?.filter(s => s.completed).length ?? 0
-    );
 
     const handleWatchChange = (tmdbId: number, childtype: string, newWatched: boolean) => {
         setWatchedCount(prev => newWatched ? prev + 1 : prev - 1);
