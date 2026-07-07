@@ -15,6 +15,7 @@ interface Filters {
 	crossedGenres: string[];
 	languages: string[];
 	statuses: string[];
+	compareMode: "NONE" | "ONLY_MINE" | "ONLY_THEIRS" | "COMMON";
 }
 
 interface Pagination {
@@ -25,9 +26,10 @@ interface Pagination {
 interface Props {
 	userId: number;
 	watchedCounts: { movie: number; tv: number };
+	isOwnProfile: boolean;
 }
 
-const ServiesTab: React.FC<Props> = ({ userId, watchedCounts }) => {
+const ServiesTab: React.FC<Props> = ({ userId, watchedCounts, isOwnProfile }) => {
 	const filters = useFilterStore();
 	const [servies, setServies] = useState<Servie[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -49,6 +51,7 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts }) => {
 					rejectedGenres: currentFilters.crossedGenres,
 					sortBy: currentFilters.sortBy,
 					sortDir: currentFilters.sortDir,
+					compareMode: currentFilters.compareMode,
 				},
 				{
 					params: { pageNo }
@@ -74,7 +77,8 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts }) => {
 			tickedGenres: filters.tickedGenres,
 			crossedGenres: filters.crossedGenres,
 			languages: filters.languages,
-			statuses: filters.statuses
+			statuses: filters.statuses,
+			compareMode: filters.compareMode,
 		};
 		fetchServies(currentFilters, 0);
 	}, []);
@@ -92,7 +96,8 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts }) => {
 			tickedGenres: filters.tickedGenres,
 			crossedGenres: filters.crossedGenres,
 			languages: filters.languages,
-			statuses: filters.statuses
+			statuses: filters.statuses,
+			compareMode: filters.compareMode,
 		};
 		fetchServies(currentFilters, newPage);
 	};
@@ -110,7 +115,10 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts }) => {
 
 				{/* CENTER */}
 				<div className={styles.centerSection}>
-					<Filter handleFilterChange={handleFilterChange} />
+					<Filter 
+					handleFilterChange={handleFilterChange}
+					showCompareFilter={!isOwnProfile}
+					/>
 				</div>
 			</div>
 

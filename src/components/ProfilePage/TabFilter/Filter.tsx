@@ -6,6 +6,7 @@ import styles from "./Filter.module.css";
 
 interface FilterProps {
     handleFilterChange: (filters: any) => void;
+    showCompareFilter?: boolean;
 }
 
 const genreOptions = [
@@ -43,7 +44,7 @@ const statusOptions = [
     "Canceled", "Airing", "Released", "Ended",
 ];
 
-const Filter: React.FC<FilterProps> = ({ handleFilterChange }) => {
+const Filter: React.FC<FilterProps> = ({ handleFilterChange, showCompareFilter = true }) => {
 
     const persistedFilters = useFilterStore();
 
@@ -56,6 +57,7 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange }) => {
     const [tempSortDir, setTempSortDir] = useState<string>("asc");
     const [tempLanguages, setTempLanguages] = useState<string[]>([]);
     const [tempStatuses, setTempStatuses] = useState<string[]>([]);
+    const [tempCompareMode, setTempCompareMode] = useState<"NONE" | "ONLY_MINE" | "ONLY_THEIRS" | "COMMON">("NONE");
 
     // selected genres for 3-state control (temp)
     const [tempGenresSelected, setTempGenresSelected] = useState<Record<string, "blank" | "tick" | "cross">>(() =>
@@ -75,6 +77,7 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange }) => {
         setTempSortDir(persistedFilters.sortDir ?? "asc");
         setTempLanguages(persistedFilters.languages ?? []);
         setTempStatuses(persistedFilters.statuses ?? []);
+        setTempCompareMode(persistedFilters.compareMode ?? "NONE");
 
         const initialGenresSelected: Record<string, "blank" | "tick" | "cross"> =
             genreOptions.reduce((acc, option) => ({ ...acc, [option]: "blank" as const }), {} as Record<string, "blank" | "tick" | "cross">);
@@ -113,6 +116,7 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange }) => {
             crossedGenres: crossed,
             languages: tempLanguages,
             statuses: tempStatuses,
+            compareMode: tempCompareMode,
         };
 
         // Persist to Zustand once (this is the moment other parts of app should react)
@@ -134,6 +138,7 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange }) => {
         setTempLanguages([]);
         setTempStatuses([]);
         setTempGenresSelected(genreOptions.reduce((acc, g) => ({ ...acc, [g]: "blank" as const }), {} as Record<string, "blank" | "tick" | "cross">));
+        setTempCompareMode("NONE");
 
         // Notify parent with defaults immediately (your existing behavior)
         handleFilterChange({
@@ -143,7 +148,8 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange }) => {
             tickedGenres: [],
             crossedGenres: [],
             languages: [],
-            statuses: []
+            statuses: [],
+            compareMode: "NONE"
         });
     };
 
@@ -198,6 +204,38 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange }) => {
                 </ul>
             </div>
 
+            {/* Compare Dropdown */}
+            {showCompareFilter && (
+                < div className="dropdown position-relative">
+                    <button
+                        className={`${styles.customBtn} dropdown-toggle ${tempCompareMode !== "NONE" ? styles.activeFilter : ""}`}
+                        type="button"
+                        id="compareDropdown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        {(() => {
+                            switch (tempCompareMode) {
+                                case "ONLY_MINE":
+                                    return "Compare : They've Missed";
+                                case "ONLY_THEIRS":
+                                    return "Compare : I've Missed";
+                                case "COMMON":
+                                    return "Compare : Common";
+                                default:
+                                    return "Compare : None";
+                            }
+                        })()}
+                    </button>
+                    <ul className={`dropdown-menu ${styles.dropdownMenu} ${styles.dropdownMenuMatchButton}`} aria-labelledby="compareDropdown">
+                        <li><button className={styles.dropdownItem} type="button" onClick={() => setTempCompareMode("NONE")}>None</button></li>
+                        <li><button className={styles.dropdownItem} type="button" onClick={() => setTempCompareMode("ONLY_THEIRS")}>I've Missed</button></li>
+                        <li><button className={styles.dropdownItem} type="button" onClick={() => setTempCompareMode("ONLY_MINE")}>They've Missed</button></li>
+                        <li><button className={styles.dropdownItem} type="button" onClick={() => setTempCompareMode("COMMON")}> Common</button></li>
+                    </ul>
+                </div>
+            )}
+
             {/* Combined Sort Dropdown (updates only tempSortBy & tempSortDir) */}
             <div className="dropdown">
                 <button
@@ -215,25 +253,25 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange }) => {
                     <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("title"); setTempSortDir("asc"); }}>A → Z</button></li>
                     <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("title"); setTempSortDir("desc"); }}>Z → A</button></li>
 
-                    <li><hr/></li>
+                    <li><hr /></li>
 
                     <li><h6 className={styles.dropdownHeader}>Popularity</h6></li>
                     <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("popularity"); setTempSortDir("desc"); }}>High → Low</button></li>
                     <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("popularity"); setTempSortDir("asc"); }}>Low → High</button></li>
 
-                    <li><hr/></li>
+                    <li><hr /></li>
 
                     <li><h6 className={styles.dropdownHeader}>Rating</h6></li>
                     <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("voteAverage"); setTempSortDir("desc"); }}>High → Low</button></li>
                     <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("voteAverage"); setTempSortDir("asc"); }}>Low → High</button></li>
 
-                    <li><hr/></li>
+                    <li><hr /></li>
 
                     <li><h6 className={styles.dropdownHeader}>When Added</h6></li>
                     <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("recent"); setTempSortDir("desc"); }}>Newest First</button></li>
                     <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("recent"); setTempSortDir("asc"); }}>Earliest First</button></li>
 
-                    <li><hr/></li>
+                    <li><hr /></li>
 
                     <li><h6 className={styles.dropdownHeader}>Release Date</h6></li>
                     <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("date"); setTempSortDir("desc"); }}>Newest First</button></li>
@@ -282,7 +320,7 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange }) => {
                     Apply
                 </button>
             </div>
-        </form>
+        </form >
     );
 };
 

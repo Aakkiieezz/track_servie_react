@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+type CompareMode = "NONE" | "ONLY_MINE" | "ONLY_THEIRS" | "COMMON";
+
 interface FilterState {
     type: string;
     sortBy: string;
@@ -9,6 +11,7 @@ interface FilterState {
     crossedGenres: string[];
     languages: string[];
     statuses: string[];
+    compareMode: CompareMode;
 
     setFilters: (filters: Partial<Omit<FilterState, 'setFilters'>>) => void;
     resetFilters: () => void;
@@ -22,6 +25,7 @@ const defaultFilters = {
     crossedGenres: [],
     languages: [],
     statuses: [],
+    compareMode: "NONE" as CompareMode,
 };
 
 export const useFilterStore = create<FilterState>()(

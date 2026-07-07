@@ -362,6 +362,7 @@ const UserProfilePage: React.FC = () => {
 							<ServiesTab
 								userId={profileUserId}
 								watchedCounts={watchedCounts}
+								isOwnProfile={isOwnProfile}
 							/>
 						)}
 

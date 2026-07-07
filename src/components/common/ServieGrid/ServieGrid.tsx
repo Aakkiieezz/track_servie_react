@@ -20,7 +20,7 @@ const ServieGrid: React.FC<ServieGridProps> = ({
     const itemWidth = `${100 / columnsPerRow}%`;
     return (
         <div className="row center">
-            {servies.map((servie) => {
+            {(servies ?? []).map((servie) => {
                 const servieKey = `${servie.childtype}-${servie.tmdbId}`;
                 return (
                     <div
