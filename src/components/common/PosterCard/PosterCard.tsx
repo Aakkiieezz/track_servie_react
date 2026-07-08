@@ -106,12 +106,12 @@ const PosterCard: React.FC<PosterCardProps> = (props) => {
         <div className={styles.card}>
 
             {/* ── Glass bubble — title above tile (movie / tv only) ── */}
-            {!isSeason && (
+            {/* {!isSeason && (
                 <div className={styles.topBubble}>
                     <span className={styles.bubbleTitle}>{title}</span>
                     <span className={styles.bubbleYear}>{formatYearRange(props)}</span>
                 </div>
-            )}
+            )} */}
 
             {/* ── Poster wrapper ── */}
             <div className={styles.posterWrapper}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import AppHeader from '@/components/common/AppHeader/AppHeader';
@@ -16,15 +16,144 @@ interface LocationState {
     personData?: PartialPersonData;
 }
 
+const BIO_CLAMP_LINES = 4;
+
+/* ============ Skeleton sub-components ============ */
+
+const StatsBarSkeleton = () => (
+    <div className={styles.statsBar}>
+        <div className={styles.statItem}>
+            <span className={styles.statLabel}>Known For</span>
+            <span className={`${styles.statValue} ${styles.skeletonBlock}`} style={{ width: 80, height: 16 }} />
+        </div>
+        <span className={styles.statsSeparator}>•</span>
+        <div className={styles.statItem}>
+            <span className={styles.statLabel}>Gender</span>
+            <span className={`${styles.statValue} ${styles.skeletonBlock}`} style={{ width: 60, height: 16 }} />
+        </div>
+        <span className={styles.statsSeparator}>•</span>
+        <div className={styles.statItem}>
+            <span className={styles.statLabel}>Popularity</span>
+            <span className={`${styles.statValue} ${styles.skeletonBlock}`} style={{ width: 40, height: 16 }} />
+        </div>
+    </div>
+);
+
+const DetailsGridSkeleton = () => (
+    <div className={styles.detailsGrid}>
+        <div className={styles.detailItem}>
+            <i className="bi bi-cake2"></i>
+            <span className={styles.skeletonBlock} style={{ width: 160, height: 14 }} />
+        </div>
+        <div className={styles.detailItem}>
+            <i className="bi bi-geo-alt"></i>
+            <span className={styles.skeletonBlock} style={{ width: 120, height: 14 }} />
+        </div>
+        <div className={styles.detailItem}>
+            <i className="bi bi-globe"></i>
+            <span className={styles.skeletonBlock} style={{ width: 100, height: 14 }} />
+        </div>
+    </div>
+);
+
+const BiographySkeleton = () => (
+    <div className={styles.biographySection}>
+        <h3 className={styles.sectionSubtitle}>Biography</h3>
+        {[100, 100, 100, 70].map((w, i) => (
+            <div
+                key={i}
+                className={styles.skeletonBlock}
+                style={{ width: `${w}%`, height: 14, marginBottom: 8 }}
+            />
+        ))}
+    </div>
+);
+
+const PosterCardSkeleton = () => (
+    <div className={styles.workCard}>
+        <div className={`${styles.posterWrapper} ${styles.skeletonShimmer}`} />
+    </div>
+);
+
+const WorksSkeleton = () => (
+    <div className={styles.container}>
+        <div className={styles.worksSection}>
+            <h2 className={styles.sectionTitle}>Works</h2>
+
+            <div className={styles.controlsBar}>
+                <div className={styles.controlGroup}>
+                    <label className={styles.controlLabel}>
+                        <input type="checkbox" disabled className={styles.checkbox} />
+                        Blur watched items
+                    </label>
+                </div>
+                <div className={styles.controlGroup}>
+                    <label className={styles.controlLabel}>Sort by:</label>
+                    <select className={styles.select} disabled>
+                        <option>Title (A-Z)</option>
+                    </select>
+                </div>
+                <div className={styles.controlGroup}>
+                    <label className={styles.controlLabel}>Filter:</label>
+                    <select className={styles.select} disabled>
+                        <option>All</option>
+                    </select>
+                </div>
+            </div>
+
+            <div className={styles.worksGrid}>
+                {Array.from({ length: 12 }).map((_, i) => (
+                    <PosterCardSkeleton key={i} />
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
+/* ============ Biography with show-more ============ */
+
+const Biography: React.FC<{ text: string }> = ({ text }) => {
+    const [expanded, setExpanded] = useState(false);
+    const [isOverflowing, setIsOverflowing] = useState(false);
+    const textRef = useRef<HTMLParagraphElement>(null);
+
+    useEffect(() => {
+        const el = textRef.current;
+        if (!el) return;
+        setIsOverflowing(el.scrollHeight > el.clientHeight + 1);
+    }, [text]);
+
+    return (
+        <div className={styles.biographySection}>
+            <h3 className={styles.sectionSubtitle}>Biography</h3>
+            <p
+                ref={textRef}
+                className={`${styles.biographyText} ${!expanded ? styles.biographyClamped : ''}`}
+            >
+                {text}
+            </p>
+            {isOverflowing && (
+                <button
+                    type="button"
+                    className={styles.showMoreBtn}
+                    onClick={() => setExpanded(prev => !prev)}
+                >
+                    {expanded ? 'Show less' : 'Show more'}
+                </button>
+            )}
+        </div>
+    );
+};
+
+/* ============ Main component ============ */
+
 const PersonPage: React.FC = () => {
     const location = useLocation() as { state: LocationState };
     const { personId } = useParams<{ personId: string }>();
 
-    // Derived fresh each render — no need to sync into state.
     const partialData = location.state?.personData ?? null;
 
     const [personData, setPersonData] = useState<PersonResponse | null>(null);
-    const [loadingDetails, setLoadingDetails] = useState<boolean>(true);
     const [detailsError, setDetailsError] = useState<string | null>(null);
     const [filterType, setFilterType] = useState<string>("Servie");
     const [blurCompleted, setBlurCompleted] = useState<boolean>(false);
@@ -32,7 +161,6 @@ const PersonPage: React.FC = () => {
     const [watchedCount, setWatchedCount] = useState(0);
 
     useEffect(() => {
-        setLoadingDetails(true);
         setDetailsError(null);
         setPersonData(null);
 
@@ -41,11 +169,9 @@ const PersonPage: React.FC = () => {
         axiosInstance.get(`person/${personId}`)
             .then((response) => {
                 setPersonData(response.data);
-                setLoadingDetails(false);
             })
             .catch((error) => {
                 const message = error?.response?.data?.message || 'Error fetching person data. Please try again later.';
-                setLoadingDetails(false);
                 setDetailsError(message);
             });
     }, [personId]);
@@ -60,8 +186,8 @@ const PersonPage: React.FC = () => {
         setWatchedCount(prev => newWatched ? prev + 1 : prev - 1);
     };
 
-    // Nothing to show at all yet (direct URL visit, first paint)
-    if (loadingDetails && !partialData && !personData) {
+    // Nothing at all yet (direct URL visit, first paint)
+    if (!partialData && !personData && !detailsError) {
         return (
             <>
                 <AppHeader />
@@ -70,14 +196,16 @@ const PersonPage: React.FC = () => {
         );
     }
 
-    // Fetch failed AND we never had partial data to fall back on
+    // Fetch failed AND no partial data to fall back on
     if (detailsError && !partialData && !personData) {
         return (
             <>
                 <AppHeader />
                 <div className={styles.loadingContainer}>
-                    <p>{detailsError}</p>
-                    <button onClick={() => window.location.reload()}>Retry</button>
+                    <div>
+                        <p>{detailsError}</p>
+                        <button onClick={() => window.location.reload()}>Retry</button>
+                    </div>
                 </div>
             </>
         );
@@ -113,6 +241,7 @@ const PersonPage: React.FC = () => {
     return (
         <>
             <AppHeader />
+
             <div className={styles.pageContainer}>
                 {/* Hero Section */}
                 <div className={styles.heroSection}>
@@ -127,7 +256,7 @@ const PersonPage: React.FC = () => {
                                         className={styles.profileImage}
                                     />
                                 ) : (
-                                    <div className={`${styles.profileImage} ${styles.profileImageSkeleton}`} />
+                                    <div className={`${styles.profileImage} ${styles.skeletonShimmer}`} />
                                 )}
                             </div>
 
@@ -136,11 +265,11 @@ const PersonPage: React.FC = () => {
                                 <h1 className={styles.personName}>{displayName}</h1>
 
                                 {!personData && !detailsError && (
-                                    <div className={styles.detailsSkeleton}>
-                                        <div className={styles.skeletonLine} />
-                                        <div className={styles.skeletonLine} />
-                                        <div className={styles.skeletonLine} />
-                                    </div>
+                                    <>
+                                        <StatsBarSkeleton />
+                                        <DetailsGridSkeleton />
+                                        <BiographySkeleton />
+                                    </>
                                 )}
 
                                 {detailsError && (
@@ -152,6 +281,7 @@ const PersonPage: React.FC = () => {
 
                                 {personData && (
                                     <>
+                                        {/* Quick Stats */}
                                         <div className={styles.statsBar}>
                                             <div className={styles.statItem}>
                                                 <span className={styles.statLabel}>Known For</span>
@@ -176,7 +306,9 @@ const PersonPage: React.FC = () => {
                                                     <i className="bi bi-cake2"></i>
                                                     <span>
                                                         {new Date(personData.birthday).toLocaleDateString('en-US', {
-                                                            month: 'long', day: 'numeric', year: 'numeric'
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                            year: 'numeric'
                                                         })}
                                                         {age && ` (${age} years old)`}
                                                     </span>
@@ -199,17 +331,14 @@ const PersonPage: React.FC = () => {
                                         </div>
 
                                         {/* Biography */}
-                                        {personData.biography && (
-                                            <div className={styles.biographySection}>
-                                                <h3 className={styles.sectionSubtitle}>Biography</h3>
-                                                <p className={styles.biographyText}>{personData.biography}</p>
-                                            </div>
-                                        )}
+                                        {personData.biography && <Biography text={personData.biography} />}
 
                                         {personData.lastModified && (
                                             <p className={styles.lastModified}>
                                                 Last updated: {new Date(personData.lastModified).toLocaleDateString('en-US', {
-                                                    month: 'long', day: 'numeric', year: 'numeric'
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
                                                 })}
                                             </p>
                                         )}
@@ -220,7 +349,9 @@ const PersonPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Works Section - Works needs full data — only render once loaded */}
+                {/* Works Section */}
+                {!personData && !detailsError && <WorksSkeleton />}
+
                 {personData && (
                     <div className={styles.container}>
                         <div className={styles.worksSection}>
@@ -239,16 +370,26 @@ const PersonPage: React.FC = () => {
                                         Blur watched items
                                     </label>
                                 </div>
+
                                 <div className={styles.controlGroup}>
                                     <label className={styles.controlLabel}>Sort by:</label>
-                                    <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className={styles.select}>
+                                    <select
+                                        value={sortOrder}
+                                        onChange={(e) => setSortOrder(e.target.value)}
+                                        className={styles.select}
+                                    >
                                         <option value="title">Title (A-Z)</option>
                                         <option value="popularity">Popularity (High to Low)</option>
                                     </select>
                                 </div>
+
                                 <div className={styles.controlGroup}>
                                     <label className={styles.controlLabel}>Filter:</label>
-                                    <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className={styles.select}>
+                                    <select
+                                        value={filterType}
+                                        onChange={(e) => setFilterType(e.target.value)}
+                                        className={styles.select}
+                                    >
                                         <option value="Servie">All</option>
                                         <option value="Movie">Movies</option>
                                         <option value="TV">TV Shows</option>
@@ -258,14 +399,17 @@ const PersonPage: React.FC = () => {
 
                             {/* Works Grid */}
                             <div className={styles.worksGrid}>
-                                {filteredServies.map(servie => (
-                                    <ServieCard
-                                        key={`${servie.childtype}-${servie.tmdbId}`}
-                                        servie={servie}
-                                        blurCompleted={blurCompleted}
-                                        onWatchChange={handleWatchChange}
-                                    />
-                                ))}
+                                {filteredServies.map(servie => {
+                                    const key = `${servie.childtype}-${servie.tmdbId}`;
+                                    return (
+                                        <ServieCard
+                                            key={key}
+                                            servie={servie}
+                                            blurCompleted={blurCompleted}
+                                            onWatchChange={handleWatchChange}
+                                        />
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>

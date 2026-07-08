@@ -451,6 +451,95 @@
   gap: 2px;
 }
 
+/* ===== Skeleton / Loading States ===== */
+.skeletonShimmer,
+.skeletonBlock,
+.skeletonIcon {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 25%,
+    var(--bg-elevated) 50%,
+    var(--bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+
+.skeletonShimmer {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--border-radius);
+}
+
+.skeletonBlock {
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.skeletonIcon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Inline Error (within hero/details section) ===== */
+
+.inlineError {
+  padding: 16px 20px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.inlineError button {
+  margin-top: 8px;
+  padding: 6px 14px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.inlineError button:hover {
+  background: #2563eb;
+}
+
+/* ===== Biography clamp + show more ===== */
+
+.biographyClamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.showMoreBtn {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 0 0 0;
+  cursor: pointer;
+}
+
+.showMoreBtn:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
 /* ===== Responsive Design ===== */
 @media (max-width: 1024px) {
   .heroContent {
