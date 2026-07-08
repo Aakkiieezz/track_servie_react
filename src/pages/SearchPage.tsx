@@ -21,9 +21,9 @@ import {
 
 import { userInteractionStore } from "@/store/UserInteractionStore";
 import { fetchGenreMap } from "@/lib/api";
-import { useAlert } from "@/contexts/AlertContext";
 
 import styles from "./DiscoveryPage.module.css";
+import { navigateToPerson } from "@/utils/navigateToPerson";
 
 type SearchType = "movie" | "tv" | "servie" | "person" | "collection";
 
@@ -40,7 +40,6 @@ interface Pagination {
 export default function SearchPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { setAlert } = useAlert();
     const [searchParams] = useSearchParams();
 
     const initialQuery = new URLSearchParams(location.search).get("query") || "";
@@ -209,24 +208,6 @@ export default function SearchPage() {
         </h1>
     );
 
-    async function navigateToPersonPage(personId: number): Promise<void> {
-        setSelectedPerson(null);
-        try {
-            const response = await axiosInstance.get(`person/${personId}`);
-            navigate(`/person/${personId}`, {
-                state: { personData: response.data },
-            });
-        } catch (error: any) {
-            console.error("Error fetching person data:", error);
-
-            const message =
-                error?.response?.data?.message ||
-                "Something went wrong. Please try again later.";
-
-            setAlert({ type: "danger", message });
-        }
-    }
-
     function navigateToCollectionPage(collectionId: number): void {
         navigate(`/movie-collection/${collectionId}`);
     }
@@ -295,7 +276,14 @@ export default function SearchPage() {
                         <KnownForModal
                             person={selectedPerson}
                             onClose={() => setSelectedPerson(null)}
-                            onNavigateToPerson={navigateToPersonPage}
+                            onNavigateToPerson={() => {
+                                navigateToPerson(navigate, {
+                                    id: selectedPerson.id,
+                                    name: selectedPerson.name,
+                                    profilePath: selectedPerson.profilePath,
+                                });
+                                setSelectedPerson(null);
+                            }}
                         />
                     )}
 

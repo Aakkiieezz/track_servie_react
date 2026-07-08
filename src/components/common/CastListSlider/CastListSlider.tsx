@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import styles from "./CastListSlider.module.css"
-import axiosInstance from '../../../utils/axiosInstance';
-import { useAlert } from "../../../contexts/AlertContext";
+import { navigateToPerson } from "@/utils/navigateToPerson";
 
 type Cast = {
     personId: number;
@@ -19,7 +18,6 @@ type CastListSliderProps = {
 };
 
 const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childType }) => {
-    const { setAlert } = useAlert();
     const navigate = useNavigate();
 
     const [hoveredProfileId, setHoveredProfileId] = useState<number | null>(null);
@@ -33,23 +31,6 @@ const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childTyp
                 : '/src/assets/profile_icon_male.png';
         }
     };
-
-    async function navigateToPersonPage(personId: number): Promise<void> {
-        try {
-            const response = await axiosInstance.get(`person/${personId}`);
-            navigate(`/person/${personId}`, {
-                state: { personData: response.data }
-            });
-        } catch (error: any) {
-            console.error('Error fetching person data:', error);
-
-            const message =
-                error?.response?.data?.message ||
-                "Something went wrong. Please try again later.";
-
-            setAlert({ type: "danger", message });
-        }
-    }
 
     return (
         <div className={styles.scrollContainer}>
@@ -68,7 +49,13 @@ const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childTyp
                                     ? '/src/assets/profile_icon_female.png'
                                     : '/src/assets/profile_icon_male.png';
                             }}
-                            onClick={() => navigateToPersonPage(profile.personId)}
+                            onClick={() => {
+                                navigateToPerson(navigate, {
+                                    id: profile.personId,
+                                    name: profile.name,
+                                    profilePath: profile.profilePath,
+                                });
+                            }}
                             style={{ cursor: 'pointer' }}
                         />
 

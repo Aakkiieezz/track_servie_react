@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styles from "./TopCrewChart.module.css";
 import axiosInstance from "@/utils/axiosInstance";
+import { useNavigate } from "react-router-dom";
+import { navigateToPerson } from "@/utils/navigateToPerson";
 
 interface CastWatchCountDto {
 	personId: number;
@@ -26,6 +28,7 @@ const TopCrewChart: React.FC<Props> = ({
 	const [displayCount, setDisplayCount] = useState(16); // Start with 12 (2 rows of 6)
 	const [loading, setLoading] = useState(true);
 	const [isExpanded, setIsExpanded] = useState(false);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -70,7 +73,17 @@ const TopCrewChart: React.FC<Props> = ({
 
 			<div className={styles.castGrid}>
 				{displayedCrew.map((member) => (
-					<div key={member.personId} className={styles.castCard}>
+					<div
+						key={member.personId}
+						className={styles.castCard}
+						onClick={() =>
+							navigateToPerson(navigate, {
+								id: member.personId,
+								name: member.name,
+								profilePath: member.profilePath,
+							})
+						}
+					>
 						{member.profilePath ? (
 							<img
 								src={`https://image.tmdb.org/t/p/original${member.profilePath}`}

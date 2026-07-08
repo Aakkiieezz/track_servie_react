@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axiosInstance from '../../../utils/axiosInstance';
-import { useAlert } from '../../../contexts/AlertContext';
+import axiosInstance from '@/utils/axiosInstance';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import styles from "./SearchFilter.module.css";
 import stylesAppHeader from "./AppHeader.module.css";
 import PortalDropdown from "./PortalDropdown";
+import { navigateToPerson } from '@/utils/navigateToPerson';
 
 type SearchType = 'movie' | 'tv' | 'servie' | 'person' | 'collection';
 
@@ -36,8 +36,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 	onCollapse,
 }) => {
 	const navigate = useNavigate();
-	const { setAlert } = useAlert();
-
 	const [query, setQuery] = useState('');
 	const [type, setType] = useState<SearchType>('movie');
 	const [searchResults, setSearchResults] = useState<ServieDto3[]>([]);
@@ -176,26 +174,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 		setType(selectedType);
 		setShowTypeDropdown(false);
 	};
-
-	// Person needs a detail fetch before navigating, since PersonPage expects
-	// pre-loaded data via route state (same pattern as CastListSlider/SearchPage).
-	async function navigateToPersonPage(personId: number): Promise<void> {
-		setShowDropdown(false);
-		try {
-			const response = await axiosInstance.get(`person/${personId}`);
-			navigate(`/person/${personId}`, {
-				state: { personData: response.data },
-			});
-		} catch (error: any) {
-			console.error('Error fetching person data:', error);
-
-			const message =
-				error?.response?.data?.message ||
-				"Something went wrong. Please try again later.";
-
-			setAlert({ type: "danger", message });
-		}
-	}
 
 	const viewportHeight = window.innerHeight;
 	const spaceBelow = viewportHeight - dropdownPosition.top;
@@ -343,7 +321,14 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 									return (
 										<div
 											key={`person-${result.tmdbId}`}
-											onClick={() => navigateToPersonPage(result.tmdbId)}
+											onClick={() => {
+												setShowDropdown(false);
+												navigateToPerson(navigate, {
+													id: result.tmdbId,
+													name: result.title,
+													profilePath: result.posterPath,
+												});
+											}}
 										>
 											{renderRow(result)}
 										</div>

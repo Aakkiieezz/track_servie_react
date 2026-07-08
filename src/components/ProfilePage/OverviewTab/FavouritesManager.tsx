@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, X } from 'lucide-react';
-import axiosInstance from '../../../utils/axiosInstance';
+import axiosInstance from '@/utils/axiosInstance';
 import styles from './FavouritesManager.module.css';
 import type { Servie } from "@/types/servie";
 import ServieCard from "@/components/common/PosterCard/ServieCard";
