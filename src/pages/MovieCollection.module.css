@@ -51,7 +51,7 @@
 .statPill {
   display: inline-block;
   padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--modal-bg);
   border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
@@ -88,7 +88,7 @@
 /* INFO CARD */
 .infoCard {
   padding: 28px;
-  background: var(--bg-tertiary);
+  background: var(--modal-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   backdrop-filter: blur(12px);
@@ -109,7 +109,7 @@
 /* MOVIES CARD */
 .moviesCard {
   padding: 28px;
-  background: var(--bg-tertiary);
+  background: var(--modal-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   backdrop-filter: blur(12px);

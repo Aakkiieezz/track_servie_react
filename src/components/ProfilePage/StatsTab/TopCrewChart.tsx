@@ -86,7 +86,7 @@ const TopCrewChart: React.FC<Props> = ({
 					>
 						{member.profilePath ? (
 							<img
-								src={`https://image.tmdb.org/t/p/original${member.profilePath}`}
+								src={`https://image.tmdb.org/t/p/w342${member.profilePath}`}
 								alt={member.name}
 								className={styles.profileImage}
 							/>

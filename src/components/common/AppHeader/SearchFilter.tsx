@@ -223,7 +223,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 		<div
 			ref={containerRef}
 			className={styles.searchContainer}
-			style={{ width: expanded ? '300px' : '40px' }}
+			style={{ width: expanded ? '400px' : '40px' }}
 		>
 
 			{/* Expand Button */}
@@ -353,7 +353,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 								return (
 									<Link
 										to="/servie"
-										state={{ childType: result.childtype, tmdbId: result.tmdbId }}
+										state={{ childType: result.childtype, tmdbId: result.tmdbId, title: result.title, posterPath: result.posterPath }}
 										key={`${result.childtype}-${result.tmdbId}`}
 										onClick={() => setShowDropdown(false)}
 										style={{ textDecoration: "none", color: "inherit" }}

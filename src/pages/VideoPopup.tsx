@@ -1,20 +1,22 @@
 import { useState } from "react";
 
-type VimeoPopupProps = {
+type VideoPopupProps = {
 	videoSite: string;
 	videoKey: string;
+	buttonClassName?: string;
 };
 
-const VideoPopup: React.FC<VimeoPopupProps> = ({ videoSite, videoKey }) => {
+const VideoPopup: React.FC<VideoPopupProps> = ({ videoSite, videoKey, buttonClassName }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (
 		<>
 			<button
-				className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+				className={buttonClassName}
 				onClick={() => setIsOpen(true)}
 			>
-				Watch Trailer
+				<i className="bi bi-play-circle-fill"></i>
+				{" "}Watch Trailer
 			</button>
 
 			{/* Modal */}

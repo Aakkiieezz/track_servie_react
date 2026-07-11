@@ -369,7 +369,7 @@ const SeasonPage = () => {
                             {/* Poster */}
                             <div className={styles.posterContainer}>
                                 <img
-                                    src={`https://image.tmdb.org/t/p/original${season.posterPath}`}
+                                    src={`https://image.tmdb.org/t/p/w500${season.posterPath}`}
                                     alt={season.name}
                                     className={styles.posterImage}
                                 />

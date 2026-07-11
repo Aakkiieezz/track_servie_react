@@ -48,7 +48,7 @@ const KnownForModal: React.FC<KnownForModalProps> = ({
                             <Link
                                 key={`${item.childtype}-${item.tmdbId}`}
                                 to="/servie"
-                                state={{ childType: item.childtype, tmdbId: item.tmdbId }}
+                                state={{ childType: item.childtype, tmdbId: item.tmdbId, title: item.title, posterPath: item.posterPath }}
                                 className={styles.tile}
                                 onClick={onClose}
                             >

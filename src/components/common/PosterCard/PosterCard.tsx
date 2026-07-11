@@ -64,7 +64,7 @@ function buildPosterSrc(posterPath?: string | null): string {
 
 function buildPosterFallback(posterPath?: string | null): string {
     if (!posterPath) return "https://placehold.co/220x330?text=No+Image";
-    return `https://image.tmdb.org/t/p/original${posterPath}`;
+    return `https://image.tmdb.org/t/p/w500${posterPath}`;
 }
 
 function formatYearRange(props: PosterCardProps): string {
@@ -99,8 +99,21 @@ const PosterCard: React.FC<PosterCardProps> = (props) => {
     const hasPopularity = popularity != null;
     const shouldBlur = blurCompleted && watched;
 
-    const detailLink = isSeason ? `/servies/${tmdbId}/Season/${seasonNo}` : "/servie";
-    const detailState = isSeason ? undefined : { childType: childtype, tmdbId };
+    const detailLink = isSeason
+        ? `/servies/${tmdbId}/Season/${seasonNo}`
+        : "/servie";
+
+    const detailState = isSeason
+        ? {
+            title,
+            posterPath,
+        }
+        : {
+            childType: childtype,
+            tmdbId,
+            title,
+            posterPath,
+        };
 
     return (
         <div className={styles.card}>

@@ -6,6 +6,7 @@ import Filter from "@/components/ProfilePage/TabFilter/Filter";
 import { useFilterStore } from "@/store/useFilterStore";
 import type { Servie } from "@/types/servie";
 import styles from "./Filters.module.css";
+import ServieGridSkeleton from "../common/ServieGrid/ServieGridSkeleton";
 
 interface Filters {
 	type: string;
@@ -123,7 +124,7 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts, isOwnProfile }) =>
 			</div>
 
 			{loading ? (
-				<p>Loading...</p>
+				<ServieGridSkeleton columnsPerRow={12} />
 			) : (
 				<ServieGrid servies={servies} columnsPerRow={12} />
 			)}

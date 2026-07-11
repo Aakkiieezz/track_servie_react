@@ -121,7 +121,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
         <>
             <Link
                 to="/servie"
-                state={{ childType: childtype, tmdbId }}
+                state={{ childType: childtype, tmdbId, title, posterPath }}
                 className={styles.cardLink}
             >
                 <div className={styles.card}>

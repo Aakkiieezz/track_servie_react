@@ -16,25 +16,23 @@ interface LocationState {
     personData?: PartialPersonData;
 }
 
-const BIO_CLAMP_LINES = 4;
-
 /* ============ Skeleton sub-components ============ */
 
 const StatsBarSkeleton = () => (
     <div className={styles.statsBar}>
         <div className={styles.statItem}>
             <span className={styles.statLabel}>Known For</span>
-            <span className={`${styles.statValue} ${styles.skeletonBlock}`} style={{ width: 80, height: 16 }} />
+            <span className={`${styles.statValue} skeletonBlock`} style={{ width: 80, height: 16 }} />
         </div>
         <span className={styles.statsSeparator}>•</span>
         <div className={styles.statItem}>
             <span className={styles.statLabel}>Gender</span>
-            <span className={`${styles.statValue} ${styles.skeletonBlock}`} style={{ width: 60, height: 16 }} />
+            <span className={`${styles.statValue} skeletonBlock`} style={{ width: 60, height: 16 }} />
         </div>
         <span className={styles.statsSeparator}>•</span>
         <div className={styles.statItem}>
             <span className={styles.statLabel}>Popularity</span>
-            <span className={`${styles.statValue} ${styles.skeletonBlock}`} style={{ width: 40, height: 16 }} />
+            <span className={`${styles.statValue} skeletonBlock`} style={{ width: 40, height: 16 }} />
         </div>
     </div>
 );
@@ -43,15 +41,15 @@ const DetailsGridSkeleton = () => (
     <div className={styles.detailsGrid}>
         <div className={styles.detailItem}>
             <i className="bi bi-cake2"></i>
-            <span className={styles.skeletonBlock} style={{ width: 160, height: 14 }} />
+            <span className="skeletonBlock" style={{ width: 160, height: 14 }} />
         </div>
         <div className={styles.detailItem}>
             <i className="bi bi-geo-alt"></i>
-            <span className={styles.skeletonBlock} style={{ width: 120, height: 14 }} />
+            <span className="skeletonBlock" style={{ width: 120, height: 14 }} />
         </div>
         <div className={styles.detailItem}>
             <i className="bi bi-globe"></i>
-            <span className={styles.skeletonBlock} style={{ width: 100, height: 14 }} />
+            <span className="skeletonBlock" style={{ width: 100, height: 14 }} />
         </div>
     </div>
 );
@@ -62,7 +60,7 @@ const BiographySkeleton = () => (
         {[100, 100, 100, 70].map((w, i) => (
             <div
                 key={i}
-                className={styles.skeletonBlock}
+                className="skeletonBlock"
                 style={{ width: `${w}%`, height: 14, marginBottom: 8 }}
             />
         ))}
@@ -71,7 +69,7 @@ const BiographySkeleton = () => (
 
 const PosterCardSkeleton = () => (
     <div className={styles.workCard}>
-        <div className={`${styles.posterWrapper} ${styles.skeletonShimmer}`} />
+        <div className={`${styles.posterWrapper} skeletonShimmer`} />
     </div>
 );
 
@@ -251,12 +249,12 @@ const PersonPage: React.FC = () => {
                             <div className={styles.profileContainer}>
                                 {displayProfilePath ? (
                                     <img
-                                        src={`https://image.tmdb.org/t/p/original/${displayProfilePath}`}
+                                        src={`https://image.tmdb.org/t/p/w780${displayProfilePath}`}
                                         alt={displayName}
                                         className={styles.profileImage}
                                     />
                                 ) : (
-                                    <div className={`${styles.profileImage} ${styles.skeletonShimmer}`} />
+                                    <div className={`${styles.profileImage} skeletonShimmer`} />
                                 )}
                             </div>
 

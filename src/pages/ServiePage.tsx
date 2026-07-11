@@ -47,6 +47,7 @@ interface ServieDto {
     status: string;
     tagline: string;
     overview: string;
+    posterPath: string;
     backdropPath: string;
     logoPath: string;
     lastModified: string;
@@ -81,7 +82,17 @@ const ServiePage = () => {
     const { setAlert } = useAlert();
 
     const location = useLocation();
-    const { childType, tmdbId } = location.state || {};
+    const {
+        childType,
+        tmdbId,
+        posterPath,
+    } = location.state || {};
+
+    const [resolvedPosterPath, setResolvedPosterPath] = useState<string | null>(posterPath ?? null);
+
+    useEffect(() => {
+        setResolvedPosterPath(posterPath ?? null);
+    }, [tmdbId, posterPath]);
 
     // ref to the seasons section wrapper so we can watch its position
     const seasonsRef = useRef<HTMLDivElement | null>(null);
@@ -347,6 +358,39 @@ const ServiePage = () => {
         }
     };
 
+    const formatTitle = (title?: string): React.ReactNode => {
+        if (!title) return title;
+
+        if (title.length <= 35) return title;
+
+        // Prefer breaking at " - " over ": "
+        if (title.includes(" - ")) {
+            const [first, ...rest] = title.split(" - ");
+
+            return (
+                <>
+                    {first}
+                    <br />
+                    {rest.join(" - ")}
+                </>
+            );
+        }
+
+        if (title.includes(": ")) {
+            const [first, ...rest] = title.split(": ");
+
+            return (
+                <>
+                    {first}:
+                    <br />
+                    {rest.join(": ")}
+                </>
+            );
+        }
+
+        return title;
+    };
+
     return (
         <>
             <div className={styles.serviePageWrapper}>
@@ -369,90 +413,112 @@ const ServiePage = () => {
 
                     <div className="container">
                         <div className={styles.contentGrid}>
+
                             {/* Left Column - Main Content */}
                             <div className={styles.mainContent}>
 
-                                {/* Title/Logo Section */}
-                                <div className={styles.titleLogo}>
-                                    {!isImageError && data?.logoPath ? (
-                                        <img
-                                            src={`https://image.tmdb.org/t/p/original${data.logoPath}`}
-                                            alt={data?.title || "logo"}
-                                            onError={() => setIsImageError(true)}
-                                        />
-                                    ) : (
-                                        <h1 className={styles.title} title={data?.title}>
-                                            {data?.title}
-                                        </h1>
-                                    )}
-                                </div>
-
-                                {/* ---------------------------------------------------------------------------- */}
-
-                                {/* Release Year Section */}
-                                {childType === 'movie' && data?.releaseDate && (
-                                    <div className={styles.yearInfo}>
-                                        <span className={styles.yearText}>
-                                            {new Date(data.releaseDate).getFullYear()}
-                                        </span>
-                                    </div>
-                                )}
-
-                                {childType === 'tv' && data?.firstAirDate && (
-                                    <div className={styles.yearInfo}>
-                                        <span className={styles.yearText}>
-                                            {new Date(data?.firstAirDate).getFullYear()} -{" "}
-                                            {new Date(data?.lastAirDate!).getFullYear() === new Date().getFullYear()
-                                                ? "present"
-                                                : new Date(data?.lastAirDate!).getFullYear()}
-                                        </span>
-                                    </div>
-                                )}
-
-                                {/* ---------------------------------------------------------------------------- */}
-
-                                {/* Trailer Section */}
-                                <div className={styles.trailerSection}>
-                                    {(data?.trailerSite === "YouTube" || data?.trailerSite === "Vimeo") && (
-                                        <VideoPopup videoSite={data.trailerSite} videoKey={data.trailerKey} />
-                                    )}
-                                </div>
-
-                                {/* ---------------------------------------------------------------------------- */}
-
-                                {/* Action Buttons */}
-                                <div className={styles.actionButtons}>
-                                    <button
-                                        className={styles.btnTranslucent}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            toggleWatch(childType);
+                                <div className={styles.heroSection}>
+                                    <img
+                                        className={styles.heroPoster}
+                                        src={`https://image.tmdb.org/t/p/w500${resolvedPosterPath}`}
+                                        alt={data?.title}
+                                        onError={() => {
+                                            if (resolvedPosterPath !== data?.posterPath && data?.posterPath)
+                                                setResolvedPosterPath(data.posterPath);
                                         }}
-                                    >
-                                        {servieWatchState ? (
-                                            <>
-                                                <i className="bi bi-eye-fill"></i> Watched
-                                            </>
-                                        ) : (
-                                            <>
-                                                <i className="bi bi-eye-slash-fill"></i> Mark as Watched
-                                            </>
+                                    />
+
+                                    <div className={styles.heroInfo}>
+                                        {/* <div className={styles.titleLogo}>
+                                            {!isImageError && data?.logoPath ? (
+                                                <img
+                                                    src={`https://image.tmdb.org/t/p/original${data.logoPath}`}
+                                                    alt={data?.title || "logo"}
+                                                    onError={() => setIsImageError(true)}
+                                                />
+                                            ) : (
+                                                <h1 className={styles.title} title={data?.title}>
+                                                    {data?.title}
+                                                </h1>
+                                            )}
+                                        </div> */}
+
+
+                                        <h1 className={styles.title} title={data?.title}>
+                                            {formatTitle(data?.title)}
+                                        </h1>
+
+                                        {/* Release Year */}
+                                        {childType === "movie" && data?.releaseDate && (
+                                            <div className={styles.yearInfo}>
+                                                <span className={styles.yearText}>
+                                                    {new Date(data.releaseDate).getFullYear()}
+                                                </span>
+                                            </div>
                                         )}
-                                    </button>
 
-                                    <button
-                                        onClick={() => setIsReviewModalOpen(true)}
-                                        className={styles.btnTranslucent}
-                                    >
-                                        <i className="bi bi-pencil-square"></i> Add Review
-                                    </button>
-                                </div>
+                                        {childType === "tv" && data?.firstAirDate && (
+                                            <div className={styles.yearInfo}>
+                                                <span className={styles.yearText}>
+                                                    {new Date(data.firstAirDate).getFullYear()} –{" "}
+                                                    {new Date(data.lastAirDate!).getFullYear() === new Date().getFullYear()
+                                                        ? "Present"
+                                                        : new Date(data.lastAirDate!).getFullYear()}
+                                                </span>
+                                            </div>
+                                        )}
 
-                                {/* ---------------------------------------------------------------------------- */}
+                                        {/* ---------------------------------------------------------------------------- */}
 
-                                {/* Rating */}
-                                <div className={styles.ratingSection}>
-                                    <HalfStarRating maxStars={5} initialRating={rating} onRatingChange={handleRatingChange} />
+                                        {/* Rating */}
+                                        <div className={styles.heroRating}>
+                                            <div className={styles.heroRatingLabel}>
+                                                {rating ? "Your Rating" : "Rate this"}
+                                            </div>
+                                            <HalfStarRating
+                                                maxStars={5}
+                                                initialRating={rating}
+                                                onRatingChange={handleRatingChange}
+                                            />
+                                        </div>
+
+                                        {/* ---------------------------------------------------------------------------- */}
+
+                                        <div className={styles.actionButtons}>
+                                            <button
+                                                className={styles.btnTranslucent}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    toggleWatch(childType);
+                                                }}
+                                            >
+                                                {servieWatchState ? (
+                                                    <>
+                                                        <i className="bi bi-eye-fill"></i> Watched
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <i className="bi bi-eye-slash-fill"></i> Mark as Watched
+                                                    </>
+                                                )}
+                                            </button>
+
+                                            <button
+                                                onClick={() => setIsReviewModalOpen(true)}
+                                                className={styles.btnTranslucent}
+                                            >
+                                                <i className="bi bi-pencil-square"></i> Add Review
+                                            </button>
+
+                                            {(data?.trailerSite === "YouTube" || data?.trailerSite === "Vimeo") && (
+                                                <VideoPopup
+                                                    videoSite={data.trailerSite}
+                                                    videoKey={data.trailerKey}
+                                                    buttonClassName={styles.btnTranslucent}
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* ---------------------------------------------------------------------------- */}
@@ -518,7 +584,7 @@ const ServiePage = () => {
                                         <h5>{data.collectionName}</h5>
                                         <img
                                             className="rounded"
-                                            src={`https://image.tmdb.org/t/p/original${data.collectionPosterPath}`}
+                                            src={`https://image.tmdb.org/t/p/w500${data.collectionPosterPath}`}
                                             alt="Poster Unavailable"
                                             style={{ width: "200px", height: "300px", cursor: "pointer" }}
                                             onClick={() => navigate(`/movie-collection/${data.collectionId}`)}

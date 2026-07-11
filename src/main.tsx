@@ -25,6 +25,8 @@ import EpisodePage from "./pages/EpisodePage.tsx";
 import SettingsPage from "./pages/SettingsPage.tsx";
 import ForgotPasswordPage from "./pages/ForgetPasswordPage.tsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
+import "@fontsource/quicksand/700.css";
+import "@/styles/skeleton.css";
 
 const processToken = () => {
     const params = new URLSearchParams(window.location.search);

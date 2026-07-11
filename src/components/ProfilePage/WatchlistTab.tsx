@@ -7,6 +7,7 @@ import { useWatchlistFilterStore } from "@/store/useWatchlistFilterStore";
 import type { Servie } from "@/types/servie";
 import { WatchlistTabContext } from "@/contexts/WatchlistTabContext";
 import styles from "./Filters.module.css";
+import ServieGridSkeleton from "../common/ServieGrid/ServieGridSkeleton";
 
 interface Filters {
 	type: string;
@@ -140,7 +141,7 @@ const ProfileWatchlistTab: React.FC<Props> = ({ userId }) => {
 				</div>
 
 				{loading ? (
-					<p>Loading...</p>
+					<ServieGridSkeleton columnsPerRow={12} />
 				) : (
 					<ServieGrid servies={servies} columnsPerRow={12} fadedKeys={fadedKeys} />
 				)}
