@@ -13,6 +13,7 @@ import ReviewModal from '@/components/common/ReviewModal/ReviewModal';
 import AppHeader from '@/components/common/AppHeader/AppHeader';
 import styles from './ServiePage.module.css';
 import type { ReviewData } from "@/types/servie";
+import ServiePageSkeleton from '@/components/common/Skeleton/ServiePageSkeleton';
 
 interface GenreDtoServiePage {
     id: number;
@@ -49,7 +50,7 @@ interface ServieDto {
     overview: string;
     posterPath: string;
     backdropPath: string;
-    logoPath: string;
+    logoPath: string; // no longer used
     lastModified: string;
     genres: GenreDtoServiePage[];
     releaseDate: string;
@@ -85,10 +86,16 @@ const ServiePage = () => {
     const {
         childType,
         tmdbId,
+        title,
         posterPath,
     } = location.state || {};
 
+    const [resolvedTitle, setResolvedTitle] = useState<string | null>(title ?? null);
     const [resolvedPosterPath, setResolvedPosterPath] = useState<string | null>(posterPath ?? null);
+
+    useEffect(() => {
+        setResolvedTitle(title ?? null);
+    }, [tmdbId, title]);
 
     useEffect(() => {
         setResolvedPosterPath(posterPath ?? null);
@@ -142,7 +149,6 @@ const ServiePage = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const [isImageError, setIsImageError] = useState(false);
     const [data, setData] = useState<ServieDto | null>(null); // Proper typing
     const [rating, setRating] = useState<number>(0); // State to hold the rating
     const [loading, setLoading] = useState<boolean>(true);
@@ -167,6 +173,8 @@ const ServiePage = () => {
                     });
 
                 setData(response.data);
+                if (!title && response.data.title)
+                    setResolvedTitle(response.data.title);
 
                 if (response.data.childType == 'movie')
                     setServieRuntime(response.data.runtime);
@@ -231,7 +239,14 @@ const ServiePage = () => {
 
     // const formattedDate = format(new Date(lastModified), 'dd-MM-yyyy HH:mm:ss');
 
-    if (loading) return <div>Loading...</div>;
+    if (loading)
+        return (
+            <ServiePageSkeleton
+                childType={childType}
+                title={resolvedTitle ?? undefined}
+                posterPath={resolvedPosterPath ?? undefined}
+            />
+        );
     if (error) return <div>{error}</div>;
 
     const toggleWatch = async (childtype: string) => {
@@ -429,26 +444,14 @@ const ServiePage = () => {
                                     />
 
                                     <div className={styles.heroInfo}>
-                                        {/* <div className={styles.titleLogo}>
-                                            {!isImageError && data?.logoPath ? (
-                                                <img
-                                                    src={`https://image.tmdb.org/t/p/original${data.logoPath}`}
-                                                    alt={data?.title || "logo"}
-                                                    onError={() => setIsImageError(true)}
-                                                />
-                                            ) : (
-                                                <h1 className={styles.title} title={data?.title}>
-                                                    {data?.title}
-                                                </h1>
-                                            )}
-                                        </div> */}
-
-
+                                        {/* Title */}
                                         <h1 className={styles.title} title={data?.title}>
-                                            {formatTitle(data?.title)}
+                                            {formatTitle(resolvedTitle ?? data?.title)}
                                         </h1>
 
-                                        {/* Release Year */}
+                                        {/* ---------------------------------------------------------------------------- */}
+
+                                        {/* Release Year - Movie */}
                                         {childType === "movie" && data?.releaseDate && (
                                             <div className={styles.yearInfo}>
                                                 <span className={styles.yearText}>
@@ -457,6 +460,7 @@ const ServiePage = () => {
                                             </div>
                                         )}
 
+                                        {/* Release Year - TV */}
                                         {childType === "tv" && data?.firstAirDate && (
                                             <div className={styles.yearInfo}>
                                                 <span className={styles.yearText}>
@@ -484,6 +488,7 @@ const ServiePage = () => {
 
                                         {/* ---------------------------------------------------------------------------- */}
 
+                                        {/* Action Buttons */}
                                         <div className={styles.actionButtons}>
                                             <button
                                                 className={styles.btnTranslucent}

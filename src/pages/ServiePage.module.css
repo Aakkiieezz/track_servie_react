@@ -141,20 +141,6 @@
   gap: 1.25rem;
 }
 
-/* Title/Logo */
-.titleLogo {
-  min-height: 110px;
-  display: flex;
-  align-items: center;
-}
-
-.titleLogo img {
-  max-height: 110px;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-}
-
 .title {
   margin: 0;
   padding: 0;
@@ -555,10 +541,6 @@
 
   .heroInfo {
     align-items: center;
-  }
-
-  .titleLogo {
-    justify-content: center;
   }
 
   .yearInfo {

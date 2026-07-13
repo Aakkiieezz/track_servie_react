@@ -20,6 +20,15 @@
   border-radius: 6px;
 }
 
+.skeletonBlock {
+  display: inline-block;
+  border-radius: inherit;
+}
+
+.skeletonShimmer {
+  border-radius: inherit;
+}
+
 @keyframes skeleton-shimmer {
   from {
     background-position: 200% 0;
