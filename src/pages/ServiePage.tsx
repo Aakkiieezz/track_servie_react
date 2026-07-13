@@ -78,6 +78,11 @@ interface ServieDto {
     trailerKey: string;
 }
 
+interface WikiPlotDto {
+    wikiPlot: string;
+    wikiConfidenceScore: number;
+}
+
 const ServiePage = () => {
     const navigate = useNavigate();
     const { setAlert } = useAlert();
@@ -186,6 +191,9 @@ const ServiePage = () => {
                 setServieWatchState(response.data.completed);
                 setRating(response.data.rated);
 
+                // ✅ Only fetch summary after Servie loaded successfully
+                await fetchSummary();
+
             } catch (err) {
                 if (err instanceof Error)
                     setError(err.message);
@@ -201,6 +209,57 @@ const ServiePage = () => {
             fetchData();
 
     }, [tmdbId, childType]);
+
+    const [summary, setSummary] = useState<string | null>(null);
+    const hasOverview = !!data?.overview?.trim();
+    const hasSummary = !!summary?.trim();
+    const showOverviewTabs = hasOverview && hasSummary;
+    const [overviewActiveTab, setOverviewActiveTab] = useState<"overview" | "summary">("overview");
+    const [summaryLoading, setSummaryLoading] = useState(false);
+    const [overviewExpanded, setOverviewExpanded] = useState(false);
+    const [summaryExpanded, setSummaryExpanded] = useState(false);
+
+    useEffect(() => {
+        if (hasOverview) setOverviewActiveTab("overview");
+        else if (hasSummary) setOverviewActiveTab("summary");
+    }, [hasOverview, hasSummary]);
+
+    // Whenever the user navigates to another Servie page
+    useEffect(() => {
+        // Summary
+        setSummary(null);
+
+        // Overview panel
+        setOverviewExpanded(false);
+        setSummaryExpanded(false);
+        setOverviewActiveTab("overview");
+
+        // Cast
+        setSeriesCastActiveTab("regulars");
+
+        // Seasons
+        setSeasonsStuck(false);
+    }, [tmdbId, childType]);
+
+    const fetchSummary = async () => {
+        try {
+            setSummaryLoading(true);
+
+            const response = await axiosInstance.get<string | null>(
+                `/servies/${childType}/${tmdbId}/summary`
+            );
+
+            setSummary(response.data);
+
+        } catch (err) {
+            console.error("Failed to fetch summary", err);
+
+            // Fail silently.
+            setSummary(null);
+        } finally {
+            setSummaryLoading(false);
+        }
+    };
 
     const movieCast = data?.cast ?? [];
     const hasMovieCast = movieCast.length > 0;
@@ -528,14 +587,95 @@ const ServiePage = () => {
 
                                 {/* ---------------------------------------------------------------------------- */}
 
-                                {/* Overview Section */}
-                                {data?.overview && (
+                                {/* Overview / Summary Section */}
+                                {(hasOverview || hasSummary) && (
                                     <div className={styles.overviewSection}>
-                                        <h4>Overview</h4>
-                                        {data.tagline && <h5 className={styles.tagline}>{data.tagline}</h5>}
-                                        <p className={styles.overviewText}>{data.overview}</p>
+
+                                        {/* Header */}
+                                        {showOverviewTabs ? (
+                                            <div className={styles.overviewTabs}>
+
+                                                <button
+                                                    className={`${styles.btnTranslucent} ${styles.tabBtn} ${overviewActiveTab === "overview" ? styles.active : ""
+                                                        }`}
+                                                    onClick={() => setOverviewActiveTab("overview")}
+                                                >
+                                                    Overview
+                                                </button>
+
+                                                <button
+                                                    className={`${styles.btnTranslucent} ${styles.tabBtn} ${overviewActiveTab === "summary" ? styles.active : ""
+                                                        }`}
+                                                    onClick={() => setOverviewActiveTab("summary")}
+                                                >
+                                                    Summary
+                                                </button>
+
+                                            </div>
+                                        ) : (
+                                            <h4>{hasOverview ? "Overview" : "Summary"}</h4>
+                                        )}
+
+                                        {/* Tagline only for Overview */}
+                                        {overviewActiveTab === "overview" && hasOverview && data?.tagline && (
+                                            <h5 className={styles.tagline}>
+                                                {data.tagline}
+                                            </h5>
+                                        )}
+
+                                        {(() => {
+                                            const isOverview =
+                                                overviewActiveTab === "overview" || !hasSummary;
+
+                                            const text = isOverview
+                                                ? data?.overview
+                                                : summary;
+
+                                            const expanded = isOverview
+                                                ? overviewExpanded
+                                                : summaryExpanded;
+
+                                            const toggleExpanded = () => {
+                                                if (isOverview)
+                                                    setOverviewExpanded(v => !v);
+                                                else
+                                                    setSummaryExpanded(v => !v);
+                                            };
+
+                                            return (
+                                                <>
+                                                    <p
+                                                        className={`${styles.overviewText} ${!expanded ? styles.clamped : ""
+                                                            }`}
+                                                    >
+                                                        {text}
+                                                    </p>
+
+                                                    {text && text.length > 400 && (
+                                                        <button
+                                                            className={styles.showMoreBtn}
+                                                            onClick={toggleExpanded}
+                                                        >
+                                                            {expanded ? (
+                                                                <>
+                                                                    Show Less
+                                                                    <i className="bi bi-chevron-up ms-2"></i>
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    Show More
+                                                                    <i className="bi bi-chevron-down ms-2"></i>
+                                                                </>
+                                                            )}
+                                                        </button>
+                                                    )}
+                                                </>
+                                            );
+                                        })()}
+
                                     </div>
                                 )}
+
 
                                 {/* ---------------------------------------------------------------------------- */}
 
