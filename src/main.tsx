@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap/dist/css/bootstrap.css";
 import './index.css';
+import './styles/common.css';
 
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import AuthPage from "./pages/AuthPage.tsx";

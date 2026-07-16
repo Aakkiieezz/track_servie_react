@@ -29,6 +29,8 @@ const HeroSectionSkeleton = ({ title, posterPath }: HeroSectionSkeletonProps) =>
                     {title}
                 </h1>
 
+                {/* ---------------------------------------------------------------------------- */}
+
                 {/* Year */}
                 <div className={styles.yearInfo}>
                     <div
@@ -40,9 +42,11 @@ const HeroSectionSkeleton = ({ title, posterPath }: HeroSectionSkeletonProps) =>
                     />
                 </div>
 
+                {/* ---------------------------------------------------------------------------- */}
+
                 {/* Rating */}
-                <div className={styles.heroRating}>
-                    <div className={styles.heroRatingLabel}>
+                <div className="glass-panel rating-block">
+                    <div className="rating-label">
                         Rate this
                     </div>
 
@@ -53,22 +57,16 @@ const HeroSectionSkeleton = ({ title, posterPath }: HeroSectionSkeletonProps) =>
                     />
                 </div>
 
-                {/* Buttons */}
+                {/* ---------------------------------------------------------------------------- */}
+
+                {/* Action Buttons */}
                 <div className={styles.actionButtons}>
-                    <button
-                        className={styles.btnTranslucent}
-                        disabled
-                    >
-                        <i className="bi bi-eye-slash-fill"></i>
-                        {" "}Mark as Watched
+                    <button className="btnTranslucent" disabled>
+                        <i className="bi bi-eye-slash-fill" /> Mark as Watched
                     </button>
 
-                    <button
-                        className={styles.btnTranslucent}
-                        disabled
-                    >
-                        <i className="bi bi-pencil-square"></i>
-                        {" "}Add Review
+                    <button className="btnTranslucent" disabled>
+                        <i className="bi bi-pencil-square" /> Add Review
                     </button>
                 </div>
             </div>

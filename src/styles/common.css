@@ -1,0 +1,77 @@
+/* =========================
+   Translucent Panel 
+   ========================= */
+
+.glass-panel {
+  background: var(--modal-bg);
+  backdrop-filter: var(--blur-strength);
+
+  /* do we need this ? */
+  -webkit-backdrop-filter: var(--blur-strength);
+
+  border: 1px solid var(--modal-border);
+  border-radius: var(--border-radius);
+  /* box-shadow: 0 8px 30px rgba(0,0,0,.18); */
+}
+
+/* =========================
+   Rating Block
+   ========================= */
+
+.rating-block {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  width: fit-content;
+  padding: 10px 16px;
+}
+
+.rating-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--modal-text);
+  opacity: 0.7;
+}
+
+/* =========================
+   Translucent Button 
+   ========================= */
+
+.btnTranslucent {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  color: var(--modal-text);
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: var(--blur-strength);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btnTranslucent:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+
+.btnSuccess {
+  background: rgba(20, 45, 28, 0.70);
+  border-color: rgba(74, 222, 128, 0.25);
+  color: var(--text-primary);
+}
+
+.btnSuccess i {
+  color: #4ade80;
+}
+
+.btnSuccess:hover {
+  background: rgba(26, 58, 36, 0.74);
+  border-color: rgba(74, 222, 128, 0.35);
+}

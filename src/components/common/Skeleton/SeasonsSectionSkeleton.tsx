@@ -3,7 +3,7 @@ import "@/styles/skeleton.css";
 import ProgressBar from "@/components/common/ProgressBar/ProgressBar";
 
 const SeasonsSectionSkeleton = () => (
-    <div className={styles.seasonsSection}>
+    <div className={`glass-panel ${styles.seasonsSection}`}>
 
         <div className={styles.seasonsHeader}>
 

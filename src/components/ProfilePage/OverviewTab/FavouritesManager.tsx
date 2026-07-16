@@ -15,8 +15,6 @@ interface FavoritesManagerProps {
 	userId: number;
 	isEditable?: boolean;
 	layout?: "side-by-side" | "stacked";
-	onAdd?: (index: number, type: "movie" | "tv") => void;
-	onRemove?: (tmdbId: number, type: "movie" | "tv") => void;
 	onFetchError?: (error: string) => void;
 }
 
@@ -26,8 +24,6 @@ const FavoritesManager: React.FC<FavoritesManagerProps> = ({
 	userId,
 	isEditable = false,
 	layout = "side-by-side",
-	onAdd,
-	onRemove,
 	onFetchError
 }) => {
 	const [movies, setMovies] = useState<Servie[]>([]);
@@ -56,17 +52,11 @@ const FavoritesManager: React.FC<FavoritesManagerProps> = ({
 	const handleRemove = async (tmdbId: number, type: "movie" | "tv") => {
 		try {
 			await axiosInstance.delete(`list/favourites/${type}/${tmdbId}`);
-			onRemove?.(tmdbId, type);
 			fetchFavorites();
 		} catch (err) {
 			console.error('Failed to remove favourite:', err);
 			onFetchError?.('Failed to remove favourite');
 		}
-	};
-
-	const handleAddClick = (index: number, type: "movie" | "tv") => {
-		onAdd?.(index, type);
-		setPickerType(type);
 	};
 
 	const handleFavouriteAdded = () => {
@@ -108,7 +98,7 @@ const FavoritesManager: React.FC<FavoritesManagerProps> = ({
 						>
 							{isEditable ? (
 								<button
-									onClick={() => handleAddClick(items.length + index, type)}
+									onClick={() => setPickerType(type)}
 									className={styles.addButton}
 								>
 									<Plus size={28} strokeWidth={1.5} />

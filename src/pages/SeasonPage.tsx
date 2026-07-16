@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from '../utils/axiosInstance';
+import axios from 'axios';
 
 import { useAlert } from "../contexts/AlertContext";
 import CastListSlider from "@/components/common/CastListSlider/CastListSlider";
@@ -9,6 +10,10 @@ import ProgressBar from '../components/common/ProgressBar/ProgressBar';
 import AppHeader from "@/components/common/AppHeader/AppHeader";
 
 import styles from './SeasonPage.module.css';
+import HalfStarRating from "@/components/common/HalfStarRating";
+import ReviewModal from "@/components/common/ReviewModal/ReviewModal";
+import type { ReviewData } from "@/types/servie";
+import { useRouteParamNumber } from "@/utils/hooks/useRouteParamNumber";
 
 interface Season {
     id: number;
@@ -28,6 +33,8 @@ interface Season {
     episodes: Episode[];
     totalSeasons: number;
     hasSpecials: boolean;
+    liked: boolean | null;
+    rated: number | null;
 }
 
 interface Cast {
@@ -53,6 +60,16 @@ interface Episode {
 const SeasonPage = () => {
     // ✅ ALL useState
     const { setAlert } = useAlert();
+    const location = useLocation();
+    const {
+        title,
+        posterPath,
+        backdropPath,
+    }: {
+        title?: string;
+        posterPath?: string;
+        backdropPath?: string | null;
+    } = location.state || {};
     const [loading, setLoading] = useState<boolean>(true);
     const [, setError] = useState<string | null>(null);
     const [season, setSeason] = useState<Season | null>(null);
@@ -65,6 +82,7 @@ const SeasonPage = () => {
     const [totalSeasons, setTotalSeasons] = useState(0);
     const [hasSpecials, setHasSpecials] = useState(false);
     const [seasonCastActiveTab, setSeasonCastActiveTab] = useState<"regulars" | "guests">("regulars");
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
 
     // ✅ ALL useRef hooks
     const pendingTogglesRef = useRef<Map<number, boolean>>(new Map());
@@ -82,12 +100,13 @@ const SeasonPage = () => {
     const navigate = useNavigate();
 
     // ✅ NOW extract params and derived values (after all hooks)
-    const { tmdbId, seasonNo = "1" } = useParams<{ tmdbId: string, seasonNo?: string }>();
-    const currentSeasonNo = parseInt(seasonNo, 10);
+    const tmdbId = useRouteParamNumber('tmdbId');
+    const seasonNo = useRouteParamNumber('seasonNo', 1);
+    const currentSeasonNo = seasonNo;
     const totalEpisodes = season?.episodeCount || 1;
 
     // ✅ Define fetchSeasonData BEFORE useEffect uses it
-    const fetchSeasonData = async (tmdbId: string, seasonNo: string) => {
+    const fetchSeasonData = async (tmdbId: number, seasonNo: number) => {
         try {
             setLoading(true);
             const response = await axiosInstance.get(`servies/${tmdbId}/Season/${seasonNo}`);
@@ -137,7 +156,8 @@ const SeasonPage = () => {
             );
 
             if (response.status === 200) {
-                setAlert({ type: "success",
+                setAlert({
+                    type: "success",
                     message: `Updated watch status of ${episodes.length} episode(s) successfully!`,
                 });
 
@@ -349,201 +369,379 @@ const SeasonPage = () => {
         return parts.length > 0 ? parts.join(" ") : "0min";
     }
 
+    const handleSaveReview = async (reviewData: ReviewData) => {
+        try {
+
+            const payload: Partial<ReviewData> = {};
+
+            if (reviewData.watchedDate != null)
+                payload.watchedDate = reviewData.watchedDate;
+
+            if (reviewData.liked != null)
+                payload.liked = reviewData.liked;
+
+            if (reviewData.rating != null)
+                payload.rating = reviewData.rating;
+
+            if (reviewData.review != null)
+                payload.review = reviewData.review;
+
+            const response = await axiosInstance.patch(
+                `/servies/${tmdbId}/Season/${seasonNo}/review`,
+                payload
+            );
+
+            if (response.status === 200) {
+                setSeason(prev =>
+                    prev
+                        ? {
+                            ...prev,
+                            liked: reviewData.liked ?? prev.liked,
+                            rated: reviewData.rating ?? prev.rated,
+                        }
+                        : prev
+                );
+                setAlert({ type: "success", message: "Saved successfully!" });
+            }
+
+        } catch (error: unknown) {
+            console.error('Failed to save user data', error);
+            if (axios.isAxiosError(error) && error.response?.data) {
+                const data = error.response.data as Record<string, string>;
+                const messages = Object.values(data).join(", ");
+                setAlert({ type: "danger", message: messages });
+                return;
+            }
+
+            setAlert({ type: "danger", message: "Failed to save!" });
+        }
+    };
+
+    const handleRatingChange = async (newRating: number | null) => {
+
+        const previousRating = season?.rated ?? null;
+
+        // Optimistic UI update
+        setSeason(prev =>
+            prev
+                ? {
+                    ...prev,
+                    rated: newRating,
+                }
+                : prev
+        );
+
+        try {
+            await axiosInstance.patch(
+                `/servies/${tmdbId}/Season/${seasonNo}/review`,
+                { rating: newRating }
+            );
+        } catch (error) {
+
+            // Roll back
+            setSeason(prev =>
+                prev
+                    ? {
+                        ...prev,
+                        rated: previousRating,
+                    }
+                    : prev
+            );
+
+            console.error("Failed to update rating", error);
+            setAlert({ type: "danger", message: "Failed to update rating!", });
+        }
+    };
+
     return (
         <>
-            <AppHeader />
-            <div className={styles.pageContainer}>
-
-                {/* Hero Section */}
-                <div className={styles.heroSection}>
-
-                    <div className={styles.container}>
-                        <SeasonsNavBar
-                            tmdbId={tmdbId!}
-                            currentSeasonNo={currentSeasonNo}
-                            totalSeasons={totalSeasons}
-                            hasSpecials={hasSpecials}
+            <div className={styles.pageWrapper}>
+                {backdropPath && (
+                    <div className={styles.fullPageBackdrop}>
+                        <img
+                            className={styles.backgroundImage}
+                            src={`https://image.tmdb.org/t/p/original${backdropPath}`}
+                            alt="Backdrop"
                         />
-                        <br />
-                        <div className={styles.heroContent}>
-                            {/* Poster */}
-                            <div className={styles.posterContainer}>
-                                <img
-                                    src={`https://image.tmdb.org/t/p/w500${season.posterPath}`}
-                                    alt={season.name}
-                                    className={styles.posterImage}
-                                />
-                            </div>
+                        <div className={styles.backdropOverlay} />
+                    </div>
+                )}
 
-                            {/* Info */}
-                            <div className={styles.infoSection}>
-                                <h1 className={styles.seasonTitle}>{season.name}</h1>
+                <div className={styles.pageContent}>
+                    <AppHeader />
+                    <div className={styles.pageContainer}>
 
-                                {/* Stats Bar */}
-                                <div className={styles.statsBar}>
-                                    <button
-                                        onClick={toggleSeasonWatch}
-                                        className={`${styles.watchButton} ${seasonWatchState ? styles.watched : styles.unwatched}`}
-                                    >
-                                        <i className={`bi ${seasonWatchState ? 'bi-eye-fill' : 'bi-eye-slash-fill'}`}></i>
-                                        {seasonWatchState ? 'Watched' : 'Mark as Watched'}
-                                    </button>
+                        <div className={styles.container}>
 
-                                    <div className={styles.statsInfo}>
-                                        <span className={styles.statsBadge}>
-                                            {epWatchCount}/{season.episodeCount} Episodes
-                                        </span>
-                                        <span className={styles.statsSeparator}>•</span>
-                                        <span className={styles.statsText}>
-                                            {formatRuntime(seasonWatchRuntime)} / {formatRuntime(season.totalRuntime)}
-                                        </span>
+                            <SeasonsNavBar
+                                tmdbId={tmdbId!}
+                                currentSeasonNo={currentSeasonNo}
+                                totalSeasons={totalSeasons}
+                                hasSpecials={hasSpecials}
+                            />
+
+                            <br />
+
+                            <div className={styles.heroLayout}>
+
+                                {/* Poster Column */}
+                                <div className={styles.posterColumn}>
+                                    <div className={styles.posterContainer}>
+                                        <img
+                                            src={`https://image.tmdb.org/t/p/w500${season.posterPath}`}
+                                            alt={season.name}
+                                            className={styles.posterImage}
+                                        />
                                     </div>
                                 </div>
 
-                                {/* Progress Bar */}
-                                <div className={styles.progressContainer}>
-                                    <ProgressBar episodesWatched={epWatchCount} totalEpisodes={season.episodeCount} />
-                                    <div className={styles.progressText}>
-                                        {Math.round((epWatchCount / season.episodeCount) * 100)}% Complete
-                                    </div>
-                                </div>
+                                {/* Right Content */}
+                                <div className={styles.contentColumn}>
 
-                                {/* Overview */}
-                                {season.overview && (
-                                    <div className={styles.overviewSection}>
-                                        <h3 className={styles.overviewTitle}>Overview</h3>
-                                        <p className={styles.overviewText}>{season.overview}</p>
-                                    </div>
-                                )}
+                                    <div className={styles.heroSection}>
 
-                                {season.lastModified && (
-                                    <p className={styles.lastModified}>
-                                        Last updated: {new Date(season.lastModified).toLocaleDateString('en-US', {
-                                            month: 'long',
-                                            day: 'numeric',
-                                            year: 'numeric'
-                                        })}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                        {/* Main Hero */}
+                                        <div className={styles.heroInfo}>
 
+                                            <h1 className={styles.seasonTitle}>
+                                                {season.name}
+                                            </h1>
 
-                {/* Cast Section */}
-                <div className={styles.container}>
-                    <div className={styles.castSection}>
-                        <h2 className={styles.sectionTitle}>Cast</h2>
+                                            <div className={styles.metaRow}>
+                                                <span>{season.episodeCount} Episodes</span>
 
-                        {/* Tabs */}
-                        <div className={styles.tabsContainer}>
-                            <button
-                                onClick={() => setSeasonCastActiveTab('regulars')}
-                                className={`${styles.tabButton} ${seasonCastActiveTab === 'regulars' ? styles.tabActive : ''}`}
-                            >
-                                Season Regulars ({season?.seasonCast?.length ?? 0})
-                            </button>
-                            <button
-                                onClick={() => setSeasonCastActiveTab('guests')}
-                                className={`${styles.tabButton} ${seasonCastActiveTab === 'guests' ? styles.tabActive : ''}`}
-                            >
-                                Guest Stars ({season?.seasonCastGuests?.length ?? 0})
-                            </button>
-                        </div>
+                                                <span className={styles.dot}>•</span>
 
-                        {/* Tab content */}
-                        {seasonCastActiveTab === 'regulars' ? (
-                            <CastListSlider profiles={season?.seasonCast} childType='movie' />
-                        ) : (
-                            <CastListSlider profiles={season?.seasonCastGuests} childType='tv' />
-                        )}
-                    </div>
-                </div>
+                                                <span>{formatRuntime(season.totalRuntime)}</span>
+                                            </div>
 
-                {/* Episodes Section */}
-                <div className={styles.container}>
-                    <div className={styles.episodesSection}>
-                        <h2 className={styles.sectionTitle}>Episodes</h2>
+                                            {/* Rating */}
+                                            <div className="glass-panel rating-block">
+                                                <div className="rating-label">
+                                                    {season?.rated ? "Your Rating" : "Rate this"}
+                                                </div>
+                                                <HalfStarRating
+                                                    maxStars={5}
+                                                    initialRating={season?.rated}
+                                                    onRatingChange={handleRatingChange}
+                                                />
+                                            </div>
 
-                        <div className={styles.episodesList}>
-                            {season.episodes.map((episode) => {
-                                const isWatched = epWatchState[episode.episodeNo];
+                                            <div className={styles.actionRow}>
 
-                                return (
-                                    <div
-                                        key={episode.episodeNo}
-                                        className={styles.episodeCard}
-                                        onClick={() => navigate(`/servies/${tmdbId}/Season/${currentSeasonNo}/Episode/${episode.episodeNo}`)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <div className={styles.episodeContent}>
-                                            {/* Episode Thumbnail */}
-                                            <div className={styles.episodeThumbnail}>
-                                                <img
-                                                    src={episode.stillPath
-                                                        ? `https://image.tmdb.org/t/p/original${episode.stillPath}`
-                                                        : `https://placehold.co/428x240?text=Ep. ${episode.episodeNo}`
-                                                    }
-                                                    alt={`Episode ${episode.episodeNo}`}
-                                                    className={styles.thumbnailImage}
+                                                <button
+                                                    onClick={toggleSeasonWatch}
+                                                    className={`btnTranslucent ${seasonWatchState ? "btnSuccess" : ""}`}
+                                                >
+                                                    <i className={`bi ${seasonWatchState ? "bi-eye-fill" : "bi-eye-slash-fill"}`} />
+                                                    {seasonWatchState ? "Watched" : "Mark as Watched"}
+                                                </button>
+
+                                                <button
+                                                    onClick={() => setIsReviewModalOpen(true)}
+                                                    className="btnTranslucent"
+                                                >
+                                                    <i className="bi bi-pencil-square"></i> Add Review
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+                                        {/* Details */}
+                                        <aside className={`glass-panel ${styles.detailsPanel}`}>
+
+                                            <h4>Season Details</h4>
+
+                                            <div className={styles.progressContainer}>
+                                                <ProgressBar
+                                                    episodesWatched={epWatchCount}
+                                                    totalEpisodes={season.episodeCount}
                                                 />
 
-                                                {isWatched && (
-                                                    <div className={styles.watchedBadge}>
-                                                        <i className="bi bi-check-lg"></i>
-                                                    </div>
-                                                )}
+                                                <div className={styles.progressText}>
+                                                    {epWatchCount}/{season.episodeCount} Episodes (
+                                                    {Math.round((epWatchCount / season.episodeCount) * 100)}%)
+                                                </div>
                                             </div>
 
-                                            {/* Episode Info */}
-                                            <div className={styles.episodeInfo}>
-                                                <div className={styles.episodeHeader}>
-                                                    <div>
-                                                        <div className={styles.episodeNumber}>Episode {episode.episodeNo}</div>
-                                                        <h3 className={styles.episodeTitle}>{episode.name}</h3>
+                                            <div className={styles.detailsList}>
+
+                                                <div className={styles.detailRow}>
+                                                    <span>Runtime</span>
+
+                                                    <strong>
+                                                        {formatRuntime(seasonWatchRuntime)}
+                                                        {" / "}
+                                                        {formatRuntime(season.totalRuntime)}
+                                                    </strong>
+                                                </div>
+
+                                                {season.lastModified && (
+                                                    <div className={styles.detailRow}>
+                                                        <span>Last Updated</span>
+                                                        <strong>
+                                                            {new Date(season.lastModified).toLocaleDateString()}
+                                                        </strong>
                                                     </div>
-
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            toggleEpisodeWatch(episode.episodeNo);
-                                                        }}
-                                                        className={`${styles.episodeWatchButton} ${isWatched ? styles.episodeWatched : ''}`}
-                                                    >
-                                                        <i className={`bi ${isWatched ? 'bi-eye-fill' : 'bi-eye-slash-fill'}`}></i>
-                                                        {isWatched ? 'Watched' : 'Mark Watched'}
-                                                    </button>
-                                                </div>
-
-                                                <div className={styles.episodeMeta}>
-                                                    {episode.airDate && (
-                                                        <span className={styles.metaText}>
-                                                            {new Date(episode.airDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                                        </span>
-                                                    )}
-                                                    <span className={styles.metaSeparator}>•</span>
-                                                    <span className={styles.metaText}>{formatRuntime(episode.runtime)}</span>
-                                                </div>
-
-                                                {episode.overview && (
-                                                    <p className={styles.episodeOverview}>{episode.overview}</p>
                                                 )}
 
-                                                {episode.lastModified && (
-                                                    <p className={styles.episodeLastModified}>
-                                                        Updated: {new Date(episode.lastModified).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                                    </p>
-                                                )}
                                             </div>
-                                        </div>
+
+                                        </aside>
+
                                     </div>
-                                );
-                            })}
+
+                                    {season.overview && (
+
+                                        <div className={`glass-panel ${styles.panel} ${styles.overviewPanel}`}>
+
+                                            <h2 className={styles.sectionTitle}>
+                                                Overview
+                                            </h2>
+
+                                            <p className={styles.overviewText}>
+                                                {season.overview}
+                                            </p>
+
+                                        </div>
+
+                                    )}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {/* Cast Section */}
+                        <div className={styles.container}>
+                            <div className={`glass-panel ${styles.panel} ${styles.castSection}`}>
+                                <h2 className={styles.sectionTitle}>Cast</h2>
+
+                                {/* Tabs */}
+                                <div className={styles.tabsContainer}>
+                                    <button
+                                        onClick={() => setSeasonCastActiveTab('regulars')}
+                                        className={`${styles.tabButton} ${seasonCastActiveTab === 'regulars' ? styles.tabActive : ''}`}
+                                    >
+                                        Season Regulars ({season?.seasonCast?.length ?? 0})
+                                    </button>
+                                    <button
+                                        onClick={() => setSeasonCastActiveTab('guests')}
+                                        className={`${styles.tabButton} ${seasonCastActiveTab === 'guests' ? styles.tabActive : ''}`}
+                                    >
+                                        Guest Stars ({season?.seasonCastGuests?.length ?? 0})
+                                    </button>
+                                </div>
+
+                                {/* Tab content */}
+                                {seasonCastActiveTab === 'regulars' ? (
+                                    <CastListSlider profiles={season?.seasonCast} childType='movie' />
+                                ) : (
+                                    <CastListSlider profiles={season?.seasonCastGuests} childType='tv' />
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Episodes Section */}
+                        <div className={styles.container}>
+                            <div className={styles.episodesSection}>
+                                <h2 className={styles.sectionTitle}>Episodes</h2>
+
+                                <div className={styles.episodesList}>
+                                    {season.episodes.map((episode) => {
+                                        const isWatched = epWatchState[episode.episodeNo];
+
+                                        return (
+                                            <div
+                                                key={episode.episodeNo}
+                                                className={`glass-panel ${styles.episodeCard}`}
+                                                onClick={() => navigate(`/servies/${tmdbId}/Season/${currentSeasonNo}/Episode/${episode.episodeNo}`)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <div className={styles.episodeContent}>
+                                                    {/* Episode Thumbnail */}
+                                                    <div className={styles.episodeThumbnail}>
+                                                        <img
+                                                            src={episode.stillPath
+                                                                ? `https://image.tmdb.org/t/p/original${episode.stillPath}`
+                                                                : `https://placehold.co/428x240?text=Ep. ${episode.episodeNo}`
+                                                            }
+                                                            alt={`Episode ${episode.episodeNo}`}
+                                                            className={styles.thumbnailImage}
+                                                        />
+
+                                                        {isWatched && (
+                                                            <div className={styles.watchedBadge}>
+                                                                <i className="bi bi-check-lg"></i>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Episode Info */}
+                                                    <div className={styles.episodeInfo}>
+                                                        <div className={styles.episodeHeader}>
+                                                            <div>
+                                                                <div className={styles.episodeNumber}>Episode {episode.episodeNo}</div>
+                                                                <h3 className={styles.episodeTitle}>{episode.name}</h3>
+                                                            </div>
+
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    toggleEpisodeWatch(episode.episodeNo);
+                                                                }}
+                                                                className={`btnTranslucent ${isWatched ? "btnSuccess" : ""}`}
+                                                            >
+                                                                <i className={`bi ${isWatched ? 'bi-eye-fill' : 'bi-eye-slash-fill'}`}></i>
+                                                                {isWatched ? 'Watched' : 'Mark Watched'}
+                                                            </button>
+                                                        </div>
+
+                                                        <div className={styles.episodeMeta}>
+                                                            {episode.airDate && (
+                                                                <span className={styles.metaText}>
+                                                                    {new Date(episode.airDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                                </span>
+                                                            )}
+                                                            <span className={styles.metaSeparator}>•</span>
+                                                            <span className={styles.metaText}>{formatRuntime(episode.runtime)}</span>
+                                                        </div>
+
+                                                        {episode.overview && (
+                                                            <p className={styles.episodeOverview}>{episode.overview}</p>
+                                                        )}
+
+                                                        {episode.lastModified && (
+                                                            <p className={styles.episodeLastModified}>
+                                                                Updated: {new Date(episode.lastModified).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Review Modal */}
+            <ReviewModal
+                isOpen={isReviewModalOpen}
+                onClose={() => setIsReviewModalOpen(false)}
+                title={season?.name || ''}
+                posterPath={`https://image.tmdb.org/t/p/w500${posterPath || ''}`}
+                initialData={{
+                    liked: season?.liked,
+                    rating: season?.rated,
+                }}
+                onSave={handleSaveReview}
+            />
         </>
     );
 };

@@ -9,12 +9,14 @@ interface SeasonsListProps {
 		totalWatchedEp: number;
 		totalWatchedRuntime: number;
 	}) => void;
+	seasonBackdropPath?: string | null;
 }
 
 const SeasonsList: React.FC<SeasonsListProps> = ({
 	seasons = [],
 	tmdbId,
 	onEpWatchCountChange,
+	seasonBackdropPath
 }) => {
 	// SeasonsList owns the aggregated per-season counts so it can
 	// compute totals and push them up to the series page.
@@ -72,6 +74,7 @@ const SeasonsList: React.FC<SeasonsListProps> = ({
 						}}
 						tmdbId={tmdbId}
 						onWatchChange={handleWatchChange}
+						seasonBackdropPath={seasonBackdropPath}
 					/>
 
 					{/* Static label — SeasonsList owns this, intentionally outside PosterCard */}

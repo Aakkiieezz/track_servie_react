@@ -4,16 +4,12 @@ import styles from "../../../pages/UserProfilePage.module.css";
 interface Props {
 	userId: number;
 	watchedCounts: { movie: number; tv: number };
-	onAdd: (index: number) => void;
-	onRemove: (tmdbId: number) => void;
 	onFetchError: (error: string) => void;
 }
 
 const ProfileOverviewTab = ({
 	userId,
 	watchedCounts,
-	onAdd,
-	onRemove,
 	onFetchError
 }: Props) => {
 
@@ -35,8 +31,6 @@ const ProfileOverviewTab = ({
 			<h2 className={styles.sectionTitle}>Favorite Servies</h2>
 			<FavoritesManager
 				userId={userId}
-				onAdd={onAdd}
-				onRemove={onRemove}
 				onFetchError={onFetchError}
 				isEditable={false}
 			/>

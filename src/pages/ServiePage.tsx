@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import axios from 'axios';
@@ -14,6 +14,7 @@ import AppHeader from '@/components/common/AppHeader/AppHeader';
 import styles from './ServiePage.module.css';
 import type { ReviewData } from "@/types/servie";
 import ServiePageSkeleton from '@/components/common/Skeleton/ServiePageSkeleton';
+import { userInteractionStore } from '@/store/UserInteractionStore';
 
 interface GenreDtoServiePage {
     id: number;
@@ -30,6 +31,8 @@ interface SeasonDtoServiePage {
     watched: boolean;
     totalRuntime: number;
     totalWatchedRuntime: number;
+    liked: boolean | null;
+    rated: number | null;
 }
 
 interface Cast {
@@ -76,11 +79,6 @@ interface ServieDto {
     keywords: { id: number; name: string }[];
     trailerSite: string | null;
     trailerKey: string;
-}
-
-interface WikiPlotDto {
-    wikiPlot: string;
-    wikiConfidenceScore: number;
 }
 
 const ServiePage = () => {
@@ -165,6 +163,17 @@ const ServiePage = () => {
     const totalEpisodes = data?.totalEpisodes || 1;
     const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
 
+    const userInteraction = userInteractionStore((state) => state.get(childType, tmdbId));
+
+    const reviewData = useMemo(
+        () => ({
+            rating: userInteraction?.rated,
+            liked: userInteraction?.liked,
+            review: userInteraction?.review,
+        }),
+        [userInteraction]
+    );
+
     useEffect(() => {
         const fetchData = async () => {
 
@@ -178,6 +187,7 @@ const ServiePage = () => {
                     });
 
                 setData(response.data);
+
                 if (!title && response.data.title)
                     setResolvedTitle(response.data.title);
 
@@ -308,7 +318,7 @@ const ServiePage = () => {
         );
     if (error) return <div>{error}</div>;
 
-    const toggleWatch = async (childtype: string) => {
+    const toggleWatch = async () => {
 
         const servieWatchStateCurrent = servieWatchState;
         const servieWatchStateNew = !servieWatchStateCurrent;
@@ -322,7 +332,7 @@ const ServiePage = () => {
         setTotalEpWatched(servieWatchStateNew ? totalEpisodes : 0);
 
         try {
-            const response = await axiosInstance.put(`servies/${childtype}/${tmdbId}/watch`,
+            const response = await axiosInstance.put(`servies/${childType}/${tmdbId}/watch`,
                 null,
                 {
                     params: {
@@ -332,7 +342,7 @@ const ServiePage = () => {
             );
 
             if (response.status === 200)
-                setAlert({ type: "success", message: `Updated watch status of ${childtype} ${tmdbId} successfully !!` });
+                setAlert({ type: "success", message: `Updated watch status of ${childType} ${tmdbId} successfully !!` });
 
         } catch (error) {
 
@@ -372,15 +382,9 @@ const ServiePage = () => {
         const ratingCurrent = rating;
         setRating(newRating);
         try {
-            await axiosInstance.put(
-                `servies/${tmdbId}`,
-                null,
-                {
-                    params: {
-                        type: childType,
-                        rating: newRating,
-                    },
-                }
+            await axiosInstance.patch(
+                `/servies/${childType}/${tmdbId}/review`,
+                { rating: newRating }
             );
         } catch (error) {
             setRating(ratingCurrent);
@@ -405,8 +409,6 @@ const ServiePage = () => {
 
             if (reviewData.review != null)
                 payload.review = reviewData.review;
-
-            console.log(payload);
 
             const response = await axiosInstance.patch(
                 `/servies/${childType}/${tmdbId}/review`,
@@ -467,7 +469,7 @@ const ServiePage = () => {
 
     return (
         <>
-            <div className={styles.serviePageWrapper}>
+            <div className={styles.pageWrapper}>
                 {/* Full-page background */}
                 <div className={styles.fullPageBackdrop}>
                     <img
@@ -492,6 +494,7 @@ const ServiePage = () => {
                             <div className={styles.mainContent}>
 
                                 <div className={styles.heroSection}>
+                                    {/* Poster */}
                                     <img
                                         className={styles.heroPoster}
                                         src={`https://image.tmdb.org/t/p/w500${resolvedPosterPath}`}
@@ -502,7 +505,9 @@ const ServiePage = () => {
                                         }}
                                     />
 
+                                    {/* Hero Info */}
                                     <div className={styles.heroInfo}>
+
                                         {/* Title */}
                                         <h1 className={styles.title} title={data?.title}>
                                             {formatTitle(resolvedTitle ?? data?.title)}
@@ -534,8 +539,8 @@ const ServiePage = () => {
                                         {/* ---------------------------------------------------------------------------- */}
 
                                         {/* Rating */}
-                                        <div className={styles.heroRating}>
-                                            <div className={styles.heroRatingLabel}>
+                                        <div className="glass-panel rating-block">
+                                            <div className="rating-label">
                                                 {rating ? "Your Rating" : "Rate this"}
                                             </div>
                                             <HalfStarRating
@@ -550,26 +555,16 @@ const ServiePage = () => {
                                         {/* Action Buttons */}
                                         <div className={styles.actionButtons}>
                                             <button
-                                                className={styles.btnTranslucent}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    toggleWatch(childType);
-                                                }}
+                                                onClick={toggleWatch}
+                                                className={`btnTranslucent ${servieWatchState ? "btnSuccess" : ""}`}
                                             >
-                                                {servieWatchState ? (
-                                                    <>
-                                                        <i className="bi bi-eye-fill"></i> Watched
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <i className="bi bi-eye-slash-fill"></i> Mark as Watched
-                                                    </>
-                                                )}
+                                                <i className={`bi ${servieWatchState ? "bi-eye-fill" : "bi-eye-slash-fill"}`} />
+                                                {servieWatchState ? "Watched" : "Mark as Watched"}
                                             </button>
 
                                             <button
                                                 onClick={() => setIsReviewModalOpen(true)}
-                                                className={styles.btnTranslucent}
+                                                className="btnTranslucent"
                                             >
                                                 <i className="bi bi-pencil-square"></i> Add Review
                                             </button>
@@ -578,7 +573,7 @@ const ServiePage = () => {
                                                 <VideoPopup
                                                     videoSite={data.trailerSite}
                                                     videoKey={data.trailerKey}
-                                                    buttonClassName={styles.btnTranslucent}
+                                                    buttonClassName="btnTranslucent"
                                                 />
                                             )}
                                         </div>
@@ -589,14 +584,14 @@ const ServiePage = () => {
 
                                 {/* Overview / Summary Section */}
                                 {(hasOverview || hasSummary) && (
-                                    <div className={styles.overviewSection}>
+                                    <div className={`glass-panel ${styles.overviewSection}`}>
 
                                         {/* Header */}
                                         {showOverviewTabs ? (
                                             <div className={styles.overviewTabs}>
 
                                                 <button
-                                                    className={`${styles.btnTranslucent} ${styles.tabBtn} ${overviewActiveTab === "overview" ? styles.active : ""
+                                                    className={`btnTranslucent ${styles.tabBtn} ${overviewActiveTab === "overview" ? styles.active : ""
                                                         }`}
                                                     onClick={() => setOverviewActiveTab("overview")}
                                                 >
@@ -604,7 +599,7 @@ const ServiePage = () => {
                                                 </button>
 
                                                 <button
-                                                    className={`${styles.btnTranslucent} ${styles.tabBtn} ${overviewActiveTab === "summary" ? styles.active : ""
+                                                    className={`btnTranslucent ${styles.tabBtn} ${overviewActiveTab === "summary" ? styles.active : ""
                                                         }`}
                                                     onClick={() => setOverviewActiveTab("summary")}
                                                 >
@@ -676,25 +671,24 @@ const ServiePage = () => {
                                     </div>
                                 )}
 
-
                                 {/* ---------------------------------------------------------------------------- */}
 
                                 {/* Cast Section */}
                                 {childType === "movie" && hasMovieCast && (
-                                    <div className={styles.castSection}>
+                                    <div className={`glass-panel ${styles.castSection}`}>
                                         <h4>Cast</h4>
                                         <CastListSlider profiles={movieCast} childType={childType} />
                                     </div>
                                 )}
 
                                 {childType === "tv" && hasAnyCast && (
-                                    <div className={styles.castSection}>
+                                    <div className={`glass-panel ${styles.castSection}`}>
                                         <h4>Cast</h4>
 
                                         <div className={styles.castTabs}>
                                             {hasRegulars && (
                                                 <button
-                                                    className={`${styles.btnTranslucent} ${styles.tabBtn} ${seriesCastActiveTab === "regulars" ? styles.active : ""}`}
+                                                    className={`btnTranslucent ${styles.tabBtn} ${seriesCastActiveTab === "regulars" ? styles.active : ""}`}
                                                     onClick={() => setSeriesCastActiveTab("regulars")}
                                                 >
                                                     Series Regulars ({regulars.length})
@@ -703,7 +697,7 @@ const ServiePage = () => {
 
                                             {hasGuests && (
                                                 <button
-                                                    className={`${styles.btnTranslucent} ${styles.tabBtn} ${seriesCastActiveTab === "guests" ? styles.active : ""}`}
+                                                    className={`btnTranslucent ${styles.tabBtn} ${seriesCastActiveTab === "guests" ? styles.active : ""}`}
                                                     onClick={() => setSeriesCastActiveTab("guests")}
                                                 >
                                                     Guest Stars ({guests.length})
@@ -725,7 +719,7 @@ const ServiePage = () => {
 
                                 {/* Movie Collection */}
                                 {data?.collectionId && (
-                                    <div className={styles.overviewSection}>
+                                    <div className={`glass-panel ${styles.overviewSection}`}>
                                         <h5>{data.collectionName}</h5>
                                         <img
                                             className="rounded"
@@ -743,7 +737,7 @@ const ServiePage = () => {
                                 {childType === 'tv' && (
                                     <div
                                         ref={seasonsRef}
-                                        className={`${styles.seasonsSection} ${seasonsStuck ? styles.stuck : ''}`}
+                                        className={`glass-panel ${styles.seasonsSection} ${seasonsStuck ? styles.stuck : ''}`}
                                     >
                                         {/* sticky header wrapper — overlay anchors to its bottom edge */}
                                         <div className={styles.seasonsHeaderWrapper}>
@@ -765,6 +759,7 @@ const ServiePage = () => {
                                                 seasons={data?.seasons}
                                                 tmdbId={tmdbId}
                                                 onEpWatchCountChange={handleEpWatchCountChange}
+                                                seasonBackdropPath={data?.backdropPath ?? null}
                                             />
                                         </div>
                                     </div>
@@ -773,8 +768,9 @@ const ServiePage = () => {
 
                             {/* Right Column - Info Cards */}
                             <div className={styles.sidebar}>
+
                                 {/* Genres Card */}
-                                <div className={styles.infoCard}>
+                                <div className={`glass-panel ${styles.infoCard}`}>
                                     <h4 className={styles.cardTitle}>Genres</h4>
                                     <div className={styles.genresGrid}>
                                         {data?.genres.map((genre) => (
@@ -787,7 +783,7 @@ const ServiePage = () => {
 
                                 {/* Keywords Card */}
                                 {data?.keywords && data.keywords.length > 0 && (
-                                    <div className={styles.infoCard}>
+                                    <div className={`glass-panel ${styles.infoCard}`}>
                                         <h4 className={styles.cardTitle}>Keywords</h4>
                                         <div className={styles.keywordsGrid}>
                                             {data.keywords.map((keyword) => (
@@ -800,7 +796,7 @@ const ServiePage = () => {
                                 )}
 
                                 {/* Details Card */}
-                                <div className={styles.infoCard}>
+                                <div className={`glass-panel ${styles.infoCard}`}>
                                     <h4 className={styles.cardTitle}>Details</h4>
                                     <div className={styles.detailsList}>
                                         {childType === 'tv' && data?.totalRuntime && (
@@ -859,15 +855,15 @@ const ServiePage = () => {
             <ReviewModal
                 isOpen={isReviewModalOpen}
                 onClose={() => setIsReviewModalOpen(false)}
-                onSave={handleSaveReview}
-                tmdbId={tmdbId}
-                childType={childType}
                 title={data?.title || ''}
-                year={childType === 'movie'
-                    ? (data?.releaseDate ? new Date(data.releaseDate).getFullYear().toString() : '')
-                    : (data?.firstAirDate ? new Date(data.firstAirDate).getFullYear().toString() : '')
+                year={
+                    childType === 'movie'
+                        ? (data?.releaseDate ? new Date(data.releaseDate).getFullYear().toString() : '')
+                        : (data?.firstAirDate ? new Date(data.firstAirDate).getFullYear().toString() : '')
                 }
-                posterPath={`https://image.tmdb.org/t/p/w500${data?.backdropPath || ''}`}
+                posterPath={`https://image.tmdb.org/t/p/w500${resolvedPosterPath || ''}`}
+                initialData={reviewData}
+                onSave={handleSaveReview}
             />
         </>
     );

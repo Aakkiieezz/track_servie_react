@@ -19,6 +19,7 @@ export interface PosterCardProps {
 
     // Poster
     posterPath?: string | null;
+    seasonBackdropPath?: string | null;
 
     // State — controlled from outside
     watched: boolean;
@@ -86,7 +87,7 @@ function formatYearRange(props: PosterCardProps): string {
 const PosterCard: React.FC<PosterCardProps> = (props) => {
     const {
         tmdbId, childtype, title, seasonNo,
-        posterPath, watched, liked,
+        posterPath, seasonBackdropPath, watched, liked,
         episodesWatched, totalEpisodes,
         totalWatchedRuntime, totalRuntime,
         popularity, blurCompleted = false,
@@ -107,6 +108,7 @@ const PosterCard: React.FC<PosterCardProps> = (props) => {
         ? {
             title,
             posterPath,
+            backdropPath: seasonBackdropPath
         }
         : {
             childType: childtype,

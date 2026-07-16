@@ -2,7 +2,7 @@ import styles from "@/pages/ServiePage.module.css";
 import "@/styles/skeleton.css";
 
 const OverviewSectionSkeleton = () => (
-    <div className={styles.overviewSection}>
+    <div className={`glass-panel ${styles.overviewSection}`}>
 
         <h4>Overview</h4>
 

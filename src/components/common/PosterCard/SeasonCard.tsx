@@ -3,6 +3,8 @@ import PosterCard from "@/components/common/PosterCard/PosterCard";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAlert } from "@/contexts/AlertContext";
 import ServieOptionsModal from "../ServieGrid/OptionsModal";
+import axios from "axios";
+import { ReviewData } from "@/types/servie";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -17,6 +19,8 @@ export interface Season {
     totalRuntime: number;
     totalWatchedRuntime: number;
     popularity?: number | null;
+    liked: boolean | null;
+    rated: number | null;
 }
 
 interface SeasonCardProps {
@@ -31,6 +35,7 @@ interface SeasonCardProps {
         newEpCount: number;
         newRuntime: number;
     }) => void;
+    seasonBackdropPath?: string | null;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -40,15 +45,16 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
     tmdbId,
     blurCompleted = false,
     onWatchChange,
+    seasonBackdropPath
 }) => {
     const { setAlert } = useAlert();
 
     const [watched, setWatched] = useState(season.watched);
-    const [liked, setLiked] = useState(false);   // seasons don't have like yet
+    const [liked, setLiked] = useState(season.liked);
     const [epWatched, setEpWatched] = useState(season.episodesWatched);
     const [watchRuntime, setWatchRuntime] = useState(season.totalWatchedRuntime);
-
     const [showOptions, setShowOptions] = useState(false);
+    const [rating, setRating] = useState(season.rated);
 
     // ── Toggle watch ──────────────────────────────────────────────────────────
     const handleWatchClick = async () => {
@@ -99,16 +105,75 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
         setLiked(next);
 
         try {
-            const res = await axiosInstance.put(
-                `servies/${tmdbId}/Season/${season.seasonNo}`,
-                null,
-                { params: { like: next } }
+            const res = await axiosInstance.patch(
+                `/servies/${tmdbId}/Season/${season.seasonNo}/review`,
+                { liked: next }
             );
             if (res.status === 200)
                 setAlert({ type: "success", message: `Updated like status of ${season.name}` });
         } catch {
             setLiked(prev);
             setAlert({ type: "danger", message: "Failed to update like status." });
+        }
+    };
+
+    const handleRatingChange = async (newRating: number | null) => {
+        if (rating === newRating) return;
+        const prev = rating;
+        setRating(newRating);
+        try {
+            await axiosInstance.patch(
+                `/servies/${tmdbId}/Season/${season.seasonNo}/review`,
+                { rating: newRating }
+            );
+        } catch (error) {
+            setRating(prev);
+            setAlert({ type: "danger", message: "Failed to update rating" });
+        }
+    };
+
+    const handleSaveReview = async (reviewData: ReviewData) => {
+        const payload: Partial<ReviewData> = {};
+
+        if (reviewData.watchedDate != null)
+            payload.watchedDate = reviewData.watchedDate;
+
+        if (reviewData.liked != null)
+            payload.liked = reviewData.liked;
+
+        if (reviewData.rating != null)
+            payload.rating = reviewData.rating;
+
+        if (reviewData.review != null)
+            payload.review = reviewData.review;
+
+        try {
+            await axiosInstance.patch(
+                `/servies/${tmdbId}/Season/${season.seasonNo}/review`,
+                payload
+            );
+
+            if (payload.rating !== undefined)
+                setRating(payload.rating);
+
+            setAlert({
+                type: "success",
+                message: "Saved successfully!",
+            });
+
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response?.data) {
+                const messages = Object.values(error.response.data as Record<string, string>).join(", ");
+                setAlert({ type: "danger", message: messages });
+                throw error;
+            }
+
+            setAlert({
+                type: "danger",
+                message: "Failed to save!",
+            });
+
+            throw error;
         }
     };
 
@@ -120,6 +185,7 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
                 title={season.name}
                 seasonNo={season.seasonNo}
                 posterPath={season.posterPath}
+                seasonBackdropPath={seasonBackdropPath}
                 watched={watched}
                 liked={liked}
                 episodesWatched={epWatched}
@@ -147,6 +213,9 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
                     }}
                     onSuccess={(msg) => setAlert({ type: "success", message: msg })}
                     onError={(msg) => setAlert({ type: "danger", message: msg })}
+                    initialRating={season.rated}
+                    onRatingChange={handleRatingChange}
+                    onSaveReview={handleSaveReview}
                     showWatchlist={false}
                     showLists={false}
                 />

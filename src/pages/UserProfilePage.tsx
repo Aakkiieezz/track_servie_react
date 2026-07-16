@@ -159,20 +159,6 @@ const UserProfilePage: React.FC = () => {
 	// -------------------------
 	// Favorite handlers
 	// -------------------------
-	const handleAddFavorite = (index: number) => {
-		console.log("to implement Add favorite", index);
-	};
-
-	const handleRemoveFavorite = async (tmdbId: number) => {
-		try {
-			await axiosInstance.delete(`user/${profileUserId}/servies/${tmdbId}/favorite`);
-			setAlert({ type: "success", message: "Removed from favorites" });
-		} catch (err) {
-			console.error(err);
-			setAlert({ type: "danger", message: "Failed to remove favorite" });
-		}
-	};
-
 	const handleFetchError = (error: string) => {
 		setAlert({ type: "danger", message: error });
 	};
@@ -352,8 +338,6 @@ const UserProfilePage: React.FC = () => {
 							<ProfileOverviewTab
 								userId={profileUserId}
 								watchedCounts={watchedCounts}
-								onAdd={handleAddFavorite}
-								onRemove={handleRemoveFavorite}
 								onFetchError={handleFetchError}
 							/>
 						)}

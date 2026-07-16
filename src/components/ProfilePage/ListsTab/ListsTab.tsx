@@ -147,7 +147,6 @@ const ProfileListsTab: React.FC<Props> = ({ userId, isOwnProfile }) => {
 
 	const getPreviewContent = (listId: number) => {
 		const posters = previews[listId] || [];
-		console.log("previews for", listId, posters);
 		return (
 			<PosterFanStack
 				posters={posters}

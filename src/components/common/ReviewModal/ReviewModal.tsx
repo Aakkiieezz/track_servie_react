@@ -1,27 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import type { ReviewData } from "@/types/servie";
 import HalfStarRating from '@/components/common/HalfStarRating';
-import { userInteractionStore } from '@/store/UserInteractionStore';
 import styles from './ReviewModal.module.css';
-
-interface MovieReviewModalProps {
+interface ReviewModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (data: ReviewData) => void;
-    tmdbId: number;
-    childType: string;
     title: string;
-    year: string;
+    year?: string;
     posterPath: string;
     initialData?: Partial<ReviewData>;
 }
 
-const MovieReviewModal: React.FC<MovieReviewModalProps> = ({
+const ReviewModal: React.FC<ReviewModalProps> = ({
     isOpen,
     onClose,
     onSave,
-    tmdbId,
-    childType,
     title,
     year,
     posterPath,
@@ -33,18 +27,20 @@ const MovieReviewModal: React.FC<MovieReviewModalProps> = ({
     const [watchedBefore, setWatchedBefore] = useState<boolean>(
         initialData?.watchedBefore ?? false
     );
-
     const [liked, setLiked] = useState<boolean | null>(initialData?.liked ?? null);
     const [review, setReview] = useState<string | null>(initialData?.review ?? null);
-
     const [tags, setTags] = useState<string[]>(initialData?.tags || []);
     const [tagInput, setTagInput] = useState<string>('');
+    const [rating, setRating] = useState<number | null>(initialData?.rating ?? null);
 
-    const userInteraction = userInteractionStore((state) => state.get(childType, tmdbId));
-    const [rating, setRating] = useState<number | null>(userInteraction?.rated ?? null);
-    const { loaded } = userInteractionStore();
-
-    if (!loaded) return null;
+    const resetForm = (data?: Partial<ReviewData>) => {
+        setWatchedDate(data?.watchedDate ?? new Date().toISOString().split('T')[0]);
+        setWatchedBefore(data?.watchedBefore ?? false);
+        setLiked(data?.liked ?? null);
+        setReview(data?.review ?? null);
+        setRating(data?.rating ?? null);
+        setTags(data?.tags ?? []);
+    };
 
     useEffect(() => {
         if (isOpen && initialData) {
@@ -58,12 +54,9 @@ const MovieReviewModal: React.FC<MovieReviewModalProps> = ({
     }, [isOpen, initialData]);
 
     useEffect(() => {
-        if (isOpen) {
-            setRating(userInteraction?.rated ?? null);
-            setLiked(userInteraction?.liked ?? null);
-            setReview(userInteraction?.review ?? null);
-        }
-    }, [isOpen, userInteraction]);
+        if (isOpen)
+            resetForm(initialData);
+    }, [isOpen, initialData]);
 
     if (!isOpen) return null;
 
@@ -244,4 +237,4 @@ const MovieReviewModal: React.FC<MovieReviewModalProps> = ({
     );
 };
 
-export default MovieReviewModal;
+export default ReviewModal;

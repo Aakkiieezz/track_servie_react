@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styles from './SeasonsNavBar.module.css';
 
 interface SeasonProps {
-	tmdbId: string;
+	tmdbId: number;
 	currentSeasonNo: number;
 	totalSeasons: number;
 	hasSpecials: boolean;
@@ -14,7 +14,7 @@ const SeasonsNavBar: React.FC<SeasonProps> = ({ tmdbId, currentSeasonNo, totalSe
 	const navigate = useNavigate();
 	useParams<{ seasonNo: string; }>();
 
-	const navigateToSeason = (tmdbId: string, seasonNumber: number) => {
+	const navigateToSeason = (tmdbId: number, seasonNumber: number) => {
 		navigate(`/servies/${tmdbId}/Season/${seasonNumber}`);
 	};
 

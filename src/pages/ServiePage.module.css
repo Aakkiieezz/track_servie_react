@@ -1,25 +1,20 @@
-/* Light/Dark Mode Variables */
-:global(body:not(.dark)) .serviePageWrapper {
-  --modal-text: #222;
-  --modal-border: rgba(0, 0, 0, 0.12);
-  --modal-hover: rgba(0, 0, 0, 0.05);
-  --list-active-accent: #2979ff;
-  --list-active-bg: rgba(41, 121, 255, 0.12);
-}
+/* =========================
+   Page Layout
+   ========================= */
 
-:global(body.dark) .serviePageWrapper {
-  --modal-text: #ededed;
-  --modal-border: rgba(255, 255, 255, 0.14);
-  --modal-hover: rgba(255, 255, 255, 0.08);
-  --list-active-accent: #82b1ff;
-  --list-active-bg: rgba(130, 177, 255, 0.1);
-}
-
-/* Page Wrapper */
-.serviePageWrapper {
+.pageWrapper {
   position: relative;
   min-height: 100vh;
   width: 100%;
+}
+
+.pageContent {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 2rem;
+  padding-bottom: 1rem;
 }
 
 .seasonsHeaderWrapper {
@@ -27,6 +22,17 @@
   top: 0;
   z-index: 3;
 }
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* =========================
+   Backdrop
+   ========================= */
 
 /* Full Page Background */
 .fullPageBackdrop {
@@ -66,24 +72,6 @@
     );
 }
 
-/* Page Content */
-.pageContent {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  min-height: 100vh;
-  padding-top: 2rem;
-  padding-bottom: 1rem;
-}
-
-/* Content Grid Layout */
-.contentGrid {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
 @media (max-width: 1200px) {
   .contentGrid {
     grid-template-columns: 1fr 320px;
@@ -110,6 +98,10 @@
   min-width: 0;
   overflow: hidden;
 }
+
+/* =========================
+   Hero
+   ========================= */
 
 .heroSection {
   position: relative;
@@ -183,39 +175,9 @@
   margin: 0;
 }
 
-.btnTranslucent {
-  background: var(--modal-bg);
-  border: 1px solid var(--modal-border);
-  color: var(--modal-text);
-  padding: 10px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  backdrop-filter: var(--blur-strength);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btnTranslucent:hover {
-  background: var(--modal-bg);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.btnTranslucent:active {
-  transform: translateY(0);
-}
-
 /* Overview Section */
 .overviewSection {
-  background: var(--modal-bg);
-  border: 1px solid var(--modal-border);
-  border-radius: var(--border-radius);
   padding: 1.5rem;
-  backdrop-filter: var(--blur-strength);
 }
 
 .overviewSection h4 {
@@ -290,11 +252,7 @@
 
 /* Cast Section */
 .castSection {
-  background: var(--modal-bg);
-  border: 1px solid var(--modal-border);
-  border-radius: var(--border-radius);
   padding: 1.5rem;
-  backdrop-filter: var(--blur-strength);
   overflow: hidden;
 }
 
@@ -334,11 +292,7 @@
 
 /* Seasons Section */
 .seasonsSection {
-  background: var(--modal-bg);
-  border: 1px solid var(--modal-border);
-  border-radius: var(--border-radius);
   padding: 1.5rem;
-  backdrop-filter: var(--blur-strength);
 
   /* default: not sticky, list scroll disabled until container reaches top */
   position: static;
@@ -391,7 +345,6 @@
   gap: 1.5rem;
   margin-bottom: 1rem;
   flex-wrap: wrap;
-  /* background: var(--modal-bg); */
   padding-top: 0.5rem;
   /* sticky is now handled by the wrapper above */
 }
@@ -429,10 +382,6 @@
 
 /* Info Cards */
 .infoCard {
-  background: var(--modal-bg);
-  border: 1px solid var(--modal-border);
-  border-radius: var(--border-radius);
-  backdrop-filter: var(--blur-strength);
   padding: 1.25rem;
   transition: all 0.2s ease;
 }
@@ -534,32 +483,6 @@
   font-size: 1rem;
   font-weight: 600;
   color: var(--modal-text);
-}
-
-.heroRating {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.4rem;
-
-  width: fit-content;
-
-  padding: 10px 16px;
-
-  background: var(--modal-bg);
-  border: 1px solid var(--modal-border);
-  border-radius: 12px;
-  backdrop-filter: var(--blur-strength);
-}
-
-.heroRatingLabel {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-
-  color: var(--modal-text);
-  opacity: 0.7;
 }
 
 @media (max-width: 768px) {

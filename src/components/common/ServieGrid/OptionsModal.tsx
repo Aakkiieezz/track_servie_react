@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '@/utils/axiosInstance';
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
-
 import { useAlert } from "@/contexts/AlertContext";
 import { useListPageContext } from '@/contexts/ListPageContext';
 import { useWatchlistTabContext } from '@/contexts/WatchlistTabContext';
-
 import ReviewModal from '@/components/common/ReviewModal/ReviewModal';
 import HalfStarRating from '@/components/common/HalfStarRating';
-
 import type { ReviewData, Servie } from "@/types/servie";
-
 import { useServieListStore } from '@/store/useServieListStore';
-import { userInteractionStore } from '@/store/UserInteractionStore';
-
 import styles from './OptionsModal.module.css';
 
 interface ServieOptionsModalProps {
@@ -25,6 +18,9 @@ interface ServieOptionsModalProps {
     showLists?: boolean;
     onSuccess: (message: string) => void;
     onError: (message: string) => void;
+    initialRating: number | null;
+    onRatingChange: (rating: number | null) => Promise<void>;
+    onSaveReview: (reviewData: ReviewData) => Promise<void>;
 }
 
 const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
@@ -34,7 +30,10 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     showWatchlist = true,
     showLists = true,
     onSuccess,
-    onError
+    onError,
+    initialRating,
+    onRatingChange,
+    onSaveReview,
 }) => {
     const navigate = useNavigate();
     const { setAlert } = useAlert();
@@ -71,13 +70,12 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     const servieKey = `${servie.childtype}-${servie.tmdbId}`;
     const onWatchlist = isOnWatchlist(servieKey);
 
-    const userInteraction = userInteractionStore((state) => state.get(servie.childtype, servie.tmdbId));
+    const [rating, setRating] = useState<number | null>(initialRating);
 
-    const { loaded } = userInteractionStore();
-
-    if (!loaded) return null;
-
-    const [rating, setRating] = useState<number | null>(userInteraction?.rated ?? null);
+    useEffect(() => {
+        if (isOpen)
+            setRating(initialRating);
+    }, [isOpen, initialRating]);
 
     useEffect(() => {
         if (!isOpen) setShowListModal(false);
@@ -90,11 +88,6 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
             fetchWatchlistKeys();
         }
     }, [isOpen, fetchAllServieLists, fetchListDetails, fetchWatchlistKeys]);
-
-    useEffect(() => {
-        if (isOpen)
-            setRating(userInteraction?.rated ?? null);
-    }, [isOpen, userInteraction]);
 
     if (!isOpen || !servie) return null;
 
@@ -134,9 +127,8 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     const handleRemoveFromList = async (listId: number) => {
         const isCurrentList = listPageContext?.listId === listId;
 
-        if (isCurrentList) {
+        if (isCurrentList)
             listPageContext.onServieRemoved(servie);
-        }
 
         try {
             const response = await axiosInstance.delete(
@@ -187,70 +179,12 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     };
 
     const handleRatingChange = async (newRating: number | null) => {
-        const prev = userInteraction?.rated ?? null;
-
-        if (prev === newRating) return;
-
-        const prevUI = rating;
+        const prev = rating;
         setRating(newRating);
-
         try {
-            await axiosInstance.patch(
-                `/servies/${servie.childtype}/${servie.tmdbId}/review`,
-                { rating: newRating }
-            );
-
-            userInteractionStore.getState().update(
-                servie.childtype,
-                servie.tmdbId,
-                { rated: newRating }
-            );
-
-        } catch (error) {
-            setRating(prevUI);
-            console.error('Failed to update rating', error);
-            setAlert({ type: "danger", message: "Failed to update rating !!" });
-        }
-    };
-
-    const handleSaveReview = async (reviewData: ReviewData) => {
-        try {
-
-            const payload: Partial<ReviewData> = {};
-
-            if (reviewData.watchedDate != null)
-                payload.watchedDate = reviewData.watchedDate;
-
-            if (reviewData.liked != null)
-                payload.liked = reviewData.liked;
-
-            if (reviewData.rating != null)
-                payload.rating = reviewData.rating;
-
-            if (reviewData.review != null)
-                payload.review = reviewData.review;
-
-            console.log(payload);
-
-            const response = await axiosInstance.patch(
-                `/servies/${servie.childtype}/${servie.tmdbId}/review`,
-                payload
-            );
-
-            if (response.status === 200)
-                setAlert({ type: "success", message: "Saved successfully!" });
-
-        } catch (error: unknown) {
-            console.error('Failed to save user data', error);
-
-            if (axios.isAxiosError(error) && error.response?.data) {
-                const data = error.response.data as Record<string, string>;
-                const messages = Object.values(data).join(", ");
-                setAlert({ type: "danger", message: messages });
-                return;
-            }
-
-            setAlert({ type: "danger", message: "Failed to save!" });
+            await onRatingChange(newRating);
+        } catch {
+            setRating(prev);
         }
     };
 
@@ -365,15 +299,13 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
             <ReviewModal
                 isOpen={isReviewModalOpen}
                 onClose={() => setIsReviewModalOpen(false)}
-                onSave={handleSaveReview}
-                tmdbId={servie.tmdbId}
-                childType={servie.childtype}
                 title={servie.title}
                 year={servie.childtype === 'movie'
                     ? (servie.releaseDate ? new Date(servie.releaseDate).getFullYear().toString() : '')
                     : (servie.firstAirDate ? new Date(servie.firstAirDate).getFullYear().toString() : '')
                 }
                 posterPath={`https://image.tmdb.org/t/p/w500${servie.posterPath || ''}`}
+                onSave={onSaveReview}
             />
         </>
     );

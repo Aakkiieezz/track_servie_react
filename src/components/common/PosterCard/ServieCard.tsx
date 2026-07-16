@@ -3,7 +3,9 @@ import PosterCard from "@/components/common/PosterCard/PosterCard";
 import ServieOptionsModal from "../ServieGrid/OptionsModal";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAlert } from "@/contexts/AlertContext";
-import type { Servie } from "@/types/servie";
+import type { ReviewData, Servie } from "@/types/servie";
+import { userInteractionStore } from '@/store/UserInteractionStore';
+import axios from "axios";
 
 interface ServieCardProps {
     servie: Servie;
@@ -23,6 +25,7 @@ const ServieCard: React.FC<ServieCardProps> = ({
     const [watched, setWatched] = useState(servie.completed);
     const [liked, setLiked] = useState(servie.liked);
     const [showOptions, setShowOptions] = useState(false);
+    const [rating, setRating] = useState(servie.rated ?? null);
 
     const handleWatchClick = async () => {
         const prev = watched;
@@ -62,6 +65,64 @@ const ServieCard: React.FC<ServieCardProps> = ({
         }
     };
 
+    const handleRatingChange = async (newRating: number | null) => {
+        if (rating === newRating) return;
+        const prev = rating;
+        setRating(newRating);
+
+        try {
+            await axiosInstance.patch(
+                `/servies/${servie.childtype}/${servie.tmdbId}/review`,
+                { rating: newRating }
+            );
+            userInteractionStore.getState().update(
+                servie.childtype,
+                servie.tmdbId,
+                { rated: newRating }
+            );
+        } catch (error) {
+            setRating(prev);
+            throw error;
+        }
+    };
+
+    const handleSaveReview = async (reviewData: ReviewData) => {
+        const payload: Partial<ReviewData> = {};
+
+        if (reviewData.watchedDate != null)
+            payload.watchedDate = reviewData.watchedDate;
+
+        if (reviewData.liked != null)
+            payload.liked = reviewData.liked;
+
+        if (reviewData.rating != null)
+            payload.rating = reviewData.rating;
+
+        if (reviewData.review != null)
+            payload.review = reviewData.review;
+
+        try {
+            await axiosInstance.patch(
+                `/servies/${servie.childtype}/${servie.tmdbId}/review`,
+                payload
+            );
+
+            if (payload.rating !== undefined)
+                setRating(payload.rating);
+
+            setAlert({ type: "success", message: "Saved successfully!" });
+
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response?.data) {
+                const messages = Object.values(error.response.data as Record<string, string>).join(", ");
+                setAlert({ type: "danger", message: messages });
+                throw error;
+            }
+            setAlert({ type: "danger", message: "Failed to save!" });
+            throw error;
+        }
+    };
+
     return (
         <div
             style={{
@@ -96,6 +157,9 @@ const ServieCard: React.FC<ServieCardProps> = ({
                     servie={{ ...servie, completed: watched, liked }}
                     onSuccess={(msg) => setAlert({ type: "success", message: msg })}
                     onError={(msg) => setAlert({ type: "danger", message: msg })}
+                    initialRating={servie.rated ?? null}
+                    onRatingChange={handleRatingChange}
+                    onSaveReview={handleSaveReview}
                 />
             )}
         </div>

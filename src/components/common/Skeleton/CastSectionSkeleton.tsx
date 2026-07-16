@@ -6,7 +6,7 @@ interface CastSectionSkeletonProps {
 }
 
 const CastSectionSkeleton: React.FC<CastSectionSkeletonProps> = ({ childType }) => (
-    <div className={styles.castSection}>
+    <div className={`glass-panel ${styles.castSection}`}>
 
         <div className={styles.section}>
             <h4>Cast</h4>
@@ -14,14 +14,14 @@ const CastSectionSkeleton: React.FC<CastSectionSkeletonProps> = ({ childType }) 
             {childType === "tv" && (
                 <div className={styles.castTabs}>
                     <button
-                        className={`${styles.btnTranslucent} ${styles.tabBtn} ${styles.active}`}
+                        className={`btnTranslucent ${styles.tabBtn} ${styles.active}`}
                         disabled
                     >
                         Series Regulars
                     </button>
 
                     <button
-                        className={`${styles.btnTranslucent} ${styles.tabBtn}`}
+                        className={`btnTranslucent ${styles.tabBtn}`}
                         disabled
                     >
                         Guest Stars

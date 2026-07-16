@@ -7,7 +7,9 @@ body {
   background-color: var(--body-bg);
   color: var(--body-color);
   background-image: none; /* Light theme looks cleaner without texture */
-  transition: background 0.4s ease, color 0.4s ease;
+  transition:
+    background 0.4s ease,
+    color 0.4s ease;
 }
 
 /* 🌙 DARK MODE */
@@ -76,14 +78,14 @@ body {
 :root {
   --appHeader-height: 80px; /* set your header height */
   --border-radius: 12px;
-  --blur-strength: blur(12px);  
-  --slight-backdrop: rgba(0, 0, 0, 0.5);              /* modal[ServieOptionsModal], */
+  --blur-strength: blur(12px);
+  --slight-backdrop: rgba(0, 0, 0, 0.5); /* modal[ServieOptionsModal], */
 }
 
 /* Default (Light Theme) */
 :root {
-  --semi-transparency-bg: rgba(255, 255, 255, 0.500);
-  
+  --semi-transparency-bg: rgba(255, 255, 255, 0.5);
+
   --body-bg: #ffffff;
   --body-color: #222;
 
@@ -91,10 +93,12 @@ body {
   --header-border: rgba(0, 0, 0, 0.08);
   --header-text: #222;
 
-  --modal-bg: var(--semi-transparency-bg);   /* slightly whiter / less transparent */
+  --modal-bg: var(
+    --semi-transparency-bg
+  ); /* slightly whiter / less transparent */
   --modal-text: #222;
   --modal-border: rgba(0, 0, 0, 0.12);
-  --modal-hover: rgba(0, 0, 0, 0.05);  
+  --modal-hover: rgba(0, 0, 0, 0.05);
 
   --input-bg: rgba(0, 0, 0, 0.06);
   --input-border: rgba(0, 0, 0, 0.2);
@@ -147,35 +151,63 @@ body {
   --overlay-bg: rgba(0, 0, 0, 0.65);
   --overlay-hover: #60a5fa;
 
-  --surface: #ffffff;                     /* main surface (cards, panels) */
-  --surface-variant: #fbfbfd;             /* slightly different surface */
-  --surface-border: rgba(0, 0, 0, 0.06);  /* border for surfaces */
-  --surface-contrast: #f3f4f6;            /* subtle elevated surface */
+  --surface: #ffffff; /* main surface (cards, panels) */
+  --surface-variant: #fbfbfd; /* slightly different surface */
+  --surface-border: rgba(0, 0, 0, 0.06); /* border for surfaces */
+  --surface-contrast: #f3f4f6; /* subtle elevated surface */
   --surface-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
   --surface-text: #111827;
   --surface-text-muted: #6b7280;
-  --surface-overlay: rgba(255, 255, 255, 0.6); /* for translucent overlays in light */
+  --surface-overlay: rgba(
+    255,
+    255,
+    255,
+    0.6
+  ); /* for translucent overlays in light */
 
-  --dropdown-bg: rgba(255, 255, 255, 0.700);
+  --dropdown-bg: rgba(255, 255, 255, 0.7);
   --dropdown-border: rgba(0, 0, 0, 0.1);
   --dropdown-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   --dropdown-border-width: 1px;
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f4f6;
+  --bg-tertiary: rgba(0, 0, 0, 0.03);
+  --bg-elevated: rgba(0, 0, 0, 0.06);
+  --bg-card: rgba(0, 0, 0, 0.08);
+
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-tertiary: #4b5563;
+  --text-muted: #6b7280;
+  --text-subtle: #9ca3af;
+
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-strong: rgba(0, 0, 0, 0.3);
+
+  --overlay-light: rgba(0, 0, 0, 0.08);
+  --overlay-medium: rgba(0, 0, 0, 0.1);
+
+  --list-active-accent: #2979ff;
+  --list-active-bg: rgba(41, 121, 255, 0.12);
 }
 
 /* 🌙 Dark Theme */
 body.dark {
-  --semi-transparency-bg: rgba(20, 20, 20, 0.700);
+  --semi-transparency-bg: rgba(20, 20, 20, 0.7);
 
   --body-bg: #1c1c1c;
   --body-color: #eee;
-  
+
   --header-bg: var(--semi-transparency-bg);
   --header-border: rgba(255, 255, 255, 0.12);
   --header-text: #fff;
 
-  --modal-bg: var(--semi-transparency-bg);     /* darker + nicer contrast */
+  --modal-bg: var(--semi-transparency-bg); /* darker + nicer contrast */
   --modal-text: #ededed;
   --modal-border: rgba(255, 255, 255, 0.14);
+
   --modal-hover: rgba(255, 255, 255, 0.08); /* brighten the selection */
 
   --input-bg: rgba(255, 255, 255, 0.08);
@@ -207,7 +239,7 @@ body.dark {
 
   /* FORM CONTROLS (SearchPageFilter.tsx -> search input text field) */
   --form-bg: rgba(39, 39, 39, 0.774);
-  --form-bg-focus: rgba(255, 255, 255, 0.13);               /* brighten when in focus */
+  --form-bg-focus: rgba(255, 255, 255, 0.13); /* brighten when in focus */
   --form-border: rgba(255, 255, 255, 0.2);
   --form-border-focus: rgba(255, 255, 255, 0.35);
   --form-text: #fff;
@@ -228,18 +260,45 @@ body.dark {
   --overlay-bg: rgba(0, 0, 0, 0.55);
   --overlay-hover: #93c5fd;
 
-  --surface: rgba(255, 255, 255, 0.04);               /* main surface (cards, panels) */
-  --surface-variant: rgba(255, 255, 255, 0.02);       /* alternate dark surface */
-  --surface-border: rgba(255, 255, 255, 0.06);        /* subtle border in dark */
-  --surface-contrast: rgba(255, 255, 255, 0.03);      /* slightly lighter surface for stacking */
+  --surface: rgba(255, 255, 255, 0.04); /* main surface (cards, panels) */
+  --surface-variant: rgba(255, 255, 255, 0.02); /* alternate dark surface */
+  --surface-border: rgba(255, 255, 255, 0.06); /* subtle border in dark */
+  --surface-contrast: rgba(
+    255,
+    255,
+    255,
+    0.03
+  ); /* slightly lighter surface for stacking */
   --surface-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
   --surface-text: #f3f4f6;
   --surface-text-muted: #a3a3a3;
   --surface-overlay: rgba(0, 0, 0, 0.45); /* for translucent overlays in dark */
 
   /* --dropdown-bg: rgba(0, 0, 0, 0.55); */
-  --dropdown-bg: rgba(20, 20, 20, 0.800);
+  --dropdown-bg: rgba(20, 20, 20, 0.8);
   --dropdown-border: rgba(255, 255, 255, 0.1);
   --dropdown-shadow: 0 6px 28px rgba(0, 0, 0, 0.45);
   --dropdown-border-width: 1px;
+
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: rgba(255, 255, 255, 0.05);
+  --bg-elevated: rgba(255, 255, 255, 0.08);
+  --bg-card: rgba(255, 255, 255, 0.1);
+
+  --text-primary: #ffffff;
+  --text-secondary: #e5e7eb;
+  --text-tertiary: #d1d5db;
+  --text-muted: #9ca3af;
+  --text-subtle: #6b7280;
+
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-strong: rgba(0, 0, 0, 0.6);
+
+  --overlay-light: rgba(255, 255, 255, 0.1);
+  --overlay-medium: rgba(255, 255, 255, 0.1);
+
+  --list-active-accent: #82b1ff;
+  --list-active-bg: rgba(130, 177, 255, 0.1);
 }
