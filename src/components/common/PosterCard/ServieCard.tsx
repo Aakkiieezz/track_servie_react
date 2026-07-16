@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PosterCard from "@/components/common/PosterCard/PosterCard";
-import ServieOptionsModal from "../ServieGrid/OptionsModal";
+import OptionsModal from "../ServieGrid/OptionsModal";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAlert } from "@/contexts/AlertContext";
 import type { ReviewData, Servie } from "@/types/servie";
@@ -126,7 +126,7 @@ const ServieCard: React.FC<ServieCardProps> = ({
             />
 
             {showOptions && (
-                <ServieOptionsModal
+                <OptionsModal
                     isOpen={showOptions}
                     onClose={() => setShowOptions(false)}
                     servie={{ ...servie, completed: watched, liked }}

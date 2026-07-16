@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PosterCard from "@/components/common/PosterCard/PosterCard";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAlert } from "@/contexts/AlertContext";
-import ServieOptionsModal from "../ServieGrid/OptionsModal";
+import OptionsModal from "../ServieGrid/OptionsModal";
 import { ReviewData } from "@/types/servie";
 import { saveSeasonReview } from "@/api/seasonApi";
 import { getAxiosErrorMessage } from "@/api/axiosError";
@@ -167,7 +167,7 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
             />
 
             {showOptions && (
-                <ServieOptionsModal
+                <OptionsModal
                     isOpen={showOptions}
                     onClose={() => setShowOptions(false)}
                     servie={{

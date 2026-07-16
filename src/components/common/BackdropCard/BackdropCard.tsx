@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./BackdropCard.module.css";
-import ServieOptionsModal from "@/components/common/ServieGrid/OptionsModal";
+import OptionsModal from "@/components/common/ServieGrid/OptionsModal";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAlert } from "@/contexts/AlertContext";
 import { userInteractionStore } from "@/store/UserInteractionStore";
@@ -215,7 +215,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
 
             {/* ── Options modal — outside <Link> so it doesn't trigger navigation ── */}
             {showOptions && (
-                <ServieOptionsModal
+                <OptionsModal
                     isOpen={showOptions}
                     onClose={() => setShowOptions(false)}
                     servie={servieForModal}

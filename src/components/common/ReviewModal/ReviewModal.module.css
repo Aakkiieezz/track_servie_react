@@ -299,7 +299,7 @@
   background-color: #00e676;
 }
 
-/* ===== SHARED THEME VARIABLES (same as ServieOptionsModal) ===== */
+/* ===== SHARED THEME VARIABLES (same as OptionsModal) ===== */
 
 /* ✅ Light Mode (default when body does NOT have .dark) */
 :global(body:not(.dark)) .backdrop {

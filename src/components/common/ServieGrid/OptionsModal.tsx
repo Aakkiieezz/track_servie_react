@@ -10,7 +10,7 @@ import type { ReviewData, Servie } from "@/types/servie";
 import { useServieListStore } from '@/store/useServieListStore';
 import styles from './OptionsModal.module.css';
 
-interface ServieOptionsModalProps {
+interface OptionsModalProps {
     isOpen: boolean;
     onClose: () => void;
     servie: Servie;
@@ -23,7 +23,7 @@ interface ServieOptionsModalProps {
     onSaveReview: (reviewData: ReviewData) => Promise<void>;
 }
 
-const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
+const OptionsModal: React.FC<OptionsModalProps> = ({
     isOpen,
     onClose,
     servie,
@@ -306,4 +306,4 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
     );
 };
 
-export default ServieOptionsModal;
+export default OptionsModal;
