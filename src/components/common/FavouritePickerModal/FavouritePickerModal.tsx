@@ -26,9 +26,7 @@ const FavouritePickerModal: React.FC<FavouritePickerModalProps> = ({
         setAddingId(result.tmdbId);
         setError(null);
         try {
-            await axiosInstance.post(
-                `list/favourites/${type}/${result.tmdbId}`
-            );
+            await axiosInstance.post(`list/favourites/${type}/${result.tmdbId}`);
             onAdded();
         } catch (err) {
             console.error("Failed to add favourite:", err);

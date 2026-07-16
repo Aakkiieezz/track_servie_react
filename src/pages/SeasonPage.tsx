@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from '../utils/axiosInstance';
-import axios from 'axios';
 
 import { useAlert } from "../contexts/AlertContext";
 import CastListSlider from "@/components/common/CastListSlider/CastListSlider";
@@ -14,6 +13,8 @@ import HalfStarRating from "@/components/common/HalfStarRating";
 import ReviewModal from "@/components/common/ReviewModal/ReviewModal";
 import type { ReviewData } from "@/types/servie";
 import { useRouteParamNumber } from "@/utils/hooks/useRouteParamNumber";
+import { getAxiosErrorMessage } from "@/api/axiosError";
+import { saveSeasonReview } from "@/api/seasonApi";
 
 interface Season {
     id: number;
@@ -150,8 +151,7 @@ const SeasonPage = () => {
         console.log("Flushing episodes:", episodes);
 
         try {
-            const response = await axiosInstance.post(
-                `servies/${tmdbId}/Season/${seasonNo}/Episodes/batch-toggle`,
+            const response = await axiosInstance.post(`servies/${tmdbId}/Season/${seasonNo}/Episodes/batch-toggle`,
                 { episodes }
             );
 
@@ -278,8 +278,7 @@ const SeasonPage = () => {
         );
 
         try {
-            const response = await axiosInstance.put(
-                `servies/${tmdbId}/Season/${seasonNo}/watch`,
+            const response = await axiosInstance.put(`servies/${tmdbId}/Season/${seasonNo}/watch`,
                 null,
                 {
                     params: {
@@ -371,49 +370,23 @@ const SeasonPage = () => {
 
     const handleSaveReview = async (reviewData: ReviewData) => {
         try {
+            await saveSeasonReview(tmdbId, seasonNo, reviewData);
 
-            const payload: Partial<ReviewData> = {};
-
-            if (reviewData.watchedDate != null)
-                payload.watchedDate = reviewData.watchedDate;
-
-            if (reviewData.liked != null)
-                payload.liked = reviewData.liked;
-
-            if (reviewData.rating != null)
-                payload.rating = reviewData.rating;
-
-            if (reviewData.review != null)
-                payload.review = reviewData.review;
-
-            const response = await axiosInstance.patch(
-                `/servies/${tmdbId}/Season/${seasonNo}/review`,
-                payload
+            setSeason(prev =>
+                prev
+                    ? {
+                        ...prev,
+                        liked: reviewData.liked ?? prev.liked,
+                        rated: reviewData.rating ?? prev.rated,
+                    }
+                    : prev
             );
 
-            if (response.status === 200) {
-                setSeason(prev =>
-                    prev
-                        ? {
-                            ...prev,
-                            liked: reviewData.liked ?? prev.liked,
-                            rated: reviewData.rating ?? prev.rated,
-                        }
-                        : prev
-                );
-                setAlert({ type: "success", message: "Saved successfully!" });
-            }
-
-        } catch (error: unknown) {
-            console.error('Failed to save user data', error);
-            if (axios.isAxiosError(error) && error.response?.data) {
-                const data = error.response.data as Record<string, string>;
-                const messages = Object.values(data).join(", ");
-                setAlert({ type: "danger", message: messages });
-                return;
-            }
-
-            setAlert({ type: "danger", message: "Failed to save!" });
+            setAlert({ type: "success", message: "Saved successfully!" });
+        }
+        catch (error) {
+            setAlert({ type: "danger", message: getAxiosErrorMessage(error), });
+            throw error;
         }
     };
 
@@ -432,8 +405,7 @@ const SeasonPage = () => {
         );
 
         try {
-            await axiosInstance.patch(
-                `/servies/${tmdbId}/Season/${seasonNo}/review`,
+            await axiosInstance.patch(`/servies/${tmdbId}/Season/${seasonNo}/review`,
                 { rating: newRating }
             );
         } catch (error) {

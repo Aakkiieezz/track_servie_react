@@ -3,8 +3,9 @@ import PosterCard from "@/components/common/PosterCard/PosterCard";
 import axiosInstance from "@/utils/axiosInstance";
 import { useAlert } from "@/contexts/AlertContext";
 import ServieOptionsModal from "../ServieGrid/OptionsModal";
-import axios from "axios";
 import { ReviewData } from "@/types/servie";
+import { saveSeasonReview } from "@/api/seasonApi";
+import { getAxiosErrorMessage } from "@/api/axiosError";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -25,7 +26,7 @@ export interface Season {
 
 interface SeasonCardProps {
     season: Season;
-    tmdbId: string;         // parent series tmdbId — needed for the season endpoint
+    tmdbId: number;
     blurCompleted?: boolean;
 
     // Bubbles up new totals so the series page header can update
@@ -75,8 +76,7 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
         });
 
         try {
-            const res = await axiosInstance.put(
-                `servies/${tmdbId}/Season/${season.seasonNo}/watch`,
+            const res = await axiosInstance.put(`servies/${tmdbId}/Season/${season.seasonNo}/watch`,
                 null,
                 { params: { newSeasonWatchState: next } }
             );
@@ -105,8 +105,7 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
         setLiked(next);
 
         try {
-            const res = await axiosInstance.patch(
-                `/servies/${tmdbId}/Season/${season.seasonNo}/review`,
+            const res = await axiosInstance.patch(`/servies/${tmdbId}/Season/${season.seasonNo}/review`,
                 { liked: next }
             );
             if (res.status === 200)
@@ -122,8 +121,7 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
         const prev = rating;
         setRating(newRating);
         try {
-            await axiosInstance.patch(
-                `/servies/${tmdbId}/Season/${season.seasonNo}/review`,
+            await axiosInstance.patch(`/servies/${tmdbId}/Season/${season.seasonNo}/review`,
                 { rating: newRating }
             );
         } catch (error) {
@@ -133,46 +131,15 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
     };
 
     const handleSaveReview = async (reviewData: ReviewData) => {
-        const payload: Partial<ReviewData> = {};
-
-        if (reviewData.watchedDate != null)
-            payload.watchedDate = reviewData.watchedDate;
-
-        if (reviewData.liked != null)
-            payload.liked = reviewData.liked;
-
-        if (reviewData.rating != null)
-            payload.rating = reviewData.rating;
-
-        if (reviewData.review != null)
-            payload.review = reviewData.review;
-
         try {
-            await axiosInstance.patch(
-                `/servies/${tmdbId}/Season/${season.seasonNo}/review`,
-                payload
-            );
+            await saveSeasonReview(tmdbId, season.seasonNo, reviewData);
 
-            if (payload.rating !== undefined)
-                setRating(payload.rating);
+            if (reviewData.rating !== undefined)
+                setRating(reviewData.rating);
 
-            setAlert({
-                type: "success",
-                message: "Saved successfully!",
-            });
-
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error) && error.response?.data) {
-                const messages = Object.values(error.response.data as Record<string, string>).join(", ");
-                setAlert({ type: "danger", message: messages });
-                throw error;
-            }
-
-            setAlert({
-                type: "danger",
-                message: "Failed to save!",
-            });
-
+            setAlert({ type: "success", message: "Saved successfully!" });
+        } catch (error) {
+            setAlert({ type: "danger", message: getAxiosErrorMessage(error) });
             throw error;
         }
     };

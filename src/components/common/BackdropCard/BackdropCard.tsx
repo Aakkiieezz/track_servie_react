@@ -59,8 +59,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
         setWatched(next);
         update(childtype, tmdbId, { completed: next });
         try {
-            await axiosInstance.put(
-                `servies/${childtype}/${tmdbId}/watch`,
+            await axiosInstance.put(`servies/${childtype}/${tmdbId}/watch`,
                 null,
                 { params: { newServieWatchState: next } }
             );
@@ -79,8 +78,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
         setLiked(next);
         update(childtype, tmdbId, { liked: next });
         try {
-            await axiosInstance.put(
-                `servies/${tmdbId}`,
+            await axiosInstance.put(`servies/${tmdbId}`,
                 null,
                 { params: { type: childtype, like: next } }
             );

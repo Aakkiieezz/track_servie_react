@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { ReviewData } from "@/types/servie";
 import HalfStarRating from '@/components/common/HalfStarRating';
 import styles from './ReviewModal.module.css';
+
 interface ReviewModalProps {
     isOpen: boolean;
     onClose: () => void;

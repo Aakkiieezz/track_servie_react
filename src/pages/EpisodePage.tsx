@@ -76,9 +76,7 @@ const EpisodePage = () => {
 			try {
 				setLoading(true);
 				setError(null);
-				const response = await axiosInstance.get<EpisodeDto>(
-					`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}`
-				);
+				const response = await axiosInstance.get<EpisodeDto>(`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}`);
 
 				setEpisode(response.data);
 				setEpisodeWatchState(response.data.watched);
@@ -112,8 +110,7 @@ const EpisodePage = () => {
 		console.log('Flushing watch status:', newWatchState);
 
 		try {
-			const response = await axiosInstance.post(
-				`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/toggle-watch`,
+			const response = await axiosInstance.post(`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/toggle-watch`,
 				{ watched: newWatchState }
 			);
 
@@ -166,8 +163,7 @@ const EpisodePage = () => {
 			const newLikeState = !episodeLiked;
 			setEpisodeLiked(newLikeState);
 
-			const response = await axiosInstance.post(
-				`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/like`,
+			const response = await axiosInstance.post(`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/like`,
 				{ liked: newLikeState }
 			);
 
@@ -178,7 +174,7 @@ const EpisodePage = () => {
 						? 'Episode added to favorites!'
 						: 'Removed from favorites!'
 				});
-				
+
 		} catch (error) {
 			console.error('Failed to toggle like', error);
 			setEpisodeLiked(!episodeLiked); // Rollback
@@ -191,8 +187,7 @@ const EpisodePage = () => {
 			try {
 				setEpisodeRating(rating);
 
-				const response = await axiosInstance.post(
-					`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/rate`,
+				const response = await axiosInstance.post(`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/rate`,
 					{ rated: rating }
 				);
 
@@ -209,8 +204,7 @@ const EpisodePage = () => {
 	const handleSaveReview = useCallback(
 		async (reviewData: ReviewData) => {
 			try {
-				const response = await axiosInstance.post(
-					`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/notes`,
+				const response = await axiosInstance.post(`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/notes`,
 					{ notes: reviewData.review }
 				);
 

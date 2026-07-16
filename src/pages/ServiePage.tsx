@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
-import axios from 'axios';
 import ProgressBar from '../components/common/ProgressBar/ProgressBar';
 import CastListSlider from '../components/common/CastListSlider/CastListSlider';
 import SeasonsList from '../components/ServiePage/SeasonsList';
@@ -15,6 +14,8 @@ import styles from './ServiePage.module.css';
 import type { ReviewData } from "@/types/servie";
 import ServiePageSkeleton from '@/components/common/Skeleton/ServiePageSkeleton';
 import { userInteractionStore } from '@/store/UserInteractionStore';
+import { saveServiewReview } from '@/api/servieApi';
+import { getAxiosErrorMessage } from '@/api/axiosError';
 
 interface GenreDtoServiePage {
     id: number;
@@ -255,9 +256,7 @@ const ServiePage = () => {
         try {
             setSummaryLoading(true);
 
-            const response = await axiosInstance.get<string | null>(
-                `/servies/${childType}/${tmdbId}/summary`
-            );
+            const response = await axiosInstance.get<string | null>(`/servies/${childType}/${tmdbId}/summary`);
 
             setSummary(response.data);
 
@@ -382,8 +381,7 @@ const ServiePage = () => {
         const ratingCurrent = rating;
         setRating(newRating);
         try {
-            await axiosInstance.patch(
-                `/servies/${childType}/${tmdbId}/review`,
+            await axiosInstance.patch(`/servies/${childType}/${tmdbId}/review`,
                 { rating: newRating }
             );
         } catch (error) {
@@ -395,42 +393,12 @@ const ServiePage = () => {
 
     const handleSaveReview = async (reviewData: ReviewData) => {
         try {
-
-            const payload: Partial<ReviewData> = {};
-
-            if (reviewData.watchedDate != null)
-                payload.watchedDate = reviewData.watchedDate;
-
-            if (reviewData.liked != null)
-                payload.liked = reviewData.liked;
-
-            if (reviewData.rating != null)
-                payload.rating = reviewData.rating;
-
-            if (reviewData.review != null)
-                payload.review = reviewData.review;
-
-            const response = await axiosInstance.patch(
-                `/servies/${childType}/${tmdbId}/review`,
-                payload
-            );
-
-            if (response.status === 200)
-                setAlert({ type: "success", message: "Saved successfully!" });
-
-        } catch (error: unknown) {
-            console.error('Failed to save user data', error);
-
-            if (axios.isAxiosError(error) && error.response?.data) {
-                const data = error.response.data as Record<string, string>;
-
-                const messages = Object.values(data).join(", ");
-
-                setAlert({ type: "danger", message: messages });
-                return;
-            }
-
-            setAlert({ type: "danger", message: "Failed to save!" });
+            await saveServiewReview(childType, tmdbId, reviewData);
+            setAlert({ type: "success", message: "Saved successfully!" });
+        }
+        catch (error) {
+            setAlert({ type: "danger", message: getAxiosErrorMessage(error), });
+            throw error;
         }
     };
 

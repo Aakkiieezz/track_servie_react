@@ -42,8 +42,7 @@ const ProfileWatchlistTab: React.FC<Props> = ({ userId }) => {
 	const fetchServies = async (currentFilters: Filters, pageNumber: number = 0) => {
 		try {
 			setLoading(true);
-			const response = await axiosInstance.post(
-				`list/${userId}/watchlist`,
+			const response = await axiosInstance.post(`list/${userId}/watchlist`,
 				{
 					type: currentFilters.type,
 					languages: currentFilters.languages,

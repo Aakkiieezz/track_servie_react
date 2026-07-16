@@ -27,8 +27,7 @@ const ResetPasswordPage: React.FC = () => {
             }
 
             try {
-                const response = await axiosInstance.get<{ valid: boolean }>(
-                    "password/reset/validate",
+                const response = await axiosInstance.get<{ valid: boolean }>("password/reset/validate",
                     { params: { token } }
                 );
                 setValidationState(response.data.valid ? "valid" : "invalid");

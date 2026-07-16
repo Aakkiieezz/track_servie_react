@@ -112,9 +112,11 @@ const ProfileListsTab: React.FC<Props> = ({ userId, isOwnProfile }) => {
 	const handleUpdateList = async () => {
 		try {
 			setSaving(true);
-			await axiosInstance.put(`list/${editingListId}`, null, {
-				params: { name: editName, description: editDescription },
-			});
+			await axiosInstance.put(`list/${editingListId}`,
+				null,
+				{
+					params: { name: editName, description: editDescription },
+				});
 			setAlert({ type: "success", message: "List updated successfully" });
 			setShowEditModal(false);
 			fetchLists();

@@ -42,8 +42,7 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts, isOwnProfile }) =>
 	const fetchServies = async (currentFilters: Filters, pageNo: number) => {
 		try {
 			setLoading(true);
-			const response = await axiosInstance.post(
-				`servies/user/${userId}`,
+			const response = await axiosInstance.post(`servies/user/${userId}`,
 				{
 					type: currentFilters.type,
 					languages: currentFilters.languages,

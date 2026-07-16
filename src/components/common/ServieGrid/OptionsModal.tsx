@@ -112,9 +112,7 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
 
     const handleAddToList = async (listId: number) => {
         try {
-            const response = await axiosInstance.post(
-                `list/${listId}/add-servie/${servie.childtype}/${servie.tmdbId}`
-            );
+            const response = await axiosInstance.post(`list/${listId}/add-servie/${servie.childtype}/${servie.tmdbId}`);
             if (response.status === 200) {
                 addListId(servieKey, listId);
                 onSuccess('Added to list successfully !!');
@@ -131,9 +129,7 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
             listPageContext.onServieRemoved(servie);
 
         try {
-            const response = await axiosInstance.delete(
-                `list/${listId}/remove-servie/${servie.childtype}/${servie.tmdbId}`
-            );
+            const response = await axiosInstance.delete(`list/${listId}/remove-servie/${servie.childtype}/${servie.tmdbId}`);
             if (response.status === 200) {
                 removeListId(servieKey, listId);
                 onSuccess('Removed from list successfully !!');
@@ -156,8 +152,7 @@ const ServieOptionsModal: React.FC<ServieOptionsModalProps> = ({
             addToWatchlist(servieKey);
 
         try {
-            const response = await axiosInstance.put(
-                `list/watchlist/${tmdbId}`,
+            const response = await axiosInstance.put(`list/watchlist/${tmdbId}`,
                 null,
                 { params: { childtype: childType } }
             );

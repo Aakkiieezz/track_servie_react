@@ -151,8 +151,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
             formDataToSend.append("file", file);
 
             try {
-                const response = await axiosInstance.post(
-                    "user/image/upload",
+                const response = await axiosInstance.post("user/image/upload",
                     formDataToSend,
                     { headers: { "Content-Type": "multipart/form-data" } }
                 );

@@ -26,8 +26,7 @@ const AuthPage: React.FC = () => {
             }
 
             try {
-                const response = await axiosInstance.post(
-                    "auth/register",
+                const response = await axiosInstance.post("auth/register",
                     { username, password, email },
                 );
                 if (response.status === 200) {
@@ -41,8 +40,7 @@ const AuthPage: React.FC = () => {
             }
         } else
             try {
-                const response = await axiosInstance.post(
-                    "auth/login",
+                const response = await axiosInstance.post("auth/login",
                     { username, password },
                 );
                 if (response.status === 200) {
