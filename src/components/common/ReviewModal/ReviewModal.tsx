@@ -28,7 +28,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
     const [watchedBefore, setWatchedBefore] = useState<boolean>(
         initialData?.watchedBefore ?? false
     );
-    const [liked, setLiked] = useState<boolean | null>(initialData?.liked ?? null);
+    const [liked, setLiked] = useState<boolean>(initialData?.liked ?? false);
     const [review, setReview] = useState<string | null>(initialData?.review ?? null);
     const [tags, setTags] = useState<string[]>(initialData?.tags || []);
     const [tagInput, setTagInput] = useState<string>('');
@@ -37,7 +37,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
     const resetForm = (data?: Partial<ReviewData>) => {
         setWatchedDate(data?.watchedDate ?? new Date().toISOString().split('T')[0]);
         setWatchedBefore(data?.watchedBefore ?? false);
-        setLiked(data?.liked ?? null);
+        setLiked(data?.liked ?? false);
         setReview(data?.review ?? null);
         setRating(data?.rating ?? null);
         setTags(data?.tags ?? []);
@@ -50,7 +50,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             setTags(initialData.tags || []);
             setReview(initialData.review ?? null);
             setRating(initialData.rating ?? null);
-            setLiked(initialData.liked ?? null);
+            setLiked(initialData.liked ?? false);
         }
     }, [isOpen, initialData]);
 

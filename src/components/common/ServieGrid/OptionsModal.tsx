@@ -9,6 +9,7 @@ import HalfStarRating from '@/components/common/HalfStarRating';
 import type { ReviewData, Servie } from "@/types/servie";
 import { useServieListStore } from '@/store/useServieListStore';
 import styles from './OptionsModal.module.css';
+import { createPortal } from "react-dom";
 
 interface OptionsModalProps {
     isOpen: boolean;
@@ -183,7 +184,7 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
         }
     };
 
-    return (
+    return createPortal(
         <>
             {/* Main Options Modal */}
             {!showListModal && (
@@ -191,7 +192,11 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                         <div className={styles.header}>
                             <div className={styles.ratingSection}>
-                                <HalfStarRating maxStars={5} initialRating={rating} onRatingChange={handleRatingChange} />
+                                <HalfStarRating
+                                    maxStars={5}
+                                    initialRating={rating}
+                                    onRatingChange={handleRatingChange}
+                                />
                             </div>
                             <button className={styles.closeBtn} onClick={onClose}>×</button>
                         </div>
@@ -301,8 +306,13 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
                 }
                 posterPath={`https://image.tmdb.org/t/p/w500${servie.posterPath || ''}`}
                 onSave={onSaveReview}
+                initialData={{
+                    liked: servie?.liked,
+                    rating: rating,
+                }}
             />
-        </>
+        </>,
+        document.body
     );
 };
 

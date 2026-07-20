@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import ProgressBar from '../components/common/ProgressBar/ProgressBar';
@@ -14,7 +14,7 @@ import styles from './ServiePage.module.css';
 import type { ReviewData } from "@/types/servie";
 import ServiePageSkeleton from '@/components/common/Skeleton/ServiePageSkeleton';
 import { userInteractionStore } from '@/store/UserInteractionStore';
-import { saveServiewReview } from '@/api/servieApi';
+import { saveServieReview } from '@/api/servieApi';
 import { getAxiosErrorMessage } from '@/api/axiosError';
 
 interface GenreDtoServiePage {
@@ -32,7 +32,7 @@ interface SeasonDtoServiePage {
     watched: boolean;
     totalRuntime: number;
     totalWatchedRuntime: number;
-    liked: boolean | null;
+    liked: boolean;
     rated: number | null;
 }
 
@@ -71,6 +71,7 @@ interface ServieDto {
     lastAirDate?: string;
     episodesWatched: number;
     completed: boolean;
+    liked: boolean;
     rated: number;
     cast: Cast[];
     seriesCastRegulars: Cast[];
@@ -85,6 +86,7 @@ interface ServieDto {
 const ServiePage = () => {
     const navigate = useNavigate();
     const { setAlert } = useAlert();
+    const { update } = userInteractionStore();
 
     const location = useLocation();
     const {
@@ -154,7 +156,8 @@ const ServiePage = () => {
     }, []);
 
     const [data, setData] = useState<ServieDto | null>(null); // Proper typing
-    const [rating, setRating] = useState<number>(0); // State to hold the rating
+    const [rating, setRating] = useState<number | null>(null);
+    const [liked, setLiked] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [servieWatchState, setServieWatchState] = useState<boolean>(false);
@@ -163,17 +166,6 @@ const ServiePage = () => {
     const [servieRuntime, setServieRuntime] = useState<number>(0);
     const totalEpisodes = data?.totalEpisodes || 1;
     const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
-
-    const userInteraction = userInteractionStore((state) => state.get(childType, tmdbId));
-
-    const reviewData = useMemo(
-        () => ({
-            rating: userInteraction?.rated,
-            liked: userInteraction?.liked,
-            review: userInteraction?.review,
-        }),
-        [userInteraction]
-    );
 
     useEffect(() => {
         const fetchData = async () => {
@@ -201,6 +193,7 @@ const ServiePage = () => {
                 setServieWatchRuntime(response.data.totalWatchedRuntime);
                 setServieWatchState(response.data.completed);
                 setRating(response.data.rated);
+                setLiked(response.data.liked);
 
                 // ✅ Only fetch summary after Servie loaded successfully
                 await fetchSummary();
@@ -226,7 +219,6 @@ const ServiePage = () => {
     const hasSummary = !!summary?.trim();
     const showOverviewTabs = hasOverview && hasSummary;
     const [overviewActiveTab, setOverviewActiveTab] = useState<"overview" | "summary">("overview");
-    const [summaryLoading, setSummaryLoading] = useState(false);
     const [overviewExpanded, setOverviewExpanded] = useState(false);
     const [summaryExpanded, setSummaryExpanded] = useState(false);
 
@@ -254,19 +246,12 @@ const ServiePage = () => {
 
     const fetchSummary = async () => {
         try {
-            setSummaryLoading(true);
-
             const response = await axiosInstance.get<string | null>(`/servies/${childType}/${tmdbId}/summary`);
-
             setSummary(response.data);
-
         } catch (err) {
             console.error("Failed to fetch summary", err);
-
             // Fail silently.
             setSummary(null);
-        } finally {
-            setSummaryLoading(false);
         }
     };
 
@@ -340,8 +325,10 @@ const ServiePage = () => {
                 }
             );
 
-            if (response.status === 200)
+            if (response.status === 200) {
+                update(childType, tmdbId, { completed: servieWatchStateNew });
                 setAlert({ type: "success", message: `Updated watch status of ${childType} ${tmdbId} successfully !!` });
+            }
 
         } catch (error) {
 
@@ -377,13 +364,14 @@ const ServiePage = () => {
         return parts.length > 0 ? parts.join(' ') : '0min';
     }
 
-    const handleRatingChange = async (newRating: number) => {
+    const handleRatingChange = async (newRating: number | null) => {
         const ratingCurrent = rating;
         setRating(newRating);
         try {
             await axiosInstance.patch(`/servies/${childType}/${tmdbId}/review`,
                 { rating: newRating }
             );
+            update(childType, tmdbId, { rated: newRating });
         } catch (error) {
             setRating(ratingCurrent);
             console.error('Failed to update watch status', error);
@@ -393,8 +381,13 @@ const ServiePage = () => {
 
     const handleSaveReview = async (reviewData: ReviewData) => {
         try {
-            await saveServiewReview(childType, tmdbId, reviewData);
+            await saveServieReview(childType, tmdbId, reviewData);
+            if (reviewData.liked != null)
+                setLiked(reviewData.liked);
+            if (reviewData.rating != null)
+                setRating(reviewData.rating);
             setAlert({ type: "success", message: "Saved successfully!" });
+            update(childType, tmdbId, { rated: reviewData.rating });
         }
         catch (error) {
             setAlert({ type: "danger", message: getAxiosErrorMessage(error), });
@@ -830,7 +823,10 @@ const ServiePage = () => {
                         : (data?.firstAirDate ? new Date(data.firstAirDate).getFullYear().toString() : '')
                 }
                 posterPath={`https://image.tmdb.org/t/p/w500${resolvedPosterPath || ''}`}
-                initialData={reviewData}
+                initialData={{
+                    rating,
+                    liked
+                }}
                 onSave={handleSaveReview}
             />
         </>

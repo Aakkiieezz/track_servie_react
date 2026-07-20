@@ -4,7 +4,7 @@ import axiosInstance from '../utils/axiosInstance';
 
 import { useAlert } from "../contexts/AlertContext";
 import CastListSlider from "@/components/common/CastListSlider/CastListSlider";
-import SeasonsNavBar from "@/components/SeasonPage/SeasonsNavBar";
+import NavBar from "@/components/SeasonPage/NavBar";
 import ProgressBar from '../components/common/ProgressBar/ProgressBar';
 import AppHeader from "@/components/common/AppHeader/AppHeader";
 
@@ -34,7 +34,7 @@ interface Season {
     episodes: Episode[];
     totalSeasons: number;
     hasSpecials: boolean;
-    liked: boolean | null;
+    liked: boolean;
     rated: number | null;
 }
 
@@ -63,7 +63,7 @@ const SeasonPage = () => {
     const { setAlert } = useAlert();
     const location = useLocation();
     const {
-        title,
+        // title,
         posterPath,
         backdropPath,
     }: {
@@ -445,7 +445,8 @@ const SeasonPage = () => {
 
                         <div className={styles.container}>
 
-                            <SeasonsNavBar
+                            <NavBar
+                                textToShow="SEASON"
                                 tmdbId={tmdbId!}
                                 currentSeasonNo={currentSeasonNo}
                                 totalSeasons={totalSeasons}

@@ -7,7 +7,6 @@ interface PortalDropdownProps {
     position: { top: number; left: number; width: number };
     maxHeight: number;
     children: React.ReactNode;
-    //   dropdownRef: React.RefObject<HTMLDivElement | null>;
     dropdownRef: React.RefObject<HTMLDivElement>
 }
 

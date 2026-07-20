@@ -1,16 +1,17 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import styles from './SeasonsNavBar.module.css';
+import styles from './NavBar.module.css';
 
 interface SeasonProps {
+	textToShow: string;
 	tmdbId: number;
 	currentSeasonNo: number;
 	totalSeasons: number;
 	hasSpecials: boolean;
 }
 
-const SeasonsNavBar: React.FC<SeasonProps> = ({ tmdbId, currentSeasonNo, totalSeasons, hasSpecials }) => {
+const NavBar: React.FC<SeasonProps> = ({ textToShow, tmdbId, currentSeasonNo, totalSeasons, hasSpecials }) => {
 	const navigate = useNavigate();
 	useParams<{ seasonNo: string; }>();
 
@@ -20,7 +21,7 @@ const SeasonsNavBar: React.FC<SeasonProps> = ({ tmdbId, currentSeasonNo, totalSe
 
 	return (
 		<nav className={styles.nav}>
-			<span className={styles.label}>SEASON</span>
+			<span className={styles.label}>{textToShow}</span>
 			{hasSpecials && (
 				<span
 					role="button"
@@ -53,4 +54,4 @@ const SeasonsNavBar: React.FC<SeasonProps> = ({ tmdbId, currentSeasonNo, totalSe
 	);
 };
 
-export default SeasonsNavBar;
+export default NavBar;

@@ -24,7 +24,7 @@ export interface Servie {
 export interface ReviewData {
     watchedDate?: string;
     watchedBefore?: boolean;
-    liked?: boolean | null;
+    liked?: boolean;
     rating?: number | null;
     review?: string | null;
     tags?: string[];

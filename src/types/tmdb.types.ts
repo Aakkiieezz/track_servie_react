@@ -104,8 +104,12 @@ export interface UserMediaState {
 
 export interface MediaCardData extends NormalizedMedia {
     genres: string[];
-    watched: boolean; // user state — defaults to false/null if user not logged in or no data
+
+    watched: boolean;
     liked: boolean;
+    rated: number | null;
+    review: string | null;
+
     episodesWatched?: number | null;
     totalEpisodes?: number | null;
 }
@@ -125,12 +129,14 @@ export function mergeMediaWithUserState(
         return {
             ...item,
             genres: item.genreIds
-                .map((id) => genreMap[id])
+                .map(id => genreMap[id])
                 .filter(Boolean),
             watched: state?.completed ?? false,
             liked: state?.liked ?? false,
+            rated: state?.rated ?? null,
+            review: state?.review ?? null,
             episodesWatched: state?.episodesWatched ?? null,
-            totalEpisodes: null,  // not available on TMDB list endpoints
+            totalEpisodes: null,
         };
     });
 }

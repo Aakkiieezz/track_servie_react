@@ -12,7 +12,7 @@ export function useRouteParamNumber(
         throw new Error(`Missing route parameter: ${paramName}`);
     }
     const number = Number(value);
-    if (Number.isNaN(number))
+    if (!Number.isInteger(number))
         throw new Error(`Invalid route parameter: ${paramName}`);
     return number;
 }

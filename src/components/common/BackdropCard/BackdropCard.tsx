@@ -6,6 +6,9 @@ import axiosInstance from "@/utils/axiosInstance";
 import { useAlert } from "@/contexts/AlertContext";
 import { userInteractionStore } from "@/store/UserInteractionStore";
 import type { MediaCardData } from "@/types/tmdb.types";
+import { saveServieReview } from "@/api/servieApi";
+import { ReviewData } from "@/types/servie";
+import { getAxiosErrorMessage } from "@/api/axiosError";
 
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p";
 
@@ -51,6 +54,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
     const [watched, setWatched] = useState(props.watched);
     const [liked, setLiked] = useState(props.liked);
     const [showOptions, setShowOptions] = useState(false);
+    const [rating, setRating] = useState(props.rated ?? null);
 
     // ── Watch toggle ──────────────────────────────────────────────────────
     const handleWatchClick = async () => {
@@ -78,9 +82,8 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
         setLiked(next);
         update(childtype, tmdbId, { liked: next });
         try {
-            await axiosInstance.put(`servies/${tmdbId}`,
-                null,
-                { params: { type: childtype, like: next } }
+            await axiosInstance.patch(`/servies/${childtype}/${tmdbId}/review`,
+                { liked: next }
             );
             setAlert({ type: "success", message: `Updated like status of ${title}` });
         } catch {
@@ -93,7 +96,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
     // ── Derived values ────────────────────────────────────────────────────
     const backdropUrl = backdropPath ? `${TMDB_IMAGE_BASE}/w1280${backdropPath}` : null;
     const posterUrl = posterPath ? `${TMDB_IMAGE_BASE}/w342${posterPath}` : null;
-    const rating = voteAverage ? voteAverage.toFixed(1) : null;
+    const tmdbRating = voteAverage ? voteAverage.toFixed(1) : null;
     const meta = getMeta(props);
     const progressPercent = getProgressPercent(episodesWatched, totalEpisodes);
     const isWatching = !watched && episodesWatched != null && episodesWatched > 0;
@@ -101,7 +104,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
     // ── Servie shape for options modal ────────────────────────────────────
     const servieForModal = {
         tmdbId,
-        childtype: childtype,
+        childtype,
         title,
         posterPath,
         releaseDate: childtype === "movie" ? releaseDate : undefined,
@@ -110,9 +113,41 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
         episodesWatched: episodesWatched ?? undefined,
         completed: watched,
         liked,
-        rated: null,
+        rated: rating,
         popularity: null,
         lastAirDate: undefined,
+    };
+
+    const handleRatingChange = async (newRating: number | null) => {
+        if (rating === newRating) return;
+        const prev = rating;
+        setRating(newRating);
+
+        try {
+            await axiosInstance.patch(`/servies/${childtype}/${tmdbId}/review`,
+                { rating: newRating }
+            );
+            update(childtype, tmdbId, { rated: newRating });
+        } catch (error) {
+            setRating(prev);
+            throw error;
+        }
+    };
+
+    const handleSaveReview = async (reviewData: ReviewData) => {
+        try {
+            await saveServieReview(childtype, tmdbId, reviewData);
+
+            if (reviewData.rating !== undefined) {
+                setRating(reviewData.rating);
+                update(childtype, tmdbId, { rated: reviewData.rating });
+            }
+
+            setAlert({ type: "success", message: "Saved successfully!" });
+        } catch (error) {
+            setAlert({ type: "danger", message: getAxiosErrorMessage(error) });
+            throw error;
+        }
     };
 
     return (
@@ -135,7 +170,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
                     </div>
 
                     {/* ── Rank ── */}
-                    {rank != null && <span className={styles.rank}>#{rank}</span>}
+                    {rank != null && <span className={styles.rank}>#{rank} wow</span>}
 
                     {/* ── Status chip ── */}
                     {watched && (
@@ -173,7 +208,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
                                 </div>
                             )}
 
-                            {rating && <p className={styles.rating}>★ {rating} / 10</p>}
+                            {tmdbRating && <p className={styles.rating}>★ {tmdbRating} / 10 (TMDB)</p>}
 
                             {/* ── Action buttons
                   e.preventDefault() stops <Link> navigation on button click ── */}
@@ -221,6 +256,9 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
                     servie={servieForModal}
                     onSuccess={(msg) => setAlert({ type: "success", message: msg })}
                     onError={(msg) => setAlert({ type: "danger", message: msg })}
+                    initialRating={rating}
+                    onRatingChange={handleRatingChange}
+                    onSaveReview={handleSaveReview}
                 />
             )}
         </>

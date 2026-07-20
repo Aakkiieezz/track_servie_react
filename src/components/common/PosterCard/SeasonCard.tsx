@@ -20,7 +20,7 @@ export interface Season {
     totalRuntime: number;
     totalWatchedRuntime: number;
     popularity?: number | null;
-    liked: boolean | null;
+    liked: boolean;
     rated: number | null;
 }
 
@@ -180,7 +180,7 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
                     }}
                     onSuccess={(msg) => setAlert({ type: "success", message: msg })}
                     onError={(msg) => setAlert({ type: "danger", message: msg })}
-                    initialRating={season.rated}
+                    initialRating={rating}
                     onRatingChange={handleRatingChange}
                     onSaveReview={handleSaveReview}
                     showWatchlist={false}

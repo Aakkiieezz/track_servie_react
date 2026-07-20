@@ -1,7 +1,7 @@
 import axiosInstance from "@/utils/axiosInstance";
 import { ReviewData } from "@/types/servie";
 
-export const saveServiewReview = async (
+export const saveServieReview = async (
     childType: string,
     tmdbId: number,
     reviewData: ReviewData

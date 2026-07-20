@@ -7,8 +7,8 @@ import { fetchUserInteractions } from "@/lib/api";
 // ─────────────────────────────────────────────
 
 export interface UserInteraction {
-	completed: boolean | null;
-	liked: boolean | null;
+	completed: boolean;
+	liked: boolean;
 	rated: number | null;
 	review: string | null;
 	episodesWatched: number | null;

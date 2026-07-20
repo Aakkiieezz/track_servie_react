@@ -5,7 +5,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import { useAlert } from "@/contexts/AlertContext";
 import type { ReviewData, Servie } from "@/types/servie";
 import { userInteractionStore } from '@/store/UserInteractionStore';
-import { saveServiewReview } from "@/api/servieApi";
+import { saveServieReview } from "@/api/servieApi";
 import { getAxiosErrorMessage } from "@/api/axiosError";
 
 interface ServieCardProps {
@@ -22,6 +22,7 @@ const ServieCard: React.FC<ServieCardProps> = ({
     faded = false,
 }) => {
     const { setAlert } = useAlert();
+    const { update } = userInteractionStore();
 
     const [watched, setWatched] = useState(servie.completed);
     const [liked, setLiked] = useState(servie.liked);
@@ -51,15 +52,16 @@ const ServieCard: React.FC<ServieCardProps> = ({
         const prev = liked;
         const next = !prev;
         setLiked(next);
+        update(servie.childtype, servie.tmdbId, { liked: next });
         try {
-            const res = await axiosInstance.put(`servies/${servie.tmdbId}`,
-                null,
-                { params: { type: servie.childtype, like: next } }
+            const res = await axiosInstance.patch(`/servies/${servie.childtype}/${servie.tmdbId}/review`,
+                { liked: next }
             );
             if (res.status === 200)
                 setAlert({ type: "success", message: `Updated like status of ${servie.title}` });
         } catch {
             setLiked(prev);
+            update(servie.childtype, servie.tmdbId, { liked: prev });
             setAlert({ type: "danger", message: "Failed to update like status." });
         }
     };
@@ -73,7 +75,7 @@ const ServieCard: React.FC<ServieCardProps> = ({
             await axiosInstance.patch(`/servies/${servie.childtype}/${servie.tmdbId}/review`,
                 { rating: newRating }
             );
-            userInteractionStore.getState().update(
+            update(
                 servie.childtype,
                 servie.tmdbId,
                 { rated: newRating }
@@ -86,10 +88,20 @@ const ServieCard: React.FC<ServieCardProps> = ({
 
     const handleSaveReview = async (reviewData: ReviewData) => {
         try {
-            await saveServiewReview(servie.childtype, servie.tmdbId, reviewData);
+            await saveServieReview(servie.childtype, servie.tmdbId, reviewData);
 
-            if (reviewData.rating !== undefined)
+            if (reviewData.rating !== undefined) {
                 setRating(reviewData.rating);
+                update(servie.childtype, servie.tmdbId, {
+                    rated: reviewData.rating,
+                });
+            }
+            if (reviewData.liked !== undefined) {
+                setLiked(reviewData.liked);
+                update(servie.childtype, servie.tmdbId, {
+                    liked: reviewData.liked,
+                });
+            }
 
             setAlert({ type: "success", message: "Saved successfully!" });
         } catch (error) {
@@ -129,10 +141,15 @@ const ServieCard: React.FC<ServieCardProps> = ({
                 <OptionsModal
                     isOpen={showOptions}
                     onClose={() => setShowOptions(false)}
-                    servie={{ ...servie, completed: watched, liked }}
+                    servie={{
+                        ...servie,
+                        completed: watched,
+                        liked,
+                        rated: rating,
+                    }}
                     onSuccess={(msg) => setAlert({ type: "success", message: msg })}
                     onError={(msg) => setAlert({ type: "danger", message: msg })}
-                    initialRating={servie.rated ?? null}
+                    initialRating={rating}
                     onRatingChange={handleRatingChange}
                     onSaveReview={handleSaveReview}
                 />
