@@ -58,11 +58,11 @@
 
 .btnTranslucent:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .btnSuccess {
-  background: rgba(20, 45, 28, 0.70);
+  background: rgba(20, 45, 28, 0.7);
   border-color: rgba(74, 222, 128, 0.25);
   color: var(--text-primary);
 }
@@ -74,4 +74,40 @@
 .btnSuccess:hover {
   background: rgba(26, 58, 36, 0.74);
   border-color: rgba(74, 222, 128, 0.35);
+}
+
+.btnLike {
+  padding: 10px 18px;
+  min-width: 64px;
+  justify-content: center;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btnLike i {
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btnLike:hover i {
+  transform: scale(1.12);
+}
+
+.btnLikeActive {
+  background: rgba(255, 92, 128, 0.14);
+  border-color: rgba(255, 92, 128, 0.5);
+}
+
+.btnLikeActive i {
+  color: #ff5c80;
+}
+
+.btnLikeActive:hover {
+  background: rgba(96, 34, 59, 0.74);
+  border-color: rgba(244, 114, 182, 0.4);
 }

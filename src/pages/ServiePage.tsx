@@ -703,7 +703,7 @@ const ServiePage = () => {
                                         {/* sticky header wrapper — overlay anchors to its bottom edge */}
                                         <div className={styles.seasonsHeaderWrapper}>
                                             <div className={styles.seasonsHeader}>
-                                                <h3>{data?.totalSeasons} Seasons</h3>
+                                                <h4>{data?.totalSeasons} Seasons</h4>
                                                 <ProgressBar episodesWatched={totalEpWatched} totalEpisodes={totalEpisodes} />
                                             </div>
                                             {/* <div className={styles.fadeOverlay} /> */}

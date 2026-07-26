@@ -11,8 +11,8 @@ interface MovieCollection {
     name: string;
     backdropPath: string;
     posterPath: string;
-    total: number;
-    watched: number;
+    totalCount: number;
+    watchedCount: number;
     watchedPosters: string[];
 }
 
@@ -38,7 +38,7 @@ const SLIDER_MAX = PAGE_SIZE_STEPS.length; // last index is reserved for "All"
 
 // Safe completion ratio - avoids NaN/divide-by-zero for collections with total = 0
 const getCompletion = (c: MovieCollection): number =>
-    c.total > 0 ? c.watched / c.total : 0;
+    c.totalCount > 0 ? c.watchedCount / c.totalCount : 0;
 
 const MovieCollectionsTab: React.FC<MovieCollectionsTabProps> = ({ userId }) => {
     const navigate = useNavigate();
@@ -90,10 +90,10 @@ const MovieCollectionsTab: React.FC<MovieCollectionsTabProps> = ({ userId }) => 
                     return withTiebreak(getCompletion(b) - getCompletion(a), a, b);
 
                 case "watched-count":
-                    return withTiebreak(b.watched - a.watched, a, b);
+                    return withTiebreak(b.watchedCount - a.watchedCount, a, b);
 
                 case "total-parts":
-                    return withTiebreak(b.total - a.total, a, b);
+                    return withTiebreak(b.totalCount - a.totalCount, a, b);
 
                 case "name":
                 default:
@@ -246,7 +246,7 @@ const MovieCollectionsTab: React.FC<MovieCollectionsTabProps> = ({ userId }) => 
                                 </h3>
 
                                 <p className={styles.watchCount}>
-                                    {collection.watched} of {collection.total} watched
+                                    {collection.watchedCount} of {collection.totalCount} watched
                                 </p>
                             </div>
                         </div>

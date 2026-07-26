@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import AppHeader from '@/components/common/AppHeader/AppHeader';
 import styles from "./PersonPage.module.css";
 import ServieCard from "@/components/common/PosterCard/ServieCard";
-import type { PersonResponse } from "@/types/PersonResponse";
+import type { PersonResponse, PersonServie } from "@/types/PersonResponse";
+import ProgressBar from '@/components/common/ProgressBar/ProgressBar';
 
 export interface PartialPersonData {
     id: number;
@@ -92,7 +93,7 @@ const WorksSkeleton = () => (
                     </select>
                 </div>
                 <div className={styles.controlGroup}>
-                    <label className={styles.controlLabel}>Filter:</label>
+                    <label className={styles.controlLabel}>Media:</label>
                     <select className={styles.select} disabled>
                         <option>All</option>
                     </select>
@@ -153,9 +154,20 @@ const PersonPage: React.FC = () => {
 
     const [personData, setPersonData] = useState<PersonResponse | null>(null);
     const [detailsError, setDetailsError] = useState<string | null>(null);
-    const [filterType, setFilterType] = useState<string>("Servie");
+
+    const [departmentFilter, setDepartmentFilter] = useState<string>("Acting");
+
+    type MediaFilter = "all" | "movie" | "tv";
+    const [mediaFilter, setMediaFilter] = useState<MediaFilter>("all");
+
+    type ActingFilter = "acting" | "appearances";
+    const [actingFilter, setActingFilter] = useState<ActingFilter>("acting");
+
+    type SortFilter = "popularity" | "title";
+    const [sortOrder, setSortOrder] = useState<SortFilter>("popularity");
+
     const [blurCompleted, setBlurCompleted] = useState<boolean>(false);
-    const [sortOrder, setSortOrder] = useState<string>('title');
+
     const [watchedCount, setWatchedCount] = useState(0);
 
     useEffect(() => {
@@ -175,10 +187,123 @@ const PersonPage: React.FC = () => {
     }, [personId]);
 
     useEffect(() => {
-        if (personData?.servies) {
-            setWatchedCount(personData.servies.filter(s => s.completed).length);
-        }
+        if (!personData) return;
+
+        const knownFor = personData.knownForDepartment;
+
+        if (knownFor === "Acting" || personData.crewIndex[knownFor])
+            setDepartmentFilter(knownFor);
+        else
+            setDepartmentFilter("Acting");
     }, [personData]);
+
+    useEffect(() => {
+        if (!personData) return;
+
+        let works: PersonServie[];
+
+        if (departmentFilter === "Acting") {
+            works =
+                actingFilter === "acting"
+                    ? personData.acting
+                    : personData.appearances;
+        }
+        else
+            works = personData.crew;
+
+        setWatchedCount(works.filter(x => x.completed).length);
+    }, [personData, departmentFilter, actingFilter]);
+
+    const handleDepartmentChange = (department: string) => {
+        setDepartmentFilter(department);
+
+        console.log("Department changed", department);
+        if (department === "Acting")
+            setActingFilter("acting");
+    };
+
+    const displayedWorks = useMemo(() => {
+        if (!personData)
+            return [];
+
+        let works: PersonServie[];
+
+        if (departmentFilter === "Acting")
+            works = [
+                ...(actingFilter === "acting"
+                    ? personData.acting
+                    : personData.appearances)
+            ];
+
+        else {
+            const department = personData.crewIndex[departmentFilter];
+
+            if (!department)
+                return [];
+
+            const keys =
+                mediaFilter === "movie"
+                    ? department.movies
+                    : mediaFilter === "tv"
+                        ? department.tv
+                        : department.all;
+
+            const allowed = new Set(keys.map(k => `${k.childtype}-${k.tmdbId}`));
+
+            works = personData.crew.filter(work =>
+                allowed.has(`${work.childtype}-${work.tmdbId}`)
+            );
+        }
+
+        if (departmentFilter === "Acting" && mediaFilter !== "all")
+            works = works.filter(work => work.childtype === mediaFilter);
+
+        works.sort((a, b) => {
+            if (sortOrder === "popularity")
+                return (b.popularity ?? 0) - (a.popularity ?? 0);
+
+            return a.title.localeCompare(b.title);
+        });
+
+        return works.map(work => ({
+            ...work,
+            liked: true
+        }));
+    }, [
+        personData,
+        departmentFilter,
+        actingFilter,
+        mediaFilter,
+        sortOrder
+    ]);
+
+    const progress = useMemo(() => {
+        let watched = 0;
+        let total = 0;
+
+        for (const work of displayedWorks) {
+            if (work.childtype === "movie") {
+                total++;
+                if (work.completed)
+                    watched++;
+            }
+            else {
+                watched += work.episodesWatched ?? 0;
+                total += work.totalEpisodes ?? 0;
+            }
+        }
+
+        const completedPct =
+            total > 0
+                ? Math.round((watched / total) * 100)
+                : 0;
+
+        return {
+            watched,
+            total,
+            completedPct
+        };
+    }, [displayedWorks]);
 
     const handleWatchChange = (tmdbId: number, childtype: string, newWatched: boolean) => {
         setWatchedCount(prev => newWatched ? prev + 1 : prev - 1);
@@ -211,18 +336,6 @@ const PersonPage: React.FC = () => {
 
     const displayName = personData?.name ?? partialData?.name ?? '';
     const displayProfilePath = personData?.profilePath ?? partialData?.profilePath;
-
-    const sortedServies = [...(personData?.servies ?? [])].sort((a, b) => {
-        if (sortOrder === 'popularity') return (b.popularity ?? 0) - (a.popularity ?? 0);
-        return a.title.localeCompare(b.title);
-    });
-
-    const filteredServies = sortedServies.filter(servie => {
-        if (filterType === "Servie") return true;
-        if (filterType === "Movie") return servie.childtype === "movie";
-        if (filterType === "TV") return servie.childtype === "tv";
-        return true;
-    });
 
     const calculateAge = (birthday: string) => {
         if (!birthday) return null;
@@ -331,6 +444,28 @@ const PersonPage: React.FC = () => {
                                         {/* Biography */}
                                         {personData.biography && <Biography text={personData.biography} />}
 
+                                        {/* Progress Bar */}
+                                        <div className={styles.progressBlock}>
+                                            <span className={styles.watchedLabel}>You've watched</span>
+
+                                            <div className={styles.watchedCount}>
+                                                <div className={styles.watchedLeft}>
+                                                    <span className={styles.watchedMain}>{progress.watched}</span>
+                                                    <span className={styles.watchedOf}>of {progress.total}</span>
+                                                </div>
+
+                                                <span className={styles.watchedPct}>
+                                                    {progress.completedPct}%
+                                                </span>
+                                            </div>
+
+                                            <ProgressBar
+                                                episodesWatched={progress.watched}
+                                                totalEpisodes={progress.total}
+                                                showLabel={false}
+                                            />
+                                        </div>
+
                                         {personData.lastModified && (
                                             <p className={styles.lastModified}>
                                                 Last updated: {new Date(personData.lastModified).toLocaleDateString('en-US', {
@@ -353,7 +488,9 @@ const PersonPage: React.FC = () => {
                 {personData && (
                     <div className={styles.container}>
                         <div className={styles.worksSection}>
-                            <h2 className={styles.sectionTitle}>Works ({filteredServies.length})</h2>
+                            <h2 className={styles.sectionTitle}>
+                                {departmentFilter} ({displayedWorks.length})
+                            </h2>
 
                             {/* Controls Bar */}
                             <div className={styles.controlsBar}>
@@ -384,20 +521,66 @@ const PersonPage: React.FC = () => {
                                 <div className={styles.controlGroup}>
                                     <label className={styles.controlLabel}>Filter:</label>
                                     <select
-                                        value={filterType}
-                                        onChange={(e) => setFilterType(e.target.value)}
+                                        value={mediaFilter}
+                                        onChange={(e) =>
+                                            setMediaFilter(e.target.value as MediaFilter)
+                                        }
                                         className={styles.select}
                                     >
-                                        <option value="Servie">All</option>
-                                        <option value="Movie">Movies</option>
-                                        <option value="TV">TV Shows</option>
+                                        <option value="all">Both</option>
+                                        <option value="movie">Movies</option>
+                                        <option value="tv">TV Shows</option>
                                     </select>
                                 </div>
+
+                                <div className={styles.controlGroup}>
+                                    <label className={styles.controlLabel}>
+                                        Department:
+                                    </label>
+
+                                    <select
+                                        value={departmentFilter}
+                                        onChange={(e) => handleDepartmentChange(e.target.value)}
+                                        className={styles.select}
+                                    >
+                                        <option value="Acting">Acting</option>
+
+                                        {Object.keys(personData.crewIndex).map(department => (
+                                            <option
+                                                key={department}
+                                                value={department}
+                                            >
+                                                {department}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+
+                                {departmentFilter === "Acting" && (
+                                    <div className={styles.controlGroup}>
+                                        <label className={styles.controlLabel}>
+                                            Role:
+                                        </label>
+
+                                        <select
+                                            value={actingFilter}
+                                            onChange={(e) =>
+                                                setActingFilter(e.target.value as ActingFilter)
+                                            }
+                                            className={styles.select}
+                                        >
+                                            <option value="acting">Acting</option>
+                                            <option value="appearances">Appearances</option>
+                                        </select>
+                                    </div>
+                                )}
+
                             </div>
 
                             {/* Works Grid */}
                             <div className={styles.worksGrid}>
-                                {filteredServies.map(servie => {
+                                {displayedWorks.map(servie => {
                                     const key = `${servie.childtype}-${servie.tmdbId}`;
                                     return (
                                         <ServieCard

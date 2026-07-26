@@ -99,10 +99,6 @@
   color: var(--text-primary);
 }
 
-.castSection {
-  margin: 2rem 0;
-}
-
 .episodesSection {
   margin: 3rem 0;
   padding-bottom: 3rem;
@@ -144,6 +140,12 @@
   font-weight: 700;
 
   color: var(--text-primary);
+  text-shadow:
+    -1px -1px 0 rgba(30, 30, 30, 0.18),
+     1px -1px 0 rgba(30, 30, 30, 0.18),
+    -1px  1px 0 rgba(30, 30, 30, 0.18),
+     1px  1px 0 rgba(30, 30, 30, 0.18),
+     0 3px 10px rgba(0, 0, 0, 0.30);
 
   margin-bottom: 0.35rem;
 }
@@ -283,13 +285,48 @@
    Cast Section
    ========================= */
 
+.castSection {
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.castSection h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: var(--modal-text);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.castTabs {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Cast slider container - constrain width */
+.castSection :global(.cast-slider),
+.castSection > div:last-child {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.tabBtn {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.tabBtn.active {
+  background: var(--list-active-bg);
+  border-color: var(--list-active-accent);
+  color: var(--list-active-accent);
+}
+
 .panel {
   padding: 1.5rem;
   margin-top: 2rem;
-}
-
-.castSection {
-  margin: 48px 0;
 }
 
 .sectionTitle {

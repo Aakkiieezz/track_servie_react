@@ -4,7 +4,7 @@ import axiosInstance from '../utils/axiosInstance';
 
 import { useAlert } from "../contexts/AlertContext";
 import CastListSlider from "@/components/common/CastListSlider/CastListSlider";
-import NavBar from "@/components/SeasonPage/NavBar";
+import NavBar from "@/components/common/NavBar/NavBar";
 import ProgressBar from '../components/common/ProgressBar/ProgressBar';
 import AppHeader from "@/components/common/AppHeader/AppHeader";
 
@@ -83,6 +83,12 @@ const SeasonPage = () => {
     const [totalSeasons, setTotalSeasons] = useState(0);
     const [hasSpecials, setHasSpecials] = useState(false);
     const [seasonCastActiveTab, setSeasonCastActiveTab] = useState<"regulars" | "guests">("regulars");
+
+    const regulars = season?.seasonCast ?? [];
+    const guests = season?.seasonCastGuests ?? [];
+    const hasRegulars = regulars.length > 0;
+    const hasGuests = guests.length > 0;
+
     const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
 
     // ✅ ALL useRef hooks
@@ -151,7 +157,7 @@ const SeasonPage = () => {
         console.log("Flushing episodes:", episodes);
 
         try {
-            const response = await axiosInstance.post(`servies/${tmdbId}/Season/${seasonNo}/Episodes/batch-toggle`,
+            const response = await axiosInstance.post(`servies/${tmdbId}/Season/${seasonNo}/Episode/batch-toggle`,
                 { episodes }
             );
 
@@ -446,10 +452,10 @@ const SeasonPage = () => {
                         <div className={styles.container}>
 
                             <NavBar
-                                textToShow="SEASON"
+                                label="SEASON"
                                 tmdbId={tmdbId!}
-                                currentSeasonNo={currentSeasonNo}
-                                totalSeasons={totalSeasons}
+                                current={currentSeasonNo}
+                                total={totalSeasons}
                                 hasSpecials={hasSpecials}
                             />
 
@@ -569,9 +575,9 @@ const SeasonPage = () => {
 
                                         <div className={`glass-panel ${styles.panel} ${styles.overviewPanel}`}>
 
-                                            <h2 className={styles.sectionTitle}>
+                                            <h4 className={styles.sectionTitle}>
                                                 Overview
-                                            </h2>
+                                            </h4>
 
                                             <p className={styles.overviewText}>
                                                 {season.overview}
@@ -589,30 +595,34 @@ const SeasonPage = () => {
 
                         {/* Cast Section */}
                         <div className={styles.container}>
-                            <div className={`glass-panel ${styles.panel} ${styles.castSection}`}>
-                                <h2 className={styles.sectionTitle}>Cast</h2>
+                            <div className={`glass-panel ${styles.castSection}`}>
+                                <h4>Cast</h4>
 
-                                {/* Tabs */}
-                                <div className={styles.tabsContainer}>
-                                    <button
-                                        onClick={() => setSeasonCastActiveTab('regulars')}
-                                        className={`${styles.tabButton} ${seasonCastActiveTab === 'regulars' ? styles.tabActive : ''}`}
-                                    >
-                                        Season Regulars ({season?.seasonCast?.length ?? 0})
-                                    </button>
-                                    <button
-                                        onClick={() => setSeasonCastActiveTab('guests')}
-                                        className={`${styles.tabButton} ${seasonCastActiveTab === 'guests' ? styles.tabActive : ''}`}
-                                    >
-                                        Guest Stars ({season?.seasonCastGuests?.length ?? 0})
-                                    </button>
+                                <div className={styles.castTabs}>
+                                    {hasRegulars && (
+                                        <button
+                                            className={`btnTranslucent ${styles.tabBtn} ${seasonCastActiveTab === "regulars" ? styles.active : ""}`}
+                                            onClick={() => setSeasonCastActiveTab("regulars")}
+                                        >
+                                            Series Regulars ({regulars.length})
+                                        </button>
+                                    )}
+                                    {hasGuests && (
+                                        <button
+                                            className={`btnTranslucent ${styles.tabBtn} ${seasonCastActiveTab === "guests" ? styles.active : ""}`}
+                                            onClick={() => setSeasonCastActiveTab("guests")}
+                                        >
+                                            Guest Stars ({guests.length})
+                                        </button>
+                                    )}
                                 </div>
 
-                                {/* Tab content */}
-                                {seasonCastActiveTab === 'regulars' ? (
-                                    <CastListSlider profiles={season?.seasonCast} childType='movie' />
-                                ) : (
-                                    <CastListSlider profiles={season?.seasonCastGuests} childType='tv' />
+                                {seasonCastActiveTab === "regulars" && hasRegulars && (
+                                    <CastListSlider profiles={regulars} childType={"movie"} />
+                                )}
+
+                                {seasonCastActiveTab === "guests" && hasGuests && (
+                                    <CastListSlider profiles={guests} childType={"tv"} />
                                 )}
                             </div>
                         </div>
@@ -657,7 +667,7 @@ const SeasonPage = () => {
                                                         <div className={styles.episodeHeader}>
                                                             <div>
                                                                 <div className={styles.episodeNumber}>Episode {episode.episodeNo}</div>
-                                                                <h3 className={styles.episodeTitle}>{episode.name}</h3>
+                                                                <h4 className={styles.episodeTitle}>{episode.name}</h4>
                                                             </div>
 
                                                             <button
