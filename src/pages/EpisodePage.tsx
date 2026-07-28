@@ -9,6 +9,8 @@ import styles from './EpisodePage.module.css';
 import type { ReviewData } from '@/types/servie';
 import { useRouteParamNumber } from '@/utils/hooks/useRouteParamNumber';
 import NavBar from "@/components/common/NavBar/NavBar";
+import { saveEpisodeReview } from '@/api/episodeApi';
+import { getAxiosErrorMessage } from '@/api/axiosError';
 
 interface CastDto {
 	personId: number;
@@ -38,7 +40,7 @@ interface EpisodeDto {
 	watched: boolean;
 	liked: boolean;
 	rated: number | null;
-	notes: string | null;
+	review: string | null;
 }
 
 const EpisodePage = () => {
@@ -52,8 +54,6 @@ const EpisodePage = () => {
 	const [error, setError] = useState<string | null>(null);
 	const [episode, setEpisode] = useState<EpisodeDto | null>(null);
 	const [episodeWatchState, setEpisodeWatchState] = useState(false);
-	const [rating, setRating] = useState<number | null>(null);
-	const [liked, setLiked] = useState(false);
 	// const [castActiveTab, setCastActiveTab] = useState<"cast" | "guests">("cast");
 
 	const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -68,8 +68,6 @@ const EpisodePage = () => {
 
 				setEpisode(response.data);
 				setEpisodeWatchState(response.data.watched);
-				setRating(response.data.rated);
-				setLiked(response.data.liked);
 			} catch (err) {
 				console.error('Error fetching episode data', err);
 				setError('Failed to load episode. Please try again.');
@@ -86,7 +84,7 @@ const EpisodePage = () => {
 			fetchEpisodeData(tmdbId, seasonNo, episodeNo);
 	}, [tmdbId, seasonNo, episodeNo, fetchEpisodeData]);
 
-	const toggleEpisodeWatch = async () => {
+	const toggleWatch = async () => {
 		const previousWatchState = episodeWatchState;
 		const newWatchState = !previousWatchState;
 		// Optimistic update
@@ -103,23 +101,65 @@ const EpisodePage = () => {
 	};
 
 	const handleLikeClick = async () => {
-		const prev = liked;
-		const next = !prev;
-		setLiked(next);
+		const previousLiked = episode?.liked;
+		const nextLiked = !previousLiked;
+
+		// Optimistic UI update
+		setEpisode(current =>
+			current
+				? {
+					...current,
+					liked: nextLiked,
+				}
+				: current
+		);
+
 		try {
 			const res = await axiosInstance.patch(`/servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/review`,
-				{ liked: next }
+				{ liked: nextLiked }
 			);
 			if (res.status === 200)
 				setAlert({ type: "success", message: `Updated like status of S${seasonNo} Ep${episodeNo}` });
 		} catch {
-			setLiked(prev);
+			// Roll back
+			setEpisode(current =>
+				current
+					? {
+						...current,
+						liked: previousLiked!,
+					}
+					: current
+			);
 			setAlert({ type: "danger", message: "Failed to update like status." });
 		}
 	};
 
+	const handleSaveReview = async (reviewData: ReviewData) => {
+		try {
+			await saveEpisodeReview(tmdbId, seasonNo, episodeNo, reviewData);
+
+			// Optimistic UI update
+			setEpisode(prev =>
+				prev
+					? {
+						...prev,
+						liked: reviewData.liked,
+						rated: reviewData.rating,
+						review: reviewData.review
+					}
+					: prev
+			);
+
+			setAlert({ type: "success", message: "Saved successfully!" });
+		}
+		catch (error) {
+			setAlert({ type: "danger", message: getAxiosErrorMessage(error), });
+			throw error;
+		}
+	};
+
 	const handleRatingChange = async (newRating: number | null) => {
-		const previousRating = rating ?? null;
+		const previousRating = episode?.rated ?? null;
 
 		// Optimistic UI update
 		setEpisode(prev =>
@@ -130,7 +170,6 @@ const EpisodePage = () => {
 				}
 				: prev
 		);
-		setRating(newRating);
 
 		try {
 			await axiosInstance.patch(`/servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/review`,
@@ -147,30 +186,9 @@ const EpisodePage = () => {
 					}
 					: prev
 			);
-			setRating(newRating);
-			console.error("Failed to update rating", error);
 			setAlert({ type: "danger", message: "Failed to update rating!", });
 		}
 	};
-
-	const handleSaveReview = useCallback(
-		async (reviewData: ReviewData) => {
-			try {
-				const response = await axiosInstance.post(`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/notes`,
-					{ notes: reviewData.review }
-				);
-
-				if (response.status === 200) {
-					setAlert({ type: 'success', message: 'Review saved successfully!' });
-					setIsReviewModalOpen(false);
-				}
-			} catch (error) {
-				console.error('Failed to save review', error);
-				setAlert({ type: 'danger', message: 'Failed to save review!' });
-			}
-		},
-		[tmdbId, seasonNo, episodeNo, setAlert]
-	);
 
 	const formatDate = (dateString: string): string => {
 		try {
@@ -311,7 +329,7 @@ const EpisodePage = () => {
 									<div className={styles.actionRow}>
 
 										<button
-											onClick={toggleEpisodeWatch}
+											onClick={toggleWatch}
 											className={`btnTranslucent ${episodeWatchState ? "btnSuccess" : ""}`}
 										>
 											<i className={`bi ${episodeWatchState ? "bi-eye-fill" : "bi-eye-slash-fill"}`} />
@@ -319,11 +337,11 @@ const EpisodePage = () => {
 										</button>
 
 										<button
-											className={`btnTranslucent btnLike ${liked ? "btnLikeActive" : ""}`}
+											className={`btnTranslucent btnLike ${episode?.liked ? "btnLikeActive" : ""}`}
 											onClick={handleLikeClick}
-											aria-label={liked ? "Unlike episode" : "Like episode"}
+											aria-label={episode?.liked ? "Unlike episode" : "Like episode"}
 										>
-											<i className={`bi ${liked ? "bi-heart-fill" : "bi-heart"}`}></i>
+											<i className={`bi ${episode?.liked ? "bi-heart-fill" : "bi-heart"}`}></i>
 										</button>
 
 										<button
@@ -426,7 +444,6 @@ const EpisodePage = () => {
 			<ReviewModal
 				isOpen={isReviewModalOpen}
 				onClose={() => setIsReviewModalOpen(false)}
-				onSave={handleSaveReview}
 				title={episode.name}
 				year={new Date(episode.airDate).getFullYear().toString()}
 				posterPath={
@@ -434,6 +451,12 @@ const EpisodePage = () => {
 						? `https://image.tmdb.org/t/p/w500${episode.stillPath}`
 						: ''
 				}
+				initialData={{
+					liked: episode?.liked ?? false,
+					rating: episode?.rated ?? null,
+					review: episode?.review ?? null
+				}}
+				onSave={handleSaveReview}
 			/>
 		</>
 	);

@@ -4,7 +4,7 @@ import seasonStyles from "./SeasonsList.module.css";
 
 interface SeasonsListProps {
 	seasons?: Season[];
-	tmdbId: string;
+	tmdbId: number;
 	onEpWatchCountChange: (data: {
 		totalWatchedEp: number;
 		totalWatchedRuntime: number;

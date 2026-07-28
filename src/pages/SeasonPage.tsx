@@ -15,6 +15,8 @@ import type { ReviewData } from "@/types/servie";
 import { useRouteParamNumber } from "@/utils/hooks/useRouteParamNumber";
 import { getAxiosErrorMessage } from "@/api/axiosError";
 import { saveSeasonReview } from "@/api/seasonApi";
+import OptionsModal from "@/components/common/ServieGrid/OptionsModal";
+import { saveEpisodeReview } from "@/api/episodeApi";
 
 interface Season {
     id: number;
@@ -36,6 +38,7 @@ interface Season {
     hasSpecials: boolean;
     liked: boolean;
     rated: number | null;
+    review: string | null;
 }
 
 interface Cast {
@@ -56,6 +59,9 @@ interface Episode {
     lastModified: string;
     airDate: string;
     watched: boolean;
+    liked: boolean;
+    rated: number | null;
+    review: string | null;
 }
 
 const SeasonPage = () => {
@@ -64,7 +70,7 @@ const SeasonPage = () => {
     const location = useLocation();
     const {
         // title,
-        posterPath,
+        // posterPath,
         backdropPath,
     }: {
         title?: string;
@@ -111,6 +117,9 @@ const SeasonPage = () => {
     const seasonNo = useRouteParamNumber('seasonNo', 1);
     const currentSeasonNo = seasonNo;
     const totalEpisodes = season?.episodeCount || 1;
+
+    const [showOptions, setShowOptions] = useState(false);
+    const [selectedEpisode, setSelectedEpisode] = useState<Season["episodes"][number] | null>(null);
 
     // ✅ Define fetchSeasonData BEFORE useEffect uses it
     const fetchSeasonData = async (tmdbId: number, seasonNo: number) => {
@@ -360,6 +369,82 @@ const SeasonPage = () => {
         }, DEBOUNCE_DELAY);
     };
 
+    const handleLikeClick = async () => {
+        const previousLiked = season?.liked;
+        const nextLiked = !previousLiked;
+
+        // Optimistic UI update
+        setSeason(current =>
+            current
+                ? {
+                    ...current,
+                    liked: nextLiked,
+                }
+                : current
+        );
+
+        try {
+            const res = await axiosInstance.patch(`/servies/${tmdbId}/Season/${seasonNo}/review`,
+                { liked: nextLiked }
+            );
+            if (res.status === 200)
+                setAlert({ type: "success", message: `Updated like status of S${seasonNo}` });
+        } catch {
+            // Roll back
+            setSeason(current =>
+                current
+                    ? {
+                        ...current,
+                        liked: previousLiked!,
+                    }
+                    : current
+            );
+            setAlert({ type: "danger", message: "Failed to update like status." });
+        }
+    };
+
+    const handleEpisodeLikeClick = async (episodeNo: number) => {
+        const previousLiked = season?.episodes.find(ep => ep.episodeNo === episodeNo)?.liked ?? false;
+        const nextLiked = !previousLiked;
+
+        // Optimistic UI update
+        setSeason(prev =>
+            prev
+                ? {
+                    ...prev,
+                    episodes: prev.episodes.map(ep =>
+                        ep.episodeNo === episodeNo
+                            ? { ...ep, liked: nextLiked }
+                            : ep
+                    ),
+                }
+                : prev
+        );
+
+        try {
+            const res = await axiosInstance.patch(`/servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/review`,
+                { liked: nextLiked }
+            );
+            if (res.status === 200)
+                setAlert({ type: "success", message: `Updated like status of S${seasonNo} Ep${episodeNo}` });
+        } catch {
+            // Roll back
+            setSeason(prev =>
+                prev
+                    ? {
+                        ...prev,
+                        episodes: prev.episodes.map(ep =>
+                            ep.episodeNo === episodeNo
+                                ? { ...ep, liked: previousLiked }
+                                : ep
+                        ),
+                    }
+                    : prev
+            );
+            setAlert({ type: "danger", message: "Failed to update like status." });
+        }
+    };
+
     function formatRuntime(totalMinutes: number): string {
         const days = Math.floor(totalMinutes / 1440);
         const hours = Math.floor((totalMinutes % 1440) / 60);
@@ -382,8 +467,40 @@ const SeasonPage = () => {
                 prev
                     ? {
                         ...prev,
-                        liked: reviewData.liked ?? prev.liked,
-                        rated: reviewData.rating ?? prev.rated,
+                        liked: reviewData.liked,
+                        rated: reviewData.rating,
+                        review: reviewData.review
+                    }
+                    : prev
+            );
+
+            setAlert({ type: "success", message: "Saved successfully!" });
+        }
+        catch (error) {
+            setAlert({ type: "danger", message: getAxiosErrorMessage(error), });
+            throw error;
+        }
+    };
+
+    const handleEpisodeSaveReview = async (episodeNo: number, reviewData: ReviewData) => {
+        try {
+            await saveEpisodeReview(tmdbId, seasonNo, episodeNo, reviewData);
+
+            setSeason(prev =>
+                prev
+                    ? {
+                        ...prev,
+
+                        episodes: prev.episodes.map(ep =>
+                            ep.episodeNo === episodeNo
+                                ? {
+                                    ...ep,
+                                    liked: reviewData.liked,
+                                    rated: reviewData.rating,
+                                    review: reviewData.review
+                                }
+                                : ep
+                        ),
                     }
                     : prev
             );
@@ -428,6 +545,52 @@ const SeasonPage = () => {
 
             console.error("Failed to update rating", error);
             setAlert({ type: "danger", message: "Failed to update rating!", });
+        }
+    };
+
+    const handleEpisodeRatingChange = async (episodeNo: number, newRating: number | null) => {
+
+        const previousRating = season?.episodes.find(ep => ep.episodeNo === episodeNo)?.rated ?? null;
+
+        // Optimistic UI update
+        setSeason(prev =>
+            prev
+                ? {
+                    ...prev,
+                    episodes: prev.episodes.map(ep =>
+                        ep.episodeNo === episodeNo
+                            ? { ...ep, rated: newRating }
+                            : ep
+                    ),
+                }
+                : prev
+        );
+
+        try {
+            await axiosInstance.patch(`/servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/review`,
+                { rating: newRating }
+            );
+        } catch (error) {
+
+            // Roll back
+            setSeason(prev =>
+                prev
+                    ? {
+                        ...prev,
+                        episodes: prev.episodes.map(ep =>
+                            ep.episodeNo === episodeNo
+                                ? { ...ep, rated: previousRating }
+                                : ep
+                        ),
+                    }
+                    : prev
+            );
+
+            console.error("Failed to update episode rating", error);
+            setAlert({
+                type: "danger",
+                message: "Failed to update episode rating!",
+            });
         }
     };
 
@@ -514,6 +677,14 @@ const SeasonPage = () => {
                                                 >
                                                     <i className={`bi ${seasonWatchState ? "bi-eye-fill" : "bi-eye-slash-fill"}`} />
                                                     {seasonWatchState ? "Watched" : "Mark as Watched"}
+                                                </button>
+
+                                                <button
+                                                    className={`btnTranslucent btnLike ${season?.liked ? "btnLikeActive" : ""}`}
+                                                    onClick={handleLikeClick}
+                                                    aria-label={season?.liked ? "Unlike episode" : "Like episode"}
+                                                >
+                                                    <i className={`bi ${season?.liked ? "bi-heart-fill" : "bi-heart"}`}></i>
                                                 </button>
 
                                                 <button
@@ -670,16 +841,45 @@ const SeasonPage = () => {
                                                                 <h4 className={styles.episodeTitle}>{episode.name}</h4>
                                                             </div>
 
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    toggleEpisodeWatch(episode.episodeNo);
-                                                                }}
-                                                                className={`btnTranslucent ${isWatched ? "btnSuccess" : ""}`}
-                                                            >
-                                                                <i className={`bi ${isWatched ? 'bi-eye-fill' : 'bi-eye-slash-fill'}`}></i>
-                                                                {isWatched ? 'Watched' : 'Mark Watched'}
-                                                            </button>
+                                                            <div className={styles.actionButtons}>
+
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        toggleEpisodeWatch(episode.episodeNo);
+                                                                    }}
+                                                                    className={`btnTranslucent ${isWatched ? "btnSuccess" : ""}`}
+                                                                >
+                                                                    <i className={`bi ${isWatched ? 'bi-eye-fill' : 'bi-eye-slash-fill'}`}></i>
+                                                                </button>
+
+                                                                <button
+                                                                    className={`btnTranslucent btnLike ${episode?.liked ? "btnLikeActive" : ""}`}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleEpisodeLikeClick(episode.episodeNo);
+                                                                    }}
+                                                                    aria-label={episode?.liked ? "Unlike episode" : "Like episode"}
+                                                                >
+                                                                    <i className={`bi ${episode?.liked ? "bi-heart-fill" : "bi-heart"}`}></i>
+                                                                </button>
+
+                                                                <button
+                                                                    className="btnTranslucent"
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+
+                                                                        setSelectedEpisode(episode);
+                                                                        setShowOptions(true);
+                                                                    }}
+                                                                    title="More options"
+                                                                >
+                                                                    <i className="bi bi-three-dots-vertical" />
+                                                                </button>
+
+                                                            </div>
+
                                                         </div>
 
                                                         <div className={styles.episodeMeta}>
@@ -718,13 +918,39 @@ const SeasonPage = () => {
                 isOpen={isReviewModalOpen}
                 onClose={() => setIsReviewModalOpen(false)}
                 title={season?.name || ''}
-                posterPath={`https://image.tmdb.org/t/p/w500${posterPath || ''}`}
+                posterPath={`https://image.tmdb.org/t/p/w500${season.posterPath}`}
                 initialData={{
-                    liked: season?.liked,
-                    rating: season?.rated,
+                    liked: season?.liked ?? false,
+                    rating: season?.rated ?? null,
+                    review: season?.review ?? null
                 }}
                 onSave={handleSaveReview}
             />
+
+            {selectedEpisode && (
+                <OptionsModal
+                    isOpen={showOptions}
+                    onClose={() => {
+                        setShowOptions(false);
+                        setSelectedEpisode(null);
+                    }}
+                    servie={{
+                        tmdbId: tmdbId!,
+                        childtype: "movie",
+                        title: selectedEpisode.name,
+                        posterPath: selectedEpisode.stillPath,
+                        completed: selectedEpisode.watched,
+                        liked: selectedEpisode.liked,
+                        rated: selectedEpisode.rated,
+                        review: selectedEpisode.review
+                    }}
+                    onSuccess={(msg) => setAlert({ type: "success", message: msg })}
+                    onError={(msg) => setAlert({ type: "danger", message: msg })}
+                    initialRating={selectedEpisode.rated}
+                    onRatingChange={(newRating) => handleEpisodeRatingChange(selectedEpisode.episodeNo, newRating)}
+                    onSaveReview={(reviwData) => handleEpisodeSaveReview(selectedEpisode.episodeNo, reviwData)}
+                />
+            )}
         </>
     );
 };

@@ -423,8 +423,6 @@
 }
 
 .episodeCard:hover {
-  transform: translateY(-3px);
-
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
@@ -484,10 +482,45 @@
   flex-shrink: 0;
 }
 
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.actionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.heroLayout {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+
+  margin-bottom: 2rem;
+}
+
+.posterColumn {
+  flex: 0 0 300px;
+}
+
+.contentColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
 .episodeHeader > div:first-child {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  min-width: 0;
+  flex: 1;
 }
 
 .episodeNumber {
@@ -582,30 +615,4 @@
     flex-direction: column;
     gap: 12px;
   }
-}
-
-.actionRow {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-top: 1rem;
-}
-
-.heroLayout {
-  display: flex;
-  align-items: flex-start;
-  gap: 2rem;
-
-  margin-bottom: 2rem;
-}
-
-.posterColumn {
-  flex: 0 0 300px;
-}
-
-.contentColumn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
 }

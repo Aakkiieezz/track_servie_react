@@ -217,7 +217,6 @@ const PersonPage: React.FC = () => {
     const handleDepartmentChange = (department: string) => {
         setDepartmentFilter(department);
 
-        console.log("Department changed", department);
         if (department === "Acting")
             setActingFilter("acting");
     };

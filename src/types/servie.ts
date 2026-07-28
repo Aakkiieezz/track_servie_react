@@ -19,13 +19,14 @@ export interface Servie {
     completed: boolean;
     liked: boolean;
     rated?: number | null;
+    review?: string | null;
 }
 
 export interface ReviewData {
     watchedDate?: string;
     watchedBefore?: boolean;
-    liked?: boolean;
-    rating?: number | null;
-    review?: string | null;
+    liked: boolean;
+    rating: number | null;
+    review: string | null;
     tags?: string[];
 }

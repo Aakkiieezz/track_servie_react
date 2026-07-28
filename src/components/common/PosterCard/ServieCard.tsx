@@ -28,6 +28,7 @@ const ServieCard: React.FC<ServieCardProps> = ({
     const [liked, setLiked] = useState(servie.liked);
     const [showOptions, setShowOptions] = useState(false);
     const [rating, setRating] = useState(servie.rated ?? null);
+    const [review, setReview] = useState(servie.review ?? null);
 
     const handleWatchClick = async () => {
         const prev = watched;
@@ -89,20 +90,14 @@ const ServieCard: React.FC<ServieCardProps> = ({
     const handleSaveReview = async (reviewData: ReviewData) => {
         try {
             await saveServieReview(servie.childtype, servie.tmdbId, reviewData);
-
-            if (reviewData.rating !== undefined) {
-                setRating(reviewData.rating);
-                update(servie.childtype, servie.tmdbId, {
-                    rated: reviewData.rating,
-                });
-            }
-            if (reviewData.liked !== undefined) {
-                setLiked(reviewData.liked);
-                update(servie.childtype, servie.tmdbId, {
-                    liked: reviewData.liked,
-                });
-            }
-
+            setLiked(reviewData.liked);
+            setRating(reviewData.rating);
+            setReview(reviewData.review);
+            update(servie.childtype, servie.tmdbId, {
+                liked: reviewData.liked,
+                rated: reviewData.rating,
+                review: reviewData.review,
+            });
             setAlert({ type: "success", message: "Saved successfully!" });
         } catch (error) {
             setAlert({ type: "danger", message: getAxiosErrorMessage(error) });
@@ -146,6 +141,7 @@ const ServieCard: React.FC<ServieCardProps> = ({
                         completed: watched,
                         liked,
                         rated: rating,
+                        review: review
                     }}
                     onSuccess={(msg) => setAlert({ type: "success", message: msg })}
                     onError={(msg) => setAlert({ type: "danger", message: msg })}

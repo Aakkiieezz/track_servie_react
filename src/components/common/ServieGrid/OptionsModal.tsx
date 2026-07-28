@@ -305,11 +305,12 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
                     : (servie.firstAirDate ? new Date(servie.firstAirDate).getFullYear().toString() : '')
                 }
                 posterPath={`https://image.tmdb.org/t/p/w500${servie.posterPath || ''}`}
-                onSave={onSaveReview}
                 initialData={{
                     liked: servie?.liked,
                     rating: rating,
+                    review: servie?.review
                 }}
+                onSave={onSaveReview}
             />
         </>,
         document.body

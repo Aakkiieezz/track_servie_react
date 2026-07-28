@@ -6,21 +6,7 @@ export const saveServieReview = async (
     tmdbId: number,
     reviewData: ReviewData
 ) => {
-    const payload: Partial<ReviewData> = {};
-
-    if (reviewData.watchedDate != null)
-        payload.watchedDate = reviewData.watchedDate;
-
-    if (reviewData.liked != null)
-        payload.liked = reviewData.liked;
-
-    if (reviewData.rating != null)
-        payload.rating = reviewData.rating;
-
-    if (reviewData.review != null)
-        payload.review = reviewData.review;
-
     return axiosInstance.patch(`/servies/${childType}/${tmdbId}/review`,
-        payload
+        reviewData
     );
 };

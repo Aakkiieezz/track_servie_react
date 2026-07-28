@@ -22,6 +22,7 @@ export interface Season {
     popularity?: number | null;
     liked: boolean;
     rated: number | null;
+    review: string | null;
 }
 
 interface SeasonCardProps {
@@ -56,6 +57,7 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
     const [watchRuntime, setWatchRuntime] = useState(season.totalWatchedRuntime);
     const [showOptions, setShowOptions] = useState(false);
     const [rating, setRating] = useState(season.rated);
+    const [review, setReview] = useState(season.review);
 
     // ── Toggle watch ──────────────────────────────────────────────────────────
     const handleWatchClick = async () => {
@@ -133,9 +135,9 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
     const handleSaveReview = async (reviewData: ReviewData) => {
         try {
             await saveSeasonReview(tmdbId, season.seasonNo, reviewData);
-
-            if (reviewData.rating !== undefined)
-                setRating(reviewData.rating);
+            setLiked(reviewData.liked);
+            setRating(reviewData.rating);
+            setReview(reviewData.review);
 
             setAlert({ type: "success", message: "Saved successfully!" });
         } catch (error) {
@@ -176,7 +178,9 @@ const SeasonCard: React.FC<SeasonCardProps> = ({
                         title: season.name,
                         posterPath: season.posterPath,
                         completed: watched,
-                        liked: liked
+                        liked: liked,
+                        rated: rating,
+                        review: review
                     }}
                     onSuccess={(msg) => setAlert({ type: "success", message: msg })}
                     onError={(msg) => setAlert({ type: "danger", message: msg })}

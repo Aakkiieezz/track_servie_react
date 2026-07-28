@@ -34,6 +34,7 @@ interface SeasonDtoServiePage {
     totalWatchedRuntime: number;
     liked: boolean;
     rated: number | null;
+    review: string | null;
 }
 
 interface Cast {
@@ -72,7 +73,8 @@ interface ServieDto {
     episodesWatched: number;
     completed: boolean;
     liked: boolean;
-    rated: number;
+    rated: number | null;
+    review: string | null;
     cast: Cast[];
     seriesCastRegulars: Cast[];
     seriesCastGuests: Cast[];
@@ -156,8 +158,6 @@ const ServiePage = () => {
     }, []);
 
     const [data, setData] = useState<ServieDto | null>(null); // Proper typing
-    const [rating, setRating] = useState<number | null>(null);
-    const [liked, setLiked] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [servieWatchState, setServieWatchState] = useState<boolean>(false);
@@ -192,9 +192,7 @@ const ServiePage = () => {
                 setTotalEpWatched(response.data.episodesWatched);
                 setServieWatchRuntime(response.data.totalWatchedRuntime);
                 setServieWatchState(response.data.completed);
-                setRating(response.data.rated);
-                setLiked(response.data.liked);
-
+                
                 // ✅ Only fetch summary after Servie loaded successfully
                 await fetchSummary();
 
@@ -365,16 +363,30 @@ const ServiePage = () => {
     }
 
     const handleRatingChange = async (newRating: number | null) => {
-        const ratingCurrent = rating;
-        setRating(newRating);
+        const previousRating = data?.rated ?? null;
+        setData(current =>
+            current
+                ? {
+                    ...current,
+                    rated: newRating,
+                }
+                : current
+        );
+
         try {
             await axiosInstance.patch(`/servies/${childType}/${tmdbId}/review`,
                 { rating: newRating }
             );
             update(childType, tmdbId, { rated: newRating });
-        } catch (error) {
-            setRating(ratingCurrent);
-            console.error('Failed to update watch status', error);
+        } catch {
+            setData(current =>
+                current
+                    ? {
+                        ...current,
+                        rated: previousRating,
+                    }
+                    : current
+            );
             setAlert({ type: "danger", message: "Failed to update watch status !!" });
         }
     };
@@ -382,16 +394,62 @@ const ServiePage = () => {
     const handleSaveReview = async (reviewData: ReviewData) => {
         try {
             await saveServieReview(childType, tmdbId, reviewData);
-            if (reviewData.liked != null)
-                setLiked(reviewData.liked);
-            if (reviewData.rating != null)
-                setRating(reviewData.rating);
+            setData(prev =>
+                prev
+                    ? {
+                        ...prev,
+                        liked: reviewData.liked,
+                        rated: reviewData.rating,
+                        review: reviewData.review
+                    }
+                    : prev
+            );
             setAlert({ type: "success", message: "Saved successfully!" });
-            update(childType, tmdbId, { rated: reviewData.rating });
+            update(childType, tmdbId, {
+                liked: reviewData.liked,
+                rated: reviewData.rating,
+                review: reviewData.review
+            });
         }
         catch (error) {
             setAlert({ type: "danger", message: getAxiosErrorMessage(error), });
             throw error;
+        }
+    };
+
+    const handleLikeClick = async () => {
+        const previousLiked = data?.liked;
+        const nextLiked = !previousLiked;
+
+        // Optimistic UI update
+        setData(current =>
+            current
+                ? {
+                    ...current,
+                    liked: nextLiked,
+                }
+                : current
+        );
+
+        try {
+            const res = await axiosInstance.patch(`/servies/${childType}/${tmdbId}/review`,
+                { liked: nextLiked }
+            );
+            if (res.status === 200) {
+                setAlert({ type: "success", message: `Updated like status` });
+                update(childType, tmdbId, { liked: nextLiked });
+            }
+        } catch {
+            // Roll back
+            setData(current =>
+                current
+                    ? {
+                        ...current,
+                        liked: previousLiked!,
+                    }
+                    : current
+            );
+            setAlert({ type: "danger", message: "Failed to update like status." });
         }
     };
 
@@ -502,11 +560,11 @@ const ServiePage = () => {
                                         {/* Rating */}
                                         <div className="glass-panel rating-block">
                                             <div className="rating-label">
-                                                {rating ? "Your Rating" : "Rate this"}
+                                                {data?.rated ? "Your Rating" : "Rate this"}
                                             </div>
                                             <HalfStarRating
                                                 maxStars={5}
-                                                initialRating={rating}
+                                                initialRating={data?.rated ?? null}
                                                 onRatingChange={handleRatingChange}
                                             />
                                         </div>
@@ -521,6 +579,14 @@ const ServiePage = () => {
                                             >
                                                 <i className={`bi ${servieWatchState ? "bi-eye-fill" : "bi-eye-slash-fill"}`} />
                                                 {servieWatchState ? "Watched" : "Mark as Watched"}
+                                            </button>
+
+                                            <button
+                                                className={`btnTranslucent btnLike ${data?.liked ? "btnLikeActive" : ""}`}
+                                                onClick={handleLikeClick}
+                                                aria-label={data?.liked ? "Unlike episode" : "Like episode"}
+                                            >
+                                                <i className={`bi ${data?.liked ? "bi-heart-fill" : "bi-heart"}`}></i>
                                             </button>
 
                                             <button
@@ -560,8 +626,7 @@ const ServiePage = () => {
                                                 </button>
 
                                                 <button
-                                                    className={`btnTranslucent ${styles.tabBtn} ${overviewActiveTab === "summary" ? styles.active : ""
-                                                        }`}
+                                                    className={`btnTranslucent ${styles.tabBtn} ${overviewActiveTab === "summary" ? styles.active : ""}`}
                                                     onClick={() => setOverviewActiveTab("summary")}
                                                 >
                                                     Summary
@@ -824,8 +889,9 @@ const ServiePage = () => {
                 }
                 posterPath={`https://image.tmdb.org/t/p/w500${resolvedPosterPath || ''}`}
                 initialData={{
-                    rating,
-                    liked
+                    liked: data?.liked ?? false,
+                    rating: data?.rated ?? null,
+                    review: data?.review ?? null
                 }}
                 onSave={handleSaveReview}
             />

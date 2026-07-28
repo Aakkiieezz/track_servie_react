@@ -10,9 +10,10 @@ interface Movie {
     title: string;
     posterPath: string;
     releaseDate: string;
-    liked: boolean;
     watched: boolean;
+    liked: boolean;
     rated: number | null;
+    review: string | null;
 }
 
 interface MovieCollectionProps {
