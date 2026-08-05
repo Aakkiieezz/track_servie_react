@@ -41,18 +41,18 @@ interface RouteConfig {
 }
 
 const ROUTE_CONFIG: Record<string, RouteConfig> = {
-	"/trending/movies": { title: "Trending movies", fetcher: fetchTrendingMovies },
-	"/trending/tv": { title: "Trending shows", fetcher: fetchTrendingTv },
-	"/trending/all": { title: "Trending", fetcher: fetchTrendingAll },
+	"/trending/movies"  : { title: "Trending movies",  fetcher: fetchTrendingMovies },
+	"/trending/tv"	    : { title: "Trending shows",   fetcher: fetchTrendingTv 	},
+	"/trending/all"	    : { title: "Trending", 		   fetcher: fetchTrendingAll 	},
 
-	"/popular/movies": { title: "Popular movies", fetcher: fetchPopularMovies },
-	"/popular/tv": { title: "Popular shows", fetcher: fetchPopularTv },
-	"/popular/all": { title: "Popular", fetcher: fetchPopularAll },
+	"/popular/movies"   : { title: "Popular movies",   fetcher: fetchPopularMovies  },
+	"/popular/tv"       : { title: "Popular shows",    fetcher: fetchPopularTv 		},
+	"/popular/all"	    : { title: "Popular", 		   fetcher: fetchPopularAll 	},
 
-	"/top-rated/movies": { title: "Top rated movies", fetcher: fetchTopRatedMovies },
-	"/top-rated/tv": { title: "Top rated shows", fetcher: fetchTopRatedTv },
+	"/top-rated/movies" : { title: "Top rated movies", fetcher: fetchTopRatedMovies },
+	"/top-rated/tv"	    : { title: "Top rated shows",  fetcher: fetchTopRatedTv 	},
 
-	"/upcoming/movies": { title: "Upcoming movies", fetcher: fetchUpcomingMovies },
+	"/upcoming/movies"  : { title: "Upcoming movies",  fetcher: fetchUpcomingMovies },
 };
 
 // ─────────────────────────────────────────────

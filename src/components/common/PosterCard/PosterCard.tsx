@@ -95,7 +95,7 @@ const PosterCard: React.FC<PosterCardProps> = (props) => {
     } = props;
 
     const isSeason = seasonNo !== undefined;
-    const hasProgress = episodesWatched != null && totalEpisodes != null;
+    const hasProgress = childtype === "tv" && totalEpisodes != null;
     const hasRuntime = totalWatchedRuntime != null && totalRuntime != null;
     const hasPopularity = popularity != null;
     const shouldBlur = blurCompleted && watched;
@@ -163,7 +163,7 @@ const PosterCard: React.FC<PosterCardProps> = (props) => {
                 {hasProgress && (
                     <div className={styles.progressWrap}>
                         <div className={styles.epLabel}>
-                            {episodesWatched} / {totalEpisodes}
+                            {episodesWatched ?? 0} / {totalEpisodes}
                         </div>
                         {hasRuntime && (
                             <div className={styles.runtimeLabel}>
@@ -171,7 +171,7 @@ const PosterCard: React.FC<PosterCardProps> = (props) => {
                             </div>
                         )}
                         <ProgressBar
-                            episodesWatched={episodesWatched!}
+                            episodesWatched={episodesWatched ?? 0}
                             totalEpisodes={totalEpisodes!}
                         />
                     </div>

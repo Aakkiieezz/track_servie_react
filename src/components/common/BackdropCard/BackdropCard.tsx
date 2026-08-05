@@ -27,7 +27,13 @@ function getMeta(props: BackdropCardProps): string {
     const parts: string[] = [];
     const year = getYear(props.releaseDate);
     if (year) parts.push(String(year));
-    parts.push(props.childtype === "movie" ? "Movie" : "Show");
+    if (props.childtype === "movie")
+        parts.push("Movie");
+    else {
+        parts.push("Show");
+        if (props.totalEpisodes != null)
+            parts.push(`${props.totalEpisodes} Episodes`);
+    }
     return parts.join(" · ");
 }
 
@@ -51,26 +57,60 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
     const { setAlert } = useAlert();
     const { update } = userInteractionStore();
 
-    const [watched, setWatched] = useState(props.watched);
+    const initialWatched = childtype === "movie"
+        ? props.watched
+        : totalEpisodes != null && episodesWatched != null && totalEpisodes > 0 && episodesWatched === totalEpisodes;
+    const [watched, setWatched] = useState(initialWatched);
+    const [episodesWatchedCount, setEpisodesWatchedCount] = useState(episodesWatched ?? 0);
     const [liked, setLiked] = useState(props.liked);
     const [showOptions, setShowOptions] = useState(false);
     const [rating, setRating] = useState(props.rated ?? null);
 
     // ── Watch toggle ──────────────────────────────────────────────────────
     const handleWatchClick = async () => {
-        const prev = watched;
-        const next = !prev;
-        setWatched(next);
-        update(childtype, tmdbId, { completed: next });
+        const prevWatched = watched;
+        const prevEpisodes = episodesWatchedCount;
+
+        const nextWatched = !prevWatched;
+
+        setWatched(nextWatched);
+
+        if (childtype !== "movie")
+            setEpisodesWatchedCount(nextWatched ? (totalEpisodes ?? 0) : 0);
+
+        update(childtype, tmdbId, {
+            completed: nextWatched,
+            episodesWatched:
+                childtype === "movie"
+                    ? undefined
+                    : (nextWatched ? (totalEpisodes ?? 0) : 0),
+        });
+
         try {
             await axiosInstance.put(`servies/${childtype}/${tmdbId}/watch`,
                 null,
-                { params: { newServieWatchState: next } }
+                {
+                    params: {
+                        newServieWatchState: nextWatched,
+                    },
+                }
             );
+
             setAlert({ type: "success", message: `Updated watch status of ${title}` });
         } catch {
-            setWatched(prev);
-            update(childtype, tmdbId, { completed: prev });
+            setWatched(prevWatched);
+
+            if (childtype !== "movie")
+                setEpisodesWatchedCount(prevEpisodes);
+
+            update(childtype, tmdbId, {
+                completed: prevWatched,
+                episodesWatched:
+                    childtype === "movie"
+                        ? undefined
+                        : prevEpisodes,
+            });
+
             setAlert({ type: "danger", message: "Failed to update watch status." });
         }
     };
@@ -98,8 +138,8 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
     const posterUrl = posterPath ? `${TMDB_IMAGE_BASE}/w342${posterPath}` : null;
     const tmdbRating = voteAverage ? voteAverage.toFixed(1) : null;
     const meta = getMeta(props);
-    const progressPercent = getProgressPercent(episodesWatched, totalEpisodes);
-    const isWatching = !watched && episodesWatched != null && episodesWatched > 0;
+    const progressPercent = getProgressPercent(episodesWatchedCount, totalEpisodes);
+    const isWatching = !watched && episodesWatchedCount > 0;
 
     // ── Servie shape for options modal ────────────────────────────────────
     const servieForModal = {
@@ -110,7 +150,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
         releaseDate: childtype === "movie" ? releaseDate : undefined,
         firstAirDate: childtype === "tv" ? releaseDate : undefined,
         totalEpisodes: totalEpisodes ?? null,
-        episodesWatched: episodesWatched ?? undefined,
+        episodesWatched: episodesWatchedCount,
         completed: watched,
         liked,
         rated: rating,
@@ -170,7 +210,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
                     </div>
 
                     {/* ── Rank ── */}
-                    {rank != null && <span className={styles.rank}>#{rank} wow</span>}
+                    {rank != null && <span className={styles.rank}>#{rank}</span>}
 
                     {/* ── Status chip ── */}
                     {watched && (
@@ -180,7 +220,7 @@ const BackdropCard: React.FC<BackdropCardProps> = (props) => {
                     )}
                     {isWatching && (
                         <span className={`${styles.statusChip} ${styles.chipWatching}`}>
-                            ▶ E{episodesWatched} watched
+                            ▶ {episodesWatchedCount}/{totalEpisodes} Episodes
                         </span>
                     )}
 

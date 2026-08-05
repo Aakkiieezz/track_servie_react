@@ -29,11 +29,23 @@ const ServieCard: React.FC<ServieCardProps> = ({
     const [showOptions, setShowOptions] = useState(false);
     const [rating, setRating] = useState(servie.rated ?? null);
     const [review, setReview] = useState(servie.review ?? null);
+    const [episodesWatched, setEpisodesWatched] = useState(servie.episodesWatched ?? 0);
 
     const handleWatchClick = async () => {
         const prev = watched;
         const next = !prev;
+        const prevEpisodes = episodesWatched;
+        const nextEpisodes = servie.childtype === "tv"
+            ? (next ? (servie.totalEpisodes ?? 0) : 0)
+            : undefined;
         setWatched(next);
+        if (servie.childtype === "tv")
+            setEpisodesWatched(next ? (servie.totalEpisodes ?? 0) : 0);
+
+        update(servie.childtype, servie.tmdbId, {
+            completed: next,
+            episodesWatched: nextEpisodes,
+        });
         try {
             const res = await axiosInstance.put(`servies/${servie.childtype}/${servie.tmdbId}/watch`,
                 null,
@@ -45,6 +57,15 @@ const ServieCard: React.FC<ServieCardProps> = ({
             }
         } catch {
             setWatched(prev);
+            if (servie.childtype === "tv")
+                setEpisodesWatched(prevEpisodes);
+            update(servie.childtype, servie.tmdbId, {
+                completed: prev,
+                episodesWatched:
+                    servie.childtype === "movie"
+                        ? undefined
+                        : prevEpisodes,
+            });
             setAlert({ type: "danger", message: "Failed to update watch status." });
         }
     };
@@ -123,7 +144,7 @@ const ServieCard: React.FC<ServieCardProps> = ({
                 posterPath={servie.posterPath}
                 watched={watched}
                 liked={liked}
-                episodesWatched={servie.episodesWatched}
+                episodesWatched={episodesWatched}
                 totalEpisodes={servie.totalEpisodes}
                 popularity={servie.popularity}
                 blurCompleted={blurCompleted}
@@ -139,6 +160,7 @@ const ServieCard: React.FC<ServieCardProps> = ({
                     servie={{
                         ...servie,
                         completed: watched,
+                        episodesWatched,
                         liked,
                         rated: rating,
                         review: review

@@ -40,6 +40,12 @@ import AppHeader from "@/components/common/AppHeader/AppHeader";
 // ─────────────────────────────────────────────
 
 function toServie(item: MediaCardData): Servie {
+    const episodesWatched = item.episodesWatched ?? 0;
+
+    const completed = item.childtype === "movie"
+            ? item.watched
+            : item.totalEpisodes != null && item.totalEpisodes > 0 && episodesWatched === item.totalEpisodes;
+
     return {
         tmdbId: item.tmdbId,
         childtype: item.childtype,
@@ -48,8 +54,8 @@ function toServie(item: MediaCardData): Servie {
         releaseDate: item.childtype === "movie" ? item.releaseDate : null,
         firstAirDate: item.childtype === "tv" ? item.releaseDate : null,
         totalEpisodes: item.totalEpisodes ?? null,
-        episodesWatched: item.episodesWatched ?? undefined,
-        completed: item.watched,
+        episodesWatched,
+        completed,
         liked: item.liked,
         rated: null,
         popularity: null,
@@ -156,16 +162,16 @@ export default function HomePage() {
             }
         }
 
-        loadSection("trendingAll", fetchTrendingAll);
+        loadSection("trendingAll",    fetchTrendingAll);
         loadSection("trendingMovies", fetchTrendingMovies);
-        loadSection("trendingTv", fetchTrendingTv);
+        loadSection("trendingTv",     fetchTrendingTv);
 
-        loadSection("popularAll", fetchPopularAll);
-        loadSection("popularMovies", fetchPopularMovies);
-        loadSection("popularTv", fetchPopularTv);
+        loadSection("popularAll",     fetchPopularAll);
+        loadSection("popularMovies",  fetchPopularMovies);
+        loadSection("popularTv",      fetchPopularTv);
 
         loadSection("topRatedMovies", fetchTopRatedMovies);
-        loadSection("topRatedTv", fetchTopRatedTv);
+        loadSection("topRatedTv",     fetchTopRatedTv);
 
         loadSection("upcomingMovies", fetchUpcomingMovies);
     }, [genreMap, interactionsLoaded]);

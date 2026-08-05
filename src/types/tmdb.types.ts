@@ -14,6 +14,7 @@ export interface TmdbRawMovie {
     release_date: string | null;       // "YYYY-MM-DD"
     vote_average: number;
     adult: boolean;
+    totalEpisodes: number | null;
 }
 
 export interface TmdbRawTv {
@@ -26,6 +27,7 @@ export interface TmdbRawTv {
     first_air_date: string | null;     // "YYYY-MM-DD"
     vote_average: number;
     adult: boolean;
+    totalEpisodes: number | null;
 }
 
 // Multi endpoint returns either shape — media_type discriminates
@@ -45,6 +47,7 @@ export interface NormalizedMedia {
     genreIds: number[];
     releaseDate: string | null;      // unified — maps from release_date or first_air_date
     voteAverage: number;
+    totalEpisodes: number | null;
 }
 
 // ─────────────────────────────────────────────
@@ -69,6 +72,7 @@ export function normalizeMedia(raw: TmdbRawMulti): NormalizedMedia {
             genreIds: raw.genre_ids,
             releaseDate: raw.release_date,
             voteAverage: raw.vote_average,
+            totalEpisodes: raw.totalEpisodes
         };
     }
 
@@ -81,6 +85,7 @@ export function normalizeMedia(raw: TmdbRawMulti): NormalizedMedia {
         genreIds: raw.genre_ids,
         releaseDate: raw.first_air_date,
         voteAverage: raw.vote_average,
+        totalEpisodes: raw.totalEpisodes
     };
 }
 
@@ -111,7 +116,6 @@ export interface MediaCardData extends NormalizedMedia {
     review: string | null;
 
     episodesWatched?: number | null;
-    totalEpisodes?: number | null;
 }
 
 // ─────────────────────────────────────────────
@@ -135,8 +139,7 @@ export function mergeMediaWithUserState(
             liked: state?.liked ?? false,
             rated: state?.rated ?? null,
             review: state?.review ?? null,
-            episodesWatched: state?.episodesWatched ?? null,
-            totalEpisodes: null,
+            episodesWatched: state?.episodesWatched ?? null
         };
     });
 }
