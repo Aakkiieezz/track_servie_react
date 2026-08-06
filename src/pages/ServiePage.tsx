@@ -22,6 +22,13 @@ interface GenreDtoServiePage {
     name: string;
 }
 
+interface Creator {
+    personId: number;
+    name: string;
+    profilePath: string | null;
+    gender: number | null;
+}
+
 interface SeasonDtoServiePage {
     id: number;
     seasonNo: number;
@@ -83,6 +90,7 @@ interface ServieDto {
     keywords: { id: number; name: string }[];
     trailerSite: string | null;
     trailerKey: string;
+    creators?: Creator[]
 }
 
 const ServiePage = () => {
@@ -192,7 +200,7 @@ const ServiePage = () => {
                 setTotalEpWatched(response.data.episodesWatched);
                 setServieWatchRuntime(response.data.totalWatchedRuntime);
                 setServieWatchState(response.data.completed);
-                
+
                 // ✅ Only fetch summary after Servie loaded successfully
                 await fetchSummary();
 
@@ -486,6 +494,39 @@ const ServiePage = () => {
         return title;
     };
 
+    const navigateToPerson = (creator: Creator) => {
+        navigate(`/person/${creator.personId}`, {
+            state: {
+                id: creator.personId,
+                name: creator.name,
+                profilePath: creator.profilePath,
+            },
+        });
+    };
+
+    const renderCreators = (label: string) => {
+        if (!data?.creators?.length) return null;
+
+        return (
+            <>
+                <span className={styles.separator}> • </span>
+                <span className={styles.creatorLabel}>{label} </span>
+
+                {data.creators.map((creator, index) => (
+                    <span key={creator.personId}>
+                        {index > 0 && ", "}
+                        <span
+                            className={styles.creatorLink}
+                            onClick={() => navigateToPerson(creator)}
+                        >
+                            {creator.name}
+                        </span>
+                    </span>
+                ))}
+            </>
+        );
+    };
+
     return (
         <>
             <div className={styles.pageWrapper}>
@@ -540,6 +581,7 @@ const ServiePage = () => {
                                                 <span className={styles.yearText}>
                                                     {new Date(data.releaseDate).getFullYear()}
                                                 </span>
+                                                {renderCreators("Directed by")}
                                             </div>
                                         )}
 
@@ -552,6 +594,7 @@ const ServiePage = () => {
                                                         ? "Present"
                                                         : new Date(data.lastAirDate!).getFullYear()}
                                                 </span>
+                                                {renderCreators("Created by")}
                                             </div>
                                         )}
 
