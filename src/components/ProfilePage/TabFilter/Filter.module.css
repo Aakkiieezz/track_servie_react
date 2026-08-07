@@ -12,7 +12,7 @@
   font-size: 0.85rem;
   font-weight: 500;
 
-  color: rgba(255,255,255,0.92);
+  color: rgba(255, 255, 255, 0.92);
 
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -20,8 +20,8 @@
   backdrop-filter: blur(10px);
 
   box-shadow:
-    0 2px 6px rgba(0,0,0,0.25),
-    inset 0 1px 0 rgba(255,255,255,0.05);
+    0 2px 6px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
   transition: all 0.2s ease;
   cursor: pointer;
@@ -35,16 +35,15 @@
 
 .customBtn:active {
   transform: translateY(0);
-  background: rgba(255, 255, 255, 0.20);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .customBtn:focus {
   outline: none;
   box-shadow:
     0 0 0 2px rgba(130, 177, 255, 0.35),
-    0 2px 6px rgba(0,0,0,0.25);
+    0 2px 6px rgba(0, 0, 0, 0.25);
 }
-
 
 /* ===============================
    ✨ ACTIVE FILTER STATE
@@ -53,7 +52,6 @@
   border-color: #82b1ff !important;
   box-shadow: 0 0 8px rgba(130, 177, 255, 0.4);
 }
-
 
 /* ===============================
    📂 DROPDOWN MENU
@@ -95,7 +93,9 @@
   border: none;
   color: #eee;
   cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
 }
 
 .dropdownItem:hover,
@@ -104,19 +104,9 @@
   color: #fff !important;
 }
 
-
 /* ===============================
    🏷 DROPDOWN HEADERS
    =============================== */
-.dropdownHeader {
-  color: var(--dd-header-text);
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.45px;
-  padding: 0.3rem 0.9rem;
-}
-
 
 /* ===============================
    🔽 DROPDOWN ARROW FIX
@@ -132,7 +122,6 @@
   transform: rotate(180deg) translateY(-1px);
 }
 
-
 /* ===============================
    🎬 ANIMATION (Fix jump issue)
    =============================== */
@@ -141,12 +130,12 @@
     opacity: 0;
     transform: translateY(-6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-
 
 /* ===============================
    🔘 ACTION BUTTONS
@@ -188,19 +177,103 @@
   width: 200px;
 }
 
-
-
-
-
-
-
-
-
-
 :global(.dropdown-menu) {
   transform: none !important;
 }
 
 :global(.dropdown-menu.show) {
   transform: none !important;
+}
+
+.simpleDropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.simpleDropdown > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.simpleDropdown > button i {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.simpleDropdownMenu {
+  position: absolute;
+  z-index: 1100;
+
+  top: calc(100% + 6px);
+  left: 0;
+
+  min-width: 180px;
+
+  padding: 0.4rem;
+
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: 12px;
+
+  backdrop-filter: var(--blur-strength);
+
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+
+  animation: dropdownFade 0.18s ease;
+}
+
+.sortDropdownMenu {
+  min-width: 190px;
+}
+
+.simpleDropdownItem {
+  display: block;
+
+  width: 100%;
+
+  padding: 0.45rem 0.6rem;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+  color: rgba(255, 255, 255, 0.88);
+
+  text-align: left;
+  white-space: nowrap;
+
+  font-size: 0.82rem;
+
+  cursor: pointer;
+
+  transition: background 0.15s ease;
+}
+
+.simpleDropdownItem:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dropdownHeader {
+  padding: 0.35rem 0.6rem 0.2rem;
+
+  color: rgba(255, 255, 255, 0.45);
+
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dropdownDivider {
+  height: 1px;
+  margin: 0.35rem 0;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.rotated {
+  transform: rotate(180deg);
 }

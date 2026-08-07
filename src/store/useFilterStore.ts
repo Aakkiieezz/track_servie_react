@@ -3,6 +3,11 @@ import { persist } from 'zustand/middleware';
 
 type CompareMode = "NONE" | "ONLY_MINE" | "ONLY_THEIRS" | "COMMON";
 
+export interface Keyword {
+    id: number;
+    name: string;
+}
+
 interface FilterState {
     type: string;
     sortBy: string;
@@ -11,6 +16,8 @@ interface FilterState {
     crossedGenres: string[];
     languages: string[];
     statuses: string[];
+    selectedKeywords: Keyword[];
+    rejectedKeywords: Keyword[];
     compareMode: CompareMode;
 
     setFilters: (filters: Partial<Omit<FilterState, 'setFilters'>>) => void;
@@ -25,6 +32,8 @@ const defaultFilters = {
     crossedGenres: [],
     languages: [],
     statuses: [],
+    selectedKeywords: [],
+    rejectedKeywords: [],
     compareMode: "NONE" as CompareMode,
 };
 
@@ -38,7 +47,7 @@ export const useFilterStore = create<FilterState>()(
             resetFilters: () => set(defaultFilters),
         }),
         {
-            name: 'home-filters-storage', // localStorage key
+            name: 'home-filters-storage',
         }
     )
 );

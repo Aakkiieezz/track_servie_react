@@ -1,0 +1,399 @@
+.container {
+	position: relative;
+	display: inline-block;
+	width: auto;
+	min-width: 0;
+}
+
+/* ===============================
+   FILTER BUTTON
+   =============================== */
+
+.filterButton {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+
+	padding: 0.4rem 0.9rem;
+	border-radius: 12px;
+
+	font-size: 0.85rem;
+	font-weight: 500;
+
+	color: rgba(255, 255, 255, 0.92);
+
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+
+	backdrop-filter: blur(10px);
+
+	box-shadow:
+		0 2px 6px rgba(0, 0, 0, 0.25),
+		inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+	cursor: pointer;
+
+	white-space: nowrap;
+
+	transition:
+		background 0.2s ease,
+		border-color 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.filterButton:hover {
+	background: rgba(255, 255, 255, 0.16);
+	border-color: rgba(255, 255, 255, 0.32);
+}
+
+.filterButton.active {
+	border-color: #82b1ff;
+	box-shadow: 0 0 8px rgba(130, 177, 255, 0.4);
+}
+
+.count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-width: 19px;
+	height: 19px;
+
+	padding: 0 5px;
+
+	border-radius: 10px;
+
+	background: rgba(130, 177, 255, 0.2);
+	color: #a9c7ff;
+
+	font-size: 0.7rem;
+	font-weight: 600;
+}
+
+.filterButton > i:last-child {
+	font-size: 0.7rem;
+	opacity: 0.7;
+
+	transition: transform 0.2s ease;
+}
+
+.rotated {
+	transform: rotate(180deg);
+}
+
+/* ===============================
+   FLOATING DROPDOWN
+   =============================== */
+
+.dropdown {
+	position: absolute;
+	z-index: 1100;
+
+	top: calc(100% + 6px);
+	left: 0;
+
+	width: 360px;
+	max-width: min(360px, calc(100vw - 30px));
+
+	padding: 0.6rem;
+
+	border: 1px solid var(--modal-border);
+	border-radius: 12px;
+
+	background: var(--modal-bg);
+
+	backdrop-filter: var(--blur-strength);
+
+	box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+
+	animation: dropdownFade 0.18s ease;
+}
+
+/* ===============================
+   SEARCH
+   =============================== */
+
+.searchBox {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+
+	padding: 0.5rem 0.65rem;
+
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 8px;
+
+	background: rgba(255, 255, 255, 0.06);
+}
+
+.searchBox > i {
+	color: rgba(255, 255, 255, 0.55);
+	font-size: 0.85rem;
+}
+
+.searchBox input {
+	flex: 1;
+	min-width: 0;
+
+	border: none;
+	outline: none;
+
+	background: transparent;
+	color: inherit;
+
+	font-size: 0.85rem;
+}
+
+.searchBox input::placeholder {
+	color: rgba(255, 255, 255, 0.45);
+}
+
+.spinner {
+	animation: spin 0.8s linear infinite;
+}
+
+/* ===============================
+   SEARCH RESULTS
+   =============================== */
+
+.results {
+	max-height: 250px;
+	overflow-y: auto;
+
+	margin-top: 0.45rem;
+
+	border-radius: 8px;
+}
+
+.resultRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	gap: 0.75rem;
+
+	padding: 0.45rem 0.5rem;
+
+	border-radius: 6px;
+
+	transition: background 0.15s ease;
+}
+
+.resultRow:hover {
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.keywordName {
+	flex: 1;
+	min-width: 0;
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	font-size: 0.85rem;
+}
+
+.actions {
+	display: flex;
+	gap: 0.3rem;
+
+	flex-shrink: 0;
+}
+
+.actionButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 27px;
+	height: 27px;
+
+	padding: 0;
+
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 50%;
+
+	background: rgba(255, 255, 255, 0.05);
+	color: rgba(255, 255, 255, 0.7);
+
+	cursor: pointer;
+
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease,
+		color 0.15s ease,
+		transform 0.15s ease;
+}
+
+.actionButton:hover {
+	transform: scale(1.08);
+}
+
+.includeButton:hover,
+.activeInclude {
+	background: rgba(80, 200, 120, 0.18);
+	border-color: rgba(80, 200, 120, 0.45);
+	color: rgb(110, 220, 145);
+}
+
+.excludeButton:hover,
+.activeExclude {
+	background: rgba(220, 80, 80, 0.18);
+	border-color: rgba(220, 80, 80, 0.45);
+	color: rgb(240, 110, 110);
+}
+
+/* ===============================
+   SELECTED KEYWORDS
+   =============================== */
+
+.selectionGroup {
+	margin-top: 0.65rem;
+}
+
+.selectionLabel {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+
+	margin-bottom: 0.4rem;
+
+	font-size: 0.72rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.includeLabel {
+	color: rgb(110, 220, 145);
+}
+
+.excludeLabel {
+	color: rgb(240, 110, 110);
+}
+
+.chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+
+	max-height: 110px;
+	overflow-y: auto;
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+
+	max-width: 100%;
+
+	padding: 0.28rem 0.45rem 0.28rem 0.6rem;
+
+	border: 1px solid;
+	border-radius: 999px;
+
+	font-size: 0.76rem;
+}
+
+.chip span {
+	max-width: 260px;
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.selectedChip {
+	border-color: rgba(80, 200, 120, 0.35);
+	background: rgba(80, 200, 120, 0.1);
+}
+
+.rejectedChip {
+	border-color: rgba(220, 80, 80, 0.35);
+	background: rgba(220, 80, 80, 0.1);
+}
+
+.chip button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 17px;
+	height: 17px;
+
+	padding: 0;
+
+	border: none;
+	border-radius: 50%;
+
+	background: transparent;
+	color: rgba(255, 255, 255, 0.55);
+
+	cursor: pointer;
+}
+
+.chip button:hover {
+	background: rgba(255, 255, 255, 0.1);
+	color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===============================
+   EMPTY / HINT
+   =============================== */
+
+.message,
+.hint {
+	padding: 0.7rem;
+
+	color: rgba(255, 255, 255, 0.5);
+
+	text-align: center;
+	font-size: 0.8rem;
+}
+
+.hint {
+	padding-bottom: 0.3rem;
+}
+
+/* ===============================
+   SCROLLBAR
+   =============================== */
+
+.results::-webkit-scrollbar,
+.chips::-webkit-scrollbar {
+	width: 5px;
+}
+
+.results::-webkit-scrollbar-thumb,
+.chips::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 4px;
+}
+
+/* ===============================
+   ANIMATION
+   =============================== */
+
+@keyframes dropdownFade {
+	from {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}

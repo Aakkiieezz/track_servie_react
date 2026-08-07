@@ -1,5 +1,6 @@
-import React from "react";
-import styles from "./Filter.module.css";
+import React, { useEffect, useRef, useState } from "react";
+import styles from "./DropdownMultiselect.module.css";
+import filterStyles from "./Filter.module.css";
 
 interface KeyValuePair {
 	id: string;
@@ -19,7 +20,29 @@ const DropdownMultiselect: React.FC<DropdownMultiselectProps> = ({
 	selected,
 	setSelected,
 }) => {
-	const handleCheckboxChange = (id: string) => {
+	const [isOpen, setIsOpen] = useState(false);
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (containerRef.current && !containerRef.current.contains(event.target as Node))
+				setIsOpen(false);
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
+
+	const isOptionObject = (
+		option: KeyValuePair | string
+	): option is KeyValuePair => {
+		return typeof option !== "string";
+	};
+
+	const toggleOption = (id: string) => {
 		setSelected((prevSelected) =>
 			prevSelected.includes(id)
 				? prevSelected.filter((item) => item !== id)
@@ -27,46 +50,61 @@ const DropdownMultiselect: React.FC<DropdownMultiselectProps> = ({
 		);
 	};
 
-	const isOptionObject = (option: KeyValuePair | string): option is KeyValuePair => {
-		return typeof option !== "string";
-	};
-
-	const selectedCount = selected.length;
-
 	return (
-		<div className="dropdown">
+		<div className={styles.container} ref={containerRef}>
 			<button
-				className={`${styles.customBtn} dropdown-toggle`}
+				className={`${filterStyles.customBtn} ${selected.length > 0 ? filterStyles.activeFilter : ""}`}
 				type="button"
-				id="dropdownMultiselectButton"
-				data-bs-toggle="dropdown"
-				aria-expanded="false"
+				onClick={() => setIsOpen((prev) => !prev)}
+				aria-expanded={isOpen}
 			>
-				{selectedCount > 0 ? `${label} (${selectedCount})` : label}
-			</button>
-			<ul className={`dropdown-menu ${styles.dropdownMenu}`} aria-labelledby="dropdownMultiselectButton">
-				{options.map((option) => {
-					const id = isOptionObject(option) ? option.id : option;
-					const displayLabel = isOptionObject(option) ? option.label : option;
+				<span>{label}</span>
 
-					return (
-						<li key={id} className={styles.dropdownItem}>
-							<div className="form-check d-flex align-items-center">
-								<input
-									className="form-check-input me-2"
-									type="checkbox"
-									id={`checkbox-${id}`}
-									checked={selected.includes(id)}
-									onChange={() => handleCheckboxChange(id)}
-								/>
-								<label className="form-check-label" htmlFor={`checkbox-${id}`}>
-									{displayLabel}
-								</label>
-							</div>
-						</li>
-					);
-				})}
-			</ul>
+				{selected.length > 0 && (
+					<span className={styles.count}>
+						{selected.length}
+					</span>
+				)}
+
+				<i className={`bi bi-chevron-down ${isOpen ? styles.rotated : ""}`} />
+			</button>
+
+			{isOpen && (
+				<div className={styles.dropdownMenu}>
+					<div className={styles.optionList}>
+						{options.map((option) => {
+							const id = isOptionObject(option)
+								? option.id
+								: option;
+
+							const displayLabel = isOptionObject(option)
+								? option.label
+								: option;
+
+							const isSelected = selected.includes(id);
+
+							return (
+								<button
+									key={id}
+									type="button"
+									className={`${styles.option} ${isSelected ? styles.selected : ""}`}
+									onClick={() => toggleOption(id)}
+								>
+									<span className={styles.checkbox}>
+										{isSelected && (
+											<i className="bi bi-check" />
+										)}
+									</span>
+
+									<span className={styles.optionLabel}>
+										{displayLabel}
+									</span>
+								</button>
+							);
+						})}
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };

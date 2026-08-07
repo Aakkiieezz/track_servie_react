@@ -56,8 +56,8 @@
 	top: calc(100% + 6px);
 	left: 0;
 
-	min-width: 180px;
-	max-width: min(280px, calc(100vw - 30px));
+	width: 360px;
+	max-width: min(360px, calc(100vw - 30px));
 
 	background: var(--modal-bg);
 	border: 1px solid var(--modal-border);
@@ -73,14 +73,148 @@
 }
 
 /* ===============================
-   OPTIONS
+   SEARCH
    =============================== */
 
-.optionList {
-	padding: 0.4rem;
+.searchContainer {
+	display: flex;
+	align-items: center;
+
+	margin: 0.6rem;
+
+	padding: 0.45rem 0.65rem;
+
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 8px;
+
+	background: rgba(255, 255, 255, 0.05);
+
+	color: rgba(255, 255, 255, 0.55);
 }
 
-.option {
+.searchContainer > i {
+	flex-shrink: 0;
+	font-size: 0.8rem;
+}
+
+.searchContainer input {
+	flex: 1;
+
+	min-width: 0;
+
+	margin-left: 0.5rem;
+
+	border: none;
+	outline: none;
+
+	background: transparent;
+	color: rgba(255, 255, 255, 0.9);
+
+	font-size: 0.82rem;
+}
+
+.searchContainer input::placeholder {
+	color: rgba(255, 255, 255, 0.4);
+}
+
+.clearSearch {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 20px;
+	height: 20px;
+
+	padding: 0;
+
+	border: none;
+	border-radius: 50%;
+
+	background: transparent;
+	color: rgba(255, 255, 255, 0.55);
+
+	cursor: pointer;
+}
+
+.clearSearch:hover {
+	background: rgba(255, 255, 255, 0.1);
+	color: white;
+}
+
+/* ===============================
+   SELECTED PILLS
+   =============================== */
+
+.selectedLanguages {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+
+	padding: 0 0.6rem 0.6rem;
+}
+
+.languagePill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+
+	max-width: 100%;
+
+	padding: 0.25rem 0.45rem 0.25rem 0.55rem;
+
+	border-radius: 999px;
+
+	background: rgba(130, 177, 255, 0.14);
+	border: 1px solid rgba(130, 177, 255, 0.25);
+
+	color: #b9d0ff;
+
+	font-size: 0.75rem;
+	font-weight: 500;
+}
+
+.languagePill > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.languagePill button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 16px;
+	height: 16px;
+
+	padding: 0;
+
+	border: none;
+	border-radius: 50%;
+
+	background: transparent;
+	color: rgba(255, 255, 255, 0.6);
+
+	cursor: pointer;
+}
+
+.languagePill button:hover {
+	background: rgba(255, 255, 255, 0.12);
+	color: white;
+}
+
+/* ===============================
+   LANGUAGE LIST
+   =============================== */
+
+.languageList {
+	max-height: 270px;
+	overflow-y: auto;
+
+	padding: 0 0.45rem 0.5rem;
+}
+
+.languageOption {
 	display: flex;
 	align-items: center;
 
@@ -88,7 +222,7 @@
 
 	gap: 0.55rem;
 
-	padding: 0.45rem 0.5rem;
+	padding: 0.4rem 0.5rem;
 
 	border: none;
 	border-radius: 7px;
@@ -105,11 +239,11 @@
 	transition: background 0.15s ease;
 }
 
-.option:hover {
+.languageOption:hover {
 	background: rgba(255, 255, 255, 0.08);
 }
 
-.option.selected {
+.languageOption.selected {
 	color: white;
 }
 
@@ -139,7 +273,7 @@
 		border-color 0.15s ease;
 }
 
-.option.selected .checkbox {
+.languageOption.selected .checkbox {
 	background: rgba(80, 200, 120, 0.16);
 	border-color: rgba(80, 200, 120, 0.45);
 
@@ -147,26 +281,27 @@
 }
 
 /* ===============================
-   LABEL
+   EMPTY STATE
    =============================== */
 
-.optionLabel {
-	min-width: 0;
+.noResults {
+	padding: 1.25rem 0.75rem;
 
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	color: rgba(255, 255, 255, 0.45);
+
+	text-align: center;
+	font-size: 0.8rem;
 }
 
 /* ===============================
    SCROLLBAR
    =============================== */
 
-.optionList::-webkit-scrollbar {
+.languageList::-webkit-scrollbar {
 	width: 5px;
 }
 
-.optionList::-webkit-scrollbar-thumb {
+.languageList::-webkit-scrollbar-thumb {
 	background: rgba(255, 255, 255, 0.2);
 	border-radius: 4px;
 }

@@ -17,6 +17,8 @@ interface Filters {
 	crossedGenres: string[];
 	languages: string[];
 	statuses: string[];
+	selectedKeywords: { id: number; name: string }[];
+	rejectedKeywords: { id: number; name: string }[];
 }
 
 interface Pagination {
@@ -49,6 +51,8 @@ const ProfileWatchlistTab: React.FC<Props> = ({ userId }) => {
 					statuses: currentFilters.statuses,
 					selectedGenres: currentFilters.tickedGenres,
 					rejectedGenres: currentFilters.crossedGenres,
+					selectedKeywords: currentFilters.selectedKeywords.map(keyword => keyword.id),
+					rejectedKeywords: currentFilters.rejectedKeywords.map(keyword => keyword.id),
 					sortBy: currentFilters.sortBy,
 					sortDir: currentFilters.sortDir,
 				},
@@ -78,6 +82,8 @@ const ProfileWatchlistTab: React.FC<Props> = ({ userId }) => {
 			crossedGenres: watchlistFilters.crossedGenres,
 			languages: watchlistFilters.languages,
 			statuses: watchlistFilters.statuses,
+			selectedKeywords: watchlistFilters.selectedKeywords,
+			rejectedKeywords: watchlistFilters.rejectedKeywords,
 		};
 		fetchServies(currentFilters, 0);
 	}, []);
@@ -99,6 +105,8 @@ const ProfileWatchlistTab: React.FC<Props> = ({ userId }) => {
 			crossedGenres: watchlistFilters.crossedGenres,
 			languages: watchlistFilters.languages,
 			statuses: watchlistFilters.statuses,
+			selectedKeywords: watchlistFilters.selectedKeywords,
+			rejectedKeywords: watchlistFilters.rejectedKeywords,
 		};
 		fetchServies(currentFilters, newPgNumber);
 	};

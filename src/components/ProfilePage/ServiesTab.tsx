@@ -16,6 +16,8 @@ interface Filters {
 	crossedGenres: string[];
 	languages: string[];
 	statuses: string[];
+	selectedKeywords: { id: number; name: string }[];
+	rejectedKeywords: { id: number; name: string }[];
 	compareMode: "NONE" | "ONLY_MINE" | "ONLY_THEIRS" | "COMMON";
 }
 
@@ -49,6 +51,8 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts, isOwnProfile }) =>
 					statuses: currentFilters.statuses,
 					selectedGenres: currentFilters.tickedGenres,
 					rejectedGenres: currentFilters.crossedGenres,
+					selectedKeywords: currentFilters.selectedKeywords.map(keyword => keyword.id),
+					rejectedKeywords: currentFilters.rejectedKeywords.map(keyword => keyword.id),
 					sortBy: currentFilters.sortBy,
 					sortDir: currentFilters.sortDir,
 					compareMode: currentFilters.compareMode,
@@ -78,6 +82,8 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts, isOwnProfile }) =>
 			crossedGenres: filters.crossedGenres,
 			languages: filters.languages,
 			statuses: filters.statuses,
+			selectedKeywords: filters.selectedKeywords,
+			rejectedKeywords: filters.rejectedKeywords,
 			compareMode: filters.compareMode,
 		};
 		fetchServies(currentFilters, 0);
@@ -97,6 +103,8 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts, isOwnProfile }) =>
 			crossedGenres: filters.crossedGenres,
 			languages: filters.languages,
 			statuses: filters.statuses,
+			selectedKeywords: filters.selectedKeywords,
+			rejectedKeywords: filters.rejectedKeywords,
 			compareMode: filters.compareMode,
 		};
 		fetchServies(currentFilters, newPage);
@@ -105,7 +113,7 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts, isOwnProfile }) =>
 	return (
 		<div>
 			<div className={styles.filterBar}>
-    
+
 				{/* LEFT */}
 				<div className={styles.leftSection}>
 					<i className="bi bi-film"></i> {watchedCounts.movie} movies
@@ -115,9 +123,9 @@ const ServiesTab: React.FC<Props> = ({ userId, watchedCounts, isOwnProfile }) =>
 
 				{/* CENTER */}
 				<div className={styles.centerSection}>
-					<Filter 
-					handleFilterChange={handleFilterChange}
-					showCompareFilter={!isOwnProfile}
+					<Filter
+						handleFilterChange={handleFilterChange}
+						showCompareFilter={!isOwnProfile}
 					/>
 				</div>
 			</div>

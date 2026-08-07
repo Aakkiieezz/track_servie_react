@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useFilterStore } from "../../../store/useFilterStore";
+import { useFilterStore, type Keyword } from "@/store/useFilterStore";
 import DropdownMultiselect from "./DropdownMultiselect";
-import DropdownMultiselect3State from "./DropdownMultiselect3State";
+import GenreMultiselect from "./GenreMultiselect";
+import KeywordMultiselect from "./KeywordMultiselect";
 import styles from "./Filter.module.css";
+import LanguageMultiselect from "./LanguageMultiselect";
 
 interface FilterProps {
     handleFilterChange: (filters: any) => void;
@@ -20,23 +22,36 @@ const disabledGenresForMovie = ["Kids", "News", "Politics", "Reality", "Soap", "
 const disabledGenresForSeries = ["History", "Horror", "Music", "Romance", "TV Movie", "Thriller"];
 
 const langOptions = [
-    { id: "cn", label: "Chinese(Cantonese)" },
-    { id: "zh", label: "Chinese(Mandarin)" },
+    { id: "ar", label: "Arabic" },
+    { id: "bn", label: "Bengali" },
+    { id: "zh", label: "Chinese (Mandarin)" },
+    { id: "cn", label: "Chinese (Cantonese)" },
+    { id: "cs", label: "Czech" },
     { id: "da", label: "Danish" },
+    { id: "nl", label: "Dutch" },
     { id: "en", label: "English" },
+    { id: "fi", label: "Finnish" },
     { id: "fr", label: "French" },
     { id: "de", label: "German" },
+    { id: "el", label: "Greek" },
+    { id: "he", label: "Hebrew" },
     { id: "hi", label: "Hindi" },
+    { id: "hu", label: "Hungarian" },
+    { id: "id", label: "Indonesian" },
     { id: "it", label: "Italian" },
     { id: "ja", label: "Japanese" },
     { id: "kn", label: "Kannada" },
     { id: "ko", label: "Korean" },
+    { id: "ml", label: "Malayalam" },
     { id: "mr", label: "Marathi" },
+    { id: "no", label: "Norwegian" },
+    { id: "pl", label: "Polish" },
+    { id: "pt", label: "Portuguese" },
+    { id: "ro", label: "Romanian" },
     { id: "ru", label: "Russian" },
     { id: "es", label: "Spanish" },
     { id: "ta", label: "Tamil" },
     { id: "te", label: "Telugu" },
-    { id: "th", label: "Thai" }
 ];
 
 const statusOptions = [
@@ -57,12 +72,17 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange, showCompareFilter =
     const [tempSortDir, setTempSortDir] = useState<string>("asc");
     const [tempLanguages, setTempLanguages] = useState<string[]>([]);
     const [tempStatuses, setTempStatuses] = useState<string[]>([]);
+    const [tempSelectedKeywords, setTempSelectedKeywords] = useState<Keyword[]>([]);
+    const [tempRejectedKeywords, setTempRejectedKeywords] = useState<Keyword[]>([]);
     const [tempCompareMode, setTempCompareMode] = useState<"NONE" | "ONLY_MINE" | "ONLY_THEIRS" | "COMMON">("NONE");
 
     // selected genres for 3-state control (temp)
     const [tempGenresSelected, setTempGenresSelected] = useState<Record<string, "blank" | "tick" | "cross">>(() =>
         genreOptions.reduce((acc, g) => ({ ...acc, [g]: "blank" as const }), {} as Record<string, "blank" | "tick" | "cross">)
     );
+
+    const [openDropdown, setOpenDropdown] = useState<"type" | "compare" | "sort" | null>(null);
+    const isSortActive = tempSortBy !== "title" || tempSortDir !== "asc";
 
     // ---------------------
     // Initialize temp state ONCE from persisted store (on mount)
@@ -77,6 +97,8 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange, showCompareFilter =
         setTempSortDir(persistedFilters.sortDir ?? "asc");
         setTempLanguages(persistedFilters.languages ?? []);
         setTempStatuses(persistedFilters.statuses ?? []);
+        setTempSelectedKeywords(persistedFilters.selectedKeywords ?? []);
+        setTempRejectedKeywords(persistedFilters.rejectedKeywords ?? []);
         setTempCompareMode(persistedFilters.compareMode ?? "NONE");
 
         const initialGenresSelected: Record<string, "blank" | "tick" | "cross"> =
@@ -116,6 +138,8 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange, showCompareFilter =
             crossedGenres: crossed,
             languages: tempLanguages,
             statuses: tempStatuses,
+            selectedKeywords: tempSelectedKeywords,
+            rejectedKeywords: tempRejectedKeywords,
             compareMode: tempCompareMode,
         };
 
@@ -137,6 +161,8 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange, showCompareFilter =
         setTempSortDir("asc");
         setTempLanguages([]);
         setTempStatuses([]);
+        setTempSelectedKeywords([]);
+        setTempRejectedKeywords([]);
         setTempGenresSelected(genreOptions.reduce((acc, g) => ({ ...acc, [g]: "blank" as const }), {} as Record<string, "blank" | "tick" | "cross">));
         setTempCompareMode("NONE");
 
@@ -149,6 +175,8 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange, showCompareFilter =
             crossedGenres: [],
             languages: [],
             statuses: [],
+            selectedKeywords: [],
+            rejectedKeywords: [],
             compareMode: "NONE"
         });
     };
@@ -187,21 +215,60 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange, showCompareFilter =
         <form onSubmit={handleSubmit} className="d-flex flex-row align-items-center flex-wrap" style={{ gap: "0.5rem" }}>
 
             {/* Type Dropdown (updates tempType only) */}
-            <div className="dropdown position-relative">
+            <div className={styles.simpleDropdown}>
                 <button
-                    className={`${styles.customBtn} dropdown-toggle ${isTypeActive ? styles.activeFilter : ""}`}
+                    className={`${styles.customBtn} ${isTypeActive ? styles.activeFilter : ""}`}
                     type="button"
-                    id="typeDropdown"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
+                    onClick={() => setOpenDropdown(openDropdown === "type" ? null : "type")}
+                    aria-expanded={openDropdown === "type"}
                 >
-                    {tempType === "" ? "Type : Servies" : tempType === "movie" ? "Type : Movies" : "Type : Series"}
+                    <span>
+                        {tempType === ""
+                            ? "Type : Servies"
+                            : tempType === "movie"
+                                ? "Type : Movies"
+                                : "Type : Series"}
+                    </span>
+
+                    <i className={`bi bi-chevron-down ${openDropdown === "type" ? styles.rotated : ""}`} />
                 </button>
-                <ul className={`dropdown-menu ${styles.dropdownMenu} ${styles.dropdownMenuMatchButton}`} aria-labelledby="typeDropdown">
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => setTempType("")}>Servies</button></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => setTempType("movie")}>Movies</button></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => setTempType("tv")}>Series</button></li>
-                </ul>
+
+                {openDropdown === "type" && (
+                    <div className={styles.simpleDropdownMenu}>
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempType("");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            Servies
+                        </button>
+
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempType("movie");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            Movies
+                        </button>
+
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempType("tv");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            Series
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Compare Dropdown */}
@@ -237,50 +304,163 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange, showCompareFilter =
             )}
 
             {/* Combined Sort Dropdown (updates only tempSortBy & tempSortDir) */}
-            <div className="dropdown">
+            <div className={styles.simpleDropdown}>
                 <button
-                    className={`${styles.customBtn} dropdown-toggle ${isTypeActive ? styles.activeFilter : ""}`}
+                    className={`${styles.customBtn} ${isSortActive ? styles.activeFilter : ""}`}
                     type="button"
-                    id="sortDropdown"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
+                    onClick={() => setOpenDropdown(openDropdown === "sort" ? null : "sort")}
+                    aria-expanded={openDropdown === "sort"}
                 >
-                    {sortingOptionsPreviewLabel()}
+                    <span>{sortingOptionsPreviewLabel()}</span>
+
+                    <i className={`bi bi-chevron-down ${openDropdown === "sort" ? styles.rotated : ""}`} />
                 </button>
 
-                <ul className={`dropdown-menu ${styles.dropdownMenu} ${styles.dropdownMenuMatchButton}`} aria-labelledby="sortDropdown">
-                    <li><h6 className={styles.dropdownHeader}>Title</h6></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("title"); setTempSortDir("asc"); }}>A → Z</button></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("title"); setTempSortDir("desc"); }}>Z → A</button></li>
+                {openDropdown === "sort" && (
+                    <div className={`${styles.simpleDropdownMenu} ${styles.sortDropdownMenu}`}>
+                        <div className={styles.dropdownHeader}>Title</div>
 
-                    <li><hr /></li>
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempSortBy("title");
+                                setTempSortDir("asc");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            A → Z
+                        </button>
 
-                    <li><h6 className={styles.dropdownHeader}>Popularity</h6></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("popularity"); setTempSortDir("desc"); }}>High → Low</button></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("popularity"); setTempSortDir("asc"); }}>Low → High</button></li>
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempSortBy("title");
+                                setTempSortDir("desc");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            Z → A
+                        </button>
 
-                    <li><hr /></li>
+                        <div className={styles.dropdownDivider} />
 
-                    <li><h6 className={styles.dropdownHeader}>Rating</h6></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("voteAverage"); setTempSortDir("desc"); }}>High → Low</button></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("voteAverage"); setTempSortDir("asc"); }}>Low → High</button></li>
+                        <div className={styles.dropdownHeader}>Popularity</div>
 
-                    <li><hr /></li>
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempSortBy("popularity");
+                                setTempSortDir("desc");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            High → Low
+                        </button>
 
-                    <li><h6 className={styles.dropdownHeader}>When Added</h6></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("recent"); setTempSortDir("desc"); }}>Newest First</button></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("recent"); setTempSortDir("asc"); }}>Earliest First</button></li>
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempSortBy("popularity");
+                                setTempSortDir("asc");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            Low → High
+                        </button>
 
-                    <li><hr /></li>
+                        <div className={styles.dropdownDivider} />
 
-                    <li><h6 className={styles.dropdownHeader}>Release Date</h6></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("date"); setTempSortDir("desc"); }}>Newest First</button></li>
-                    <li><button className={styles.dropdownItem} type="button" onClick={() => { setTempSortBy("date"); setTempSortDir("asc"); }}>Oldest First</button></li>
-                </ul>
+                        <div className={styles.dropdownHeader}>Rating</div>
+
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempSortBy("voteAverage");
+                                setTempSortDir("desc");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            High → Low
+                        </button>
+
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempSortBy("voteAverage");
+                                setTempSortDir("asc");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            Low → High
+                        </button>
+
+                        <div className={styles.dropdownDivider} />
+
+                        <div className={styles.dropdownHeader}>When Added</div>
+
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempSortBy("recent");
+                                setTempSortDir("desc");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            Newest First
+                        </button>
+
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempSortBy("recent");
+                                setTempSortDir("asc");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            Earliest First
+                        </button>
+
+                        <div className={styles.dropdownDivider} />
+
+                        <div className={styles.dropdownHeader}>Release Date</div>
+
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempSortBy("date");
+                                setTempSortDir("desc");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            Newest First
+                        </button>
+
+                        <button
+                            type="button"
+                            className={styles.simpleDropdownItem}
+                            onClick={() => {
+                                setTempSortBy("date");
+                                setTempSortDir("asc");
+                                setOpenDropdown(null);
+                            }}
+                        >
+                            Oldest First
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Genres (3-state): pass tempSelected and updater */}
-            <DropdownMultiselect3State
+            <GenreMultiselect
                 label="Genres"
                 options={genreOptions}
                 selected={tempGenresSelected}
@@ -288,8 +468,16 @@ const Filter: React.FC<FilterProps> = ({ handleFilterChange, showCompareFilter =
                 disabledOptions={getDisabledGenres()}
             />
 
+            {/* Keywords (3-state): update tempKeywords only */}
+            <KeywordMultiselect
+                selectedKeywords={tempSelectedKeywords}
+                rejectedKeywords={tempRejectedKeywords}
+                onSelectedKeywordsChange={setTempSelectedKeywords}
+                onRejectedKeywordsChange={setTempRejectedKeywords}
+            />
+
             {/* Languages - update tempLanguages only */}
-            <DropdownMultiselect
+            <LanguageMultiselect
                 label="Languages"
                 options={langOptions}
                 selected={tempLanguages}

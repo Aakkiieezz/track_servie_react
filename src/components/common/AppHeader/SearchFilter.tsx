@@ -10,7 +10,7 @@ import { navigateToPerson } from '@/utils/navigateToPerson';
 
 type SearchType = 'movie' | 'tv' | 'servie' | 'person' | 'collection';
 
-interface ServieDto3 {
+interface SearchDto {
 	childtype: string;
 	tmdbId: number;
 	title: string;
@@ -38,7 +38,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 	const navigate = useNavigate();
 	const [query, setQuery] = useState('');
 	const [type, setType] = useState<SearchType>('movie');
-	const [searchResults, setSearchResults] = useState<ServieDto3[]>([]);
+	const [searchResults, setSearchResults] = useState<SearchDto[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [showTypeDropdown, setShowTypeDropdown] = useState(false);
@@ -191,7 +191,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 	const DROPDOWN_WIDTH = 120;
 
 	// Shared row markup, reused across all three navigation strategies below
-	const renderRow = (result: ServieDto3) => (
+	const renderRow = (result: SearchDto) => (
 		<div
 			className={`d-flex align-items-center ${styles.dropdownRow}`}
 			style={{ cursor: "pointer", gap: "10px" }}

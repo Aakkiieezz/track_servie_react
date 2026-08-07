@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export interface Keyword {
+    id: number;
+    name: string;
+}
+
 interface WatchlistFilterState {
     type: string;
     sortBy: string;
@@ -9,6 +14,8 @@ interface WatchlistFilterState {
     crossedGenres: string[];
     languages: string[];
     statuses: string[];
+    selectedKeywords: Keyword[];
+    rejectedKeywords: Keyword[];
 
     // Actions
     setFilters: (filters: {
@@ -19,6 +26,8 @@ interface WatchlistFilterState {
         crossedGenres: string[];
         languages: string[];
         statuses: string[];
+        selectedKeywords: Keyword[];
+        rejectedKeywords: Keyword[];
     }) => void;
 
     resetFilters: () => void;
@@ -32,6 +41,8 @@ const initialState = {
     crossedGenres: [],
     languages: [],
     statuses: [],
+    selectedKeywords: [],
+    rejectedKeywords: [],
 };
 
 export const useWatchlistFilterStore = create<WatchlistFilterState>()(
