@@ -31,7 +31,7 @@ const AppHeader: React.FC = () => {
             {/* Logo */}
             <div className={styles.logo}>
                 <Link to="/">
-                    <img src="/src/assets/logo.png" alt="Logo" style={{ width: "200px", borderRadius: "6px" }} />
+                    <img src="/src/assets/logo.png" alt="Logo" style={{ width: "175px", borderRadius: "6px" }} />
                 </Link>
             </div>
 

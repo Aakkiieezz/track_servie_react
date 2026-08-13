@@ -1,0 +1,603 @@
+/* ===========================================================
+   🎬 AUTH PAGE
+=========================================================== */
+
+.authPage {
+    width: 100%;
+    min-height: calc(100vh - var(--appHeader-height));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.authContent {
+    width: 100%;
+    max-width: 430px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* ===========================================================
+   🎞️ LOGO
+=========================================================== */
+
+.logoWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.logo {
+    width: 190px;
+    max-width: 70vw;
+    border-radius: 6px;
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.logo:hover {
+    transform: scale(1.02);
+}
+
+
+/* ===========================================================
+   🪟 GLASS AUTH CARD
+=========================================================== */
+
+.authCard {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 28px 32px;
+    border-radius: 18px;
+    background: var(--semi-transparency-bg);
+    border: 1px solid var(--modal-border);
+    backdrop-filter: var(--blur-strength);
+    -webkit-backdrop-filter: var(--blur-strength);
+    box-shadow:
+        0 14px 40px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    color: var(--modal-text);
+    animation: cardEnter 0.3s ease;
+}
+
+@keyframes cardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ===========================================================
+   📝 CARD HEADER
+=========================================================== */
+
+.cardHeader {
+    text-align: center;
+    margin-bottom: 26px;
+}
+
+.cardHeader h1 {
+    margin: 0;
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cardHeader p {
+    margin: 8px 0 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+
+/* ===========================================================
+   📋 FORM
+=========================================================== */
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.field label {
+    padding-left: 2px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+
+/* ===========================================================
+   ✏️ INPUTS
+=========================================================== */
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.inputWrapper i {
+    position: absolute;
+    left: 13px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.inputWrapper input {
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+    padding: 0 13px 0 39px;
+    border-radius: 12px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--form-text);
+    font-size: 0.88rem;
+    outline: none;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.inputWrapper input::placeholder {
+    color: var(--input-placeholder);
+}
+
+.inputWrapper input:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.inputWrapper input:focus {
+    background: var(--form-bg-focus);
+    border-color: rgba(130, 177, 255, 0.6);
+    box-shadow:
+        0 0 0 2px rgba(130, 177, 255, 0.18),
+        0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.inputWrapper:focus-within i {
+    color: #82b1ff;
+}
+
+
+/* ===========================================================
+   🔑 FORGOT PASSWORD
+=========================================================== */
+
+.forgotPassword {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -7px;
+}
+
+.forgotPassword button {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--btn-link-text);
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.forgotPassword button:hover {
+    color: #82b1ff;
+}
+
+
+/* ===========================================================
+   🔵 PRIMARY BUTTON
+=========================================================== */
+
+.primaryButton {
+    width: 100%;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 2px;
+    border: 1px solid var(--btn-primary-border);
+    border-radius: 12px;
+    background: var(--btn-primary-bg);
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.2),
+        0 0 0 transparent;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+}
+
+.primaryButton:hover {
+    background: var(--btn-primary-bg-hover);
+    box-shadow:
+        0 5px 16px rgba(0, 0, 0, 0.25),
+        0 0 14px var(--btn-primary-glow);
+    transform: translateY(-1px);
+}
+
+.primaryButton:active {
+    transform: translateY(0);
+}
+
+.primaryButton i {
+    font-size: 0.85rem;
+}
+
+
+/* ===========================================================
+   ───────── GOOGLE DIVIDER
+=========================================================== */
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0 16px;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--surface-border);
+}
+
+.divider span {
+    opacity: 0.8;
+}
+
+
+/* ===========================================================
+   🔵 GOOGLE BUTTON
+=========================================================== */
+
+.googleButton {
+    width: 100%;
+    height: 42px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    background: var(--btn-outline-primary-bg);
+    color: var(--text-primary);
+    font-size: 0.86rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.googleButton:hover {
+    background: var(--btn-outline-primary-bg-hover);
+    border-color: var(--btn-outline-primary-border);
+    transform: translateY(-1px);
+}
+
+.googleButton:active {
+    transform: translateY(0);
+}
+
+.googleButton img {
+    position: absolute;
+    left: 10px;
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+
+/* ===========================================================
+   🔄 LOGIN / REGISTER SWITCH
+=========================================================== */
+
+.switchAuth {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-top: 24px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.switchAuth button {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--btn-link-text);
+    font-size: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.switchAuth button:hover {
+    color: #82b1ff;
+}
+
+
+/* ===========================================================
+   ✨ FOOTER
+=========================================================== */
+
+.footerText {
+    margin-top: 18px;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    opacity: 0.65;
+    text-align: center;
+}
+
+
+/* ===========================================================
+   📱 RESPONSIVE
+=========================================================== */
+
+@media (max-width: 520px) {
+    .authPage {
+        padding: 28px 16px;
+    }
+
+    .authCard {
+        padding: 26px 20px;
+        border-radius: 16px;
+    }
+
+    .logo {
+        width: 170px;
+    }
+
+    .cardHeader h1 {
+        font-size: 1.3rem;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   🔑 AUTH PAGE ICON
+=========================================================== */
+
+.authIcon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    border-radius: 12px;
+    background: var(--btn-outline-primary-bg);
+    border: 1px solid var(--input-border);
+    color: #82b1ff;
+    font-size: 1rem;
+}
+
+
+/* ===========================================================
+   ✉️ SUCCESS MESSAGE
+=========================================================== */
+
+.successMessage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 0 4px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.successIcon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--btn-outline-primary-bg);
+    border: 1px solid var(--btn-outline-primary-border);
+    color: #82b1ff;
+    font-size: 1.1rem;
+}
+
+
+/* ===========================================================
+   🔙 BACK TO LOGIN
+=========================================================== */
+
+.switchAuth button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.switchAuth button i {
+    font-size: 0.72rem;
+    transition: transform 0.2s ease;
+}
+
+.switchAuth button:hover i {
+    transform: translateX(-2px);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===========================================================
+   🔐 AUTH STATE
+=========================================================== */
+
+.authState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.authState h1 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.authState p {
+    max-width: 320px;
+    margin: 9px 0 24px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.stateIcon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    background: var(--btn-outline-primary-bg);
+    border: 1px solid var(--btn-outline-primary-border);
+    color: #82b1ff;
+    font-size: 1.15rem;
+}
+
+
+/* ===========================================================
+   ⏳ VALIDATION SPINNER
+=========================================================== */
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    margin-top: 2px;
+    border: 2px solid var(--surface-border);
+    border-top-color: #82b1ff;
+    border-radius: 50%;
+    animation: authSpinner 0.8s linear infinite;
+}
+
+@keyframes authSpinner {
+    to {
+        transform: rotate(360deg);
+    }
+}

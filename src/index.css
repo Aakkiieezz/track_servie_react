@@ -76,7 +76,7 @@ body {
 }
 
 :root {
-  --appHeader-height: 80px; /* set your header height */
+  --appHeader-height: 72px; /* set your header height */
   --border-radius: 12px;
   --blur-strength: blur(12px);
   --slight-backdrop: rgba(0, 0, 0, 0.5); /* modal[OptionsModal], */

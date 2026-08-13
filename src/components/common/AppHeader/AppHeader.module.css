@@ -21,7 +21,7 @@ body {
   align-items: center;
   justify-content: space-between;
 
-  padding: 0.75rem 2rem;
+  padding: 0.5rem 2rem;
 
   background: var(--semi-transparency-bg);
   border-bottom: 1px solid var(--header-border);
@@ -69,8 +69,8 @@ body {
    👤 PROFILE IMAGE
 =========================================================== */
 .headerProfile img {
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
 
   border: 2px solid rgba(255,255,255,0.2);
