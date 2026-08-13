@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '@/utils/axiosInstance';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
@@ -36,6 +36,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 	onCollapse,
 }) => {
 	const navigate = useNavigate();
+	const location = useLocation();
+	const isDiscoveryPage = location.pathname === "/discover";
 	const [query, setQuery] = useState('');
 	const [type, setType] = useState<SearchType>('movie');
 	const [searchResults, setSearchResults] = useState<SearchDto[]>([]);
@@ -133,9 +135,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 				!containerRef.current.contains(target) &&
 				dropdownRef.current &&
 				!dropdownRef.current.contains(target)
-			) {
+			)
 				setShowDropdown(false);
-			}
 
 			// Check type dropdown
 			if (
@@ -143,9 +144,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 				!typeButtonRef.current.contains(target) &&
 				typeDropdownRef.current &&
 				!typeDropdownRef.current.contains(target)
-			) {
+			)
 				setShowTypeDropdown(false);
-			}
 		};
 
 		const handleResize = () => {
@@ -223,8 +223,25 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 		<div
 			ref={containerRef}
 			className={styles.searchContainer}
-			style={{ width: expanded ? '400px' : '40px' }}
+			style={{
+				width: expanded
+					? '400px'
+					: isDiscoveryPage
+						? 'auto'
+						: 'auto'
+			}}
 		>
+			{!isDiscoveryPage && (
+				<button
+					type="button"
+					className={styles.discoverButton}
+					onClick={() => navigate("/discover")}
+					title="Discover"
+					aria-label="Open Discovery"
+				>
+					<i className="bi bi-stars" />
+				</button>
+			)}
 
 			{/* Expand Button */}
 			{!expanded && (
@@ -273,9 +290,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 							className={`btn ${stylesAppHeader.btnOutlinePrimary} ${styles.typeButton} ${showTypeDropdown ? styles.typeButtonOpen : ''}`}
 							onClick={() => {
 								setShowTypeDropdown(!showTypeDropdown);
-								if (!showTypeDropdown) {
+								if (!showTypeDropdown)
 									setTimeout(() => updateTypeDropdownPosition(), 0);
-								}
 							}}
 						>
 							<span>{type}</span>
@@ -317,7 +333,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 							searchResults.map((result) => {
 								// Person needs an async pre-fetch before navigating, so it
 								// can't be a plain <Link> the way the others are.
-								if (result.childtype === 'person') {
+								if (result.childtype === 'person')
 									return (
 										<div
 											key={`person-${result.tmdbId}`}
@@ -333,10 +349,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 											{renderRow(result)}
 										</div>
 									);
-								}
 
 								// Collection routes to its own detail page, no state needed.
-								if (result.childtype === 'collection') {
+								if (result.childtype === 'collection')
 									return (
 										<Link
 											to={`/movie-collection/${result.tmdbId}`}
@@ -347,7 +362,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 											{renderRow(result)}
 										</Link>
 									);
-								}
 
 								// movie / tv / servie — unchanged existing behavior
 								return (

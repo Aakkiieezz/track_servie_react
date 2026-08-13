@@ -28,6 +28,7 @@ import ForgotPasswordPage from "./pages/ForgetPasswordPage.tsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.tsx";
 import "@fontsource/quicksand/700.css";
 import "@/styles/skeleton.css";
+import DiscoverySearchPage from "./pages/DiscoverySearchPage.tsx";
 
 const processToken = () => {
     const params = new URLSearchParams(window.location.search);
@@ -69,6 +70,8 @@ const router = createBrowserRouter([
     { path: "/settings", element: <PrivateRoute element={<SettingsPage />} /> },
 
     { path: "/search", element: <PrivateRoute element={<SearchPage />} /> },
+
+    { path: "/discover", element: <PrivateRoute element={<DiscoverySearchPage />} /> },
 
     {
         path: "/servies/:tmdbId/Season/:seasonNo",
