@@ -82,7 +82,7 @@ const MovieCollection = () => {
                 src={`https://image.tmdb.org/t/p/original${data?.backdropPath}`}
                 alt="Backdrop"
                 onError={(e) => {
-                    e.currentTarget.src = 'src/assets/defaultBackground.png';
+                    e.currentTarget.src = '/defaultBackground.png';
                 }}
             />
 
@@ -99,7 +99,7 @@ const MovieCollection = () => {
                             src={`https://image.tmdb.org/t/p/w500${data?.posterPath}`}
                             alt={data?.name}
                             onError={(e) => {
-                                e.currentTarget.src = 'src/assets/defaultPoster.png';
+                                e.currentTarget.src = '/defaultPoster.png';
                             }}
                         />
                     </div>

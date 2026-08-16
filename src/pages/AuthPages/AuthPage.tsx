@@ -15,7 +15,7 @@ const AuthPage: React.FC = () => {
     const navigate = useNavigate();
 
     const handleGoogleSignIn = () => {
-        window.location.href = "http://localhost:8080/track-servie/oauth2/authorization/google";
+        window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`;
     };
 
     const handleSubmit = async (event: React.FormEvent) => {
@@ -56,11 +56,7 @@ const AuthPage: React.FC = () => {
                     localStorage.setItem("token", response.data.token);
                     localStorage.setItem("userId", String(response.data.userId));
                     localStorage.setItem("username", response.data.username);
-                    localStorage.setItem(
-                        "profileImgUrl",
-                        "http://localhost:8080/track-servie/" +
-                        response.data.profileImgUrl
-                    );
+                    localStorage.setItem("profileImgUrl", `${import.meta.env.VITE_API_BASE_URL}/${response.data.profileImgUrl}`);
                     setAlert({ type: "success", message: "Logged in Successfully !!" });
                     navigate("/");
                 } else {
@@ -85,7 +81,7 @@ const AuthPage: React.FC = () => {
                 {/* Logo */}
                 <div className={styles.logoWrapper}>
                     <img
-                        src="/src/assets/logo.png"
+                        src="/logo.png"
                         alt="TrackServie"
                         className={styles.logo}
                     />
@@ -230,7 +226,7 @@ const AuthPage: React.FC = () => {
                                 onClick={handleGoogleSignIn}
                             >
                                 <img
-                                    src="/src/assets/google-logo.jpg"
+                                    src="/google-logo.jpg"
                                     alt=""
                                 />
 

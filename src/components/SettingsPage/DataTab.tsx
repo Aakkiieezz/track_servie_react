@@ -11,8 +11,7 @@ const DataTab: React.FC = () => {
     const handleExportData = async () => {
         try {
             setExporting(true);
-            const response = await axiosInstance.get(
-                "http://localhost:8080/track-servie/export/user-data",
+            const response = await axiosInstance.get("/export/user-data",
                 {
                     responseType: "blob",
                 }

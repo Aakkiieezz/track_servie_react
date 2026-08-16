@@ -41,7 +41,7 @@ const processToken = () => {
         localStorage.setItem("token", token);
         localStorage.setItem("userId", String(userId));
         localStorage.setItem("username", username);
-        localStorage.setItem("profileImgUrl", "http://localhost:8080/track-servie/" + profileImgUrl);
+        localStorage.setItem("profileImgUrl", `${import.meta.env.VITE_API_BASE_URL}/${profileImgUrl}`);
         window.history.replaceState({}, document.title, "/");
     }
 };

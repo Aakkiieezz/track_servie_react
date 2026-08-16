@@ -157,7 +157,7 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
                 );
 
                 if (response.status === 200) {
-                    const uploadedImageUrl = `http://localhost:8080/track-servie/${response.data.profileImgUrl}`;
+                    const uploadedImageUrl = `${import.meta.env.VITE_API_BASE_URL}/${response.data.profileImgUrl}`;
                     localStorage.setItem("profileImgUrl", uploadedImageUrl);
                     setProfilePicUrl(uploadedImageUrl);
                     setAlert({ type: "success", message: "Profile image uploaded successfully." });
@@ -221,11 +221,11 @@ const ProfileTab: React.FC<ProfileTabProps> = ({
                                 <div className={styles.profilePictureContainer}>
                                     <div className={styles.profilePictureWrapper}>
                                         <img
-                                            src={profilePicUrl || "src/assets/defaultProfileImg.jpg"}
+                                            src={profilePicUrl || "/defaultProfileImg.jpg"}
                                             alt="Profile"
                                             className={styles.profilePicture}
                                             onError={(e) => {
-                                                (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+                                                (e.target as HTMLImageElement).src = "/defaultProfileImg.jpg";
                                             }}
                                         />
                                     </div>

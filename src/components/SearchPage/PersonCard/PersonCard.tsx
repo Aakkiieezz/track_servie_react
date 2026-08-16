@@ -16,7 +16,7 @@ type PersonCardProps = PersonCardData & {
     onClick: (person: PersonCardData) => void;
 };
 
-const DEFAULT_AVATAR = "/src/assets/profile_icon_male.png";
+const DEFAULT_AVATAR = "/profile_icon_male.png";
 
 // Matches strings made up of Latin letters, marks, numbers, and common punctuation/spacing.
 // Anything containing script outside this range (Devanagari, CJK, Cyrillic, Arabic, etc.)

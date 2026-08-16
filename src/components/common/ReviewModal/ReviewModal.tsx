@@ -116,7 +116,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                                 alt={title}
                                 className={styles.poster}
                                 onError={(e) => {
-                                    e.currentTarget.src = '/src/assets/defaultPoster.png';
+                                    e.currentTarget.src = '/defaultPoster.png';
                                 }}
                             />
                         </div>

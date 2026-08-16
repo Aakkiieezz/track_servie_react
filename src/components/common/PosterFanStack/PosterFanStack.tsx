@@ -84,12 +84,11 @@ const PosterFanStack: React.FC<PosterFanStackProps> = ({ posters = [], height = 
                 // Z-index: lower index (left) should be on top, so right ones are covered
                 const zIndex = 100 + (finalPosters.length - idx);
 
-                const src =
-                    !p
-                        ? "https://placehold.co/220x330?text=No+Image"
-                        : p.startsWith("http://") || p.startsWith("https://")
-                            ? p
-                            : `http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${p.replace(".jpg", ".webp")}`;
+                const src = !p
+                    ? "https://placehold.co/220x330?text=No+Image"
+                    : p.startsWith("http://") || p.startsWith("https://")
+                        ? p
+                        : `${import.meta.env.VITE_API_BASE_URL}/posterImgs_resize220x330_q0.85${p.replace(".jpg", ".webp")}`;
 
                 return (
                     <div

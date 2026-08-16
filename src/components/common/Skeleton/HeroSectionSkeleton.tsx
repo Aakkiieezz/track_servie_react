@@ -17,7 +17,7 @@ const HeroSectionSkeleton = ({ title, posterPath }: HeroSectionSkeletonProps) =>
                 src={`https://image.tmdb.org/t/p/w500${posterPath}`}
                 alt={title}
                 onError={(e) => {
-                    e.currentTarget.src = "src/assets/defaultPoster.png";
+                    e.currentTarget.src = "/defaultPoster.png";
                 }}
             />
 

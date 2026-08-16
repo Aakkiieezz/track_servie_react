@@ -96,7 +96,7 @@ const ProfilePic: React.FC = () => {
             {/* 👤 Avatar trigger */}
             <img
                 ref={buttonRef}
-                src={profilePicUrl || "src/assets/defaultProfileImg.jpg"}
+                src={profilePicUrl || "/defaultProfileImg.jpg"}
                 alt="Profile"
                 onClick={() => {
                     setShowDropdown(prev => !prev);
@@ -105,7 +105,7 @@ const ProfilePic: React.FC = () => {
                     }
                 }}
                 onError={(e) => {
-                    (e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+                    (e.target as HTMLImageElement).src = "/defaultProfileImg.jpg";
                 }}
             />
 

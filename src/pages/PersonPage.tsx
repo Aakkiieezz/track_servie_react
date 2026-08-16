@@ -168,7 +168,7 @@ const PersonPage: React.FC = () => {
 
     const [blurCompleted, setBlurCompleted] = useState<boolean>(false);
 
-    const [watchedCount, setWatchedCount] = useState(0);
+    const [, setWatchedCount] = useState(0);
 
     useEffect(() => {
         setDetailsError(null);
@@ -305,6 +305,8 @@ const PersonPage: React.FC = () => {
     }, [displayedWorks]);
 
     const handleWatchChange = (tmdbId: number, childtype: string, newWatched: boolean) => {
+        console.log(tmdbId);
+        console.log(childtype);
         setWatchedCount(prev => newWatched ? prev + 1 : prev - 1);
     };
 
@@ -509,7 +511,7 @@ const PersonPage: React.FC = () => {
                                     <label className={styles.controlLabel}>Sort by:</label>
                                     <select
                                         value={sortOrder}
-                                        onChange={(e) => setSortOrder(e.target.value)}
+                                        onChange={(e) => setSortOrder(e.target.value as SortFilter)}
                                         className={styles.select}
                                     >
                                         <option value="title">Title (A-Z)</option>
@@ -584,7 +586,7 @@ const PersonPage: React.FC = () => {
                                     return (
                                         <ServieCard
                                             key={key}
-                                            servie={servie}
+                                            servie={{ ...servie, episodesWatched: servie.episodesWatched ?? undefined }}
                                             blurCompleted={blurCompleted}
                                             onWatchChange={handleWatchChange}
                                         />

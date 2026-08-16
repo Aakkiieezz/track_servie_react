@@ -50,12 +50,12 @@ const SetttingsPage: React.FC = () => {
                             {/* Left — mini profile */}
                             <div className={styles.miniHeader}>
                                 <img
-                                    src={profilePicUrl || "src/assets/defaultProfileImg.jpg"}
+                                    src={profilePicUrl || "/defaultProfileImg.jpg"}
                                     alt="Profile"
                                     className={styles.miniAvatar}
                                     onError={(e) => {
                                         (e.target as HTMLImageElement).src =
-                                            "src/assets/defaultProfileImg.jpg";
+                                            "/defaultProfileImg.jpg";
                                     }}
                                 />
                                 <span className={styles.miniUsername}>{username}</span>

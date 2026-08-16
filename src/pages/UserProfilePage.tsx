@@ -206,7 +206,7 @@ const UserProfilePage: React.FC = () => {
 											alt={user.username}
 											className={styles.userAvatar}
 											onError={(e) => {
-												(e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+												(e.target as HTMLImageElement).src = "/defaultProfileImg.jpg";
 											}}
 										/>
 									</div>
@@ -302,7 +302,7 @@ const UserProfilePage: React.FC = () => {
 										alt={user.username}
 										className={styles.miniAvatar}
 										onError={(e) => {
-											(e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+											(e.target as HTMLImageElement).src = "/defaultProfileImg.jpg";
 										}}
 									/>
 									<span className={styles.miniUsername}>{user.username}</span>

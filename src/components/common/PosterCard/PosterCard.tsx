@@ -60,7 +60,7 @@ function formatRuntime(minutes: number): string {
 
 function buildPosterSrc(posterPath?: string | null): string {
     if (!posterPath) return "https://placehold.co/220x330?text=No+Image";
-    return `http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${posterPath.replace(".jpg", ".webp")}`;
+    return `${import.meta.env.VITE_API_BASE_URL}/posterImgs_resize220x330_q0.85${posterPath.replace(".jpg", ".webp")}`;
 }
 
 function buildPosterFallback(posterPath?: string | null): string {

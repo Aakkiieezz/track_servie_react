@@ -81,7 +81,7 @@ const ProfileNetworkTab: React.FC<NetworkTabProps> = ({ activeNetworkTab, setAct
 							alt={user.username}
 							className={styles.userAvatar}
 							onError={(e) => {
-								(e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+								(e.target as HTMLImageElement).src = "/defaultProfileImg.jpg";
 							}}
 						/>
 						<div className={styles.userInfo}>
@@ -156,7 +156,7 @@ const ProfileNetworkTab: React.FC<NetworkTabProps> = ({ activeNetworkTab, setAct
 											alt={user.username}
 											className={styles.userAvatar}
 											onError={(e) => {
-												(e.target as HTMLImageElement).src = "src/assets/defaultProfileImg.jpg";
+												(e.target as HTMLImageElement).src = "/defaultProfileImg.jpg";
 											}}
 										/>
 										<div className={styles.userInfo}>

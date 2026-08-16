@@ -27,8 +27,8 @@ const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childTyp
             return `https://image.tmdb.org/t/p/w185${profile.profilePath}`;
         else {
             return profile.gender === 1
-                ? '/src/assets/profile_icon_female.png'
-                : '/src/assets/profile_icon_male.png';
+                ? '/profile_icon_female.png'
+                : '/profile_icon_male.png';
         }
     };
 
@@ -46,8 +46,8 @@ const CastListSlider: React.FC<CastListSliderProps> = ({ profiles = [], childTyp
                             alt={profile.name}
                             onError={(e) => {
                                 e.currentTarget.src = profile.gender === 1
-                                    ? '/src/assets/profile_icon_female.png'
-                                    : '/src/assets/profile_icon_male.png';
+                                    ? '/profile_icon_female.png'
+                                    : '/profile_icon_male.png';
                             }}
                             onClick={() => {
                                 navigateToPerson(navigate, {

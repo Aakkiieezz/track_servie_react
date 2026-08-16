@@ -537,7 +537,7 @@ const ServiePage = () => {
                         src={`https://image.tmdb.org/t/p/original${data?.backdropPath}`}
                         alt={"Backdrop Unavailable"}
                         onError={(e) => {
-                            e.currentTarget.src = 'src/assets/defaultBackground.png';
+                            e.currentTarget.src = '/defaultBackground.png';
                         }}
                     />
                     <div className={styles.backdropOverlay}></div>

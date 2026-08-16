@@ -200,7 +200,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 			{result.posterPath ? (
 				<img
 					className={styles.imageBorder}
-					src={`http://localhost:8080/track-servie/posterImgs_resize220x330_q0.85${result.posterPath.replace('.jpg', '.webp')}`}
+					src={`${import.meta.env.VITE_API_BASE_URL}/posterImgs_resize220x330_q0.85${result.posterPath.replace('.jpg', '.webp')}`}
 					alt={result.title}
 					onError={(e) => {
 						e.currentTarget.onerror = null;

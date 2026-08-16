@@ -14,7 +14,7 @@ body {
 
 /* 🌙 DARK MODE */
 body.dark {
-  background-image: url("../src/assets/abstract-luxury-blur-dark-grey-black-gradient-used-as-background-studio-wall-display-your-pr.jpg");
+  background-image: url("/background-blur-dark-grey.jpg");
   background-size: cover;
   background-attachment: fixed;
 }

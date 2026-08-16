@@ -116,7 +116,7 @@ const ResetPasswordPage: React.FC = () => {
                 {/* Logo */}
                 <div className={styles.logoWrapper}>
                     <img
-                        src="/src/assets/logo.png"
+                        src="/logo.png"
                         alt="TrackServie"
                         className={styles.logo}
                     />
