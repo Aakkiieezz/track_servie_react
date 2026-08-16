@@ -78,10 +78,32 @@ const EpisodePage = () => {
 		[episodeNo]
 	);
 
+	const fetchSummary = async () => {
+		try {
+			const response = await axiosInstance.get<string | null>(`servies/${tmdbId}/Season/${seasonNo}/Episode/${episodeNo}/summary`);
+			setSummary(response.data);
+		} catch (err) {
+			console.error("Failed to fetch summary", err);
+			// Fail silently.
+			setSummary(null);
+		}
+	};
+
+	const [summary, setSummary] = useState<string | null>(null);
+	const hasOverview = !!episode?.overview?.trim();
+	const hasSummary = !!summary?.trim();
+	const showOverviewTabs = hasOverview && hasSummary;
+	const [overviewActiveTab, setOverviewActiveTab] = useState<"overview" | "summary">("overview");
+	const [overviewExpanded, setOverviewExpanded] = useState(false);
+	const [summaryExpanded, setSummaryExpanded] = useState(false);
+
 	// ✅ useEffect to fetch data
 	useEffect(() => {
-		if (tmdbId && seasonNo && episodeNo)
+		if (tmdbId && seasonNo && episodeNo) {
 			fetchEpisodeData(tmdbId, seasonNo, episodeNo);
+			// ✅ Only fetch summary after Servie loaded successfully
+			fetchSummary();
+		}
 	}, [tmdbId, seasonNo, episodeNo, fetchEpisodeData]);
 
 	const toggleWatch = async () => {
@@ -408,18 +430,90 @@ const EpisodePage = () => {
 							</div>
 						</div>
 
-						{/* Overview */}
-						<div className={`glass-panel ${styles.panel} ${styles.overviewSection}`}>
+						{/* ---------------------------------------------------------------------------- */}
 
-							<h4 className={styles.sectionTitle}>
-								Overview
-							</h4>
+						{/* Overview / Summary Section */}
+						{(hasOverview || hasSummary) && (
+							<div className={`glass-panel ${styles.overviewSection}`}>
 
-							<p className={styles.overviewText}>
-								{episode?.overview || "No overview available."}
-							</p>
+								{/* Header */}
+								{showOverviewTabs ? (
+									<div className={styles.overviewTabs}>
 
-						</div>
+										<button
+											className={`btnTranslucent ${styles.tabBtn} ${overviewActiveTab === "overview" ? styles.active : ""
+												}`}
+											onClick={() => setOverviewActiveTab("overview")}
+										>
+											Overview
+										</button>
+
+										<button
+											className={`btnTranslucent ${styles.tabBtn} ${overviewActiveTab === "summary" ? styles.active : ""}`}
+											onClick={() => setOverviewActiveTab("summary")}
+										>
+											Summary
+										</button>
+
+									</div>
+								) : (
+									<h4>{hasOverview ? "Overview" : "Summary"}</h4>
+								)}
+
+								{(() => {
+									const isOverview =
+										overviewActiveTab === "overview" || !hasSummary;
+
+									const text = isOverview
+										? episode?.overview
+										: summary;
+
+									const expanded = isOverview
+										? overviewExpanded
+										: summaryExpanded;
+
+									const toggleExpanded = () => {
+										if (isOverview)
+											setOverviewExpanded(v => !v);
+										else
+											setSummaryExpanded(v => !v);
+									};
+
+									return (
+										<>
+											<p
+												className={`${styles.overviewText} ${!expanded ? styles.clamped : ""
+													}`}
+											>
+												{text}
+											</p>
+
+											{text && text.length > 400 && (
+												<button
+													className={styles.showMoreBtn}
+													onClick={toggleExpanded}
+												>
+													{expanded ? (
+														<>
+															Show Less
+															<i className="bi bi-chevron-up ms-2"></i>
+														</>
+													) : (
+														<>
+															Show More
+															<i className="bi bi-chevron-down ms-2"></i>
+														</>
+													)}
+												</button>
+											)}
+										</>
+									);
+								})()}
+
+							</div>
+						)}
+
+						{/* ---------------------------------------------------------------------------- */}
 
 						{/* Cast */}
 						<div className={styles.castSection}>
