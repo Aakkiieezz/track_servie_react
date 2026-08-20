@@ -481,10 +481,7 @@ const EpisodePage = () => {
 
 									return (
 										<>
-											<p
-												className={`${styles.overviewText} ${!expanded ? styles.clamped : ""
-													}`}
-											>
+											<p className={`${styles.overviewText} ${!expanded ? styles.clamped : ""}`}>
 												{text}
 											</p>
 

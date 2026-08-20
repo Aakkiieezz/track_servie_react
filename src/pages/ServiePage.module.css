@@ -243,13 +243,6 @@
   font-weight: 400;
 }
 
-.overviewText {
-  color: var(--modal-text);
-  line-height: 1.6;
-  margin: 0;
-  opacity: 0.9;
-}
-
 .overviewSection span {
   color: var(--modal-text);
   opacity: 0.9;
@@ -264,6 +257,8 @@
 .overviewText {
     color: var(--text-secondary);
     line-height: 1.8;
+    margin: 0;
+    opacity: 0.9;
     white-space: pre-line;
 }
 
