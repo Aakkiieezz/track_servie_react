@@ -11,6 +11,8 @@ import { useRouteParamNumber } from '@/utils/hooks/useRouteParamNumber';
 import NavBar from "@/components/common/NavBar/NavBar";
 import { saveEpisodeReview } from '@/api/episodeApi';
 import { getAxiosErrorMessage } from '@/api/axiosError';
+import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
 
 interface CastDto {
 	personId: number;
@@ -481,9 +483,12 @@ const EpisodePage = () => {
 
 									return (
 										<>
-											<p className={`${styles.overviewText} ${!expanded ? styles.clamped : ""}`}>
-												{text}
-											</p>
+											<div className={`${styles.overviewText} ${!expanded ? styles.clamped : ""}`}>
+												<ReactMarkdown
+													remarkPlugins={[remarkBreaks]}>
+													{text}
+												</ReactMarkdown>
+											</div>
 
 											{text && text.length > 400 && (
 												<button

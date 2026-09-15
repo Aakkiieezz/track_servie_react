@@ -251,6 +251,44 @@
     white-space: pre-line;
 }
 
+.paragraph {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.bold {
+  font-weight: 700; /* or bold */
+  color: inherit; /* keeps the same color as parent */
+}
+
+.italic {
+  font-style: italic;
+  color: inherit;
+}
+
+/* Optional: add more styles for other elements you might use */
+.heading {
+  font-weight: 700;
+  margin: 1.5rem 0 0.5rem 0;
+}
+
+.link {
+  color: #0070f3;
+  text-decoration: underline;
+}
+
+.list {
+  margin: 0.5rem 0 0.5rem 1.5rem;
+}
+
+/* For the clamped effect */
+.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* =========================
    Cast
    ========================= */
