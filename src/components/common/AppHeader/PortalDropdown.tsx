@@ -5,7 +5,7 @@ import styles from "./SearchFilter.module.css";
 interface PortalDropdownProps {
     show: boolean;
     position: { top: number; left: number; width: number };
-    maxHeight: number;
+    maxHeight?: number;
     children: React.ReactNode;
     dropdownRef: React.RefObject<HTMLDivElement>
 }
@@ -28,7 +28,9 @@ const PortalDropdown: React.FC<PortalDropdownProps> = ({
                 top: `${position.top}px`,
                 left: `${position.left}px`,
                 width: `${position.width}px`,
-                maxHeight: `${maxHeight}px`,
+                ...(maxHeight !== undefined && {
+                    maxHeight: `${maxHeight}px`,
+                }),
             }}
             onMouseDown={(e) => e.stopPropagation()}
             onClick={(e) => e.stopPropagation()}

@@ -10,6 +10,7 @@ import ProfileOverviewTab from "@/components/ProfilePage/OverviewTab/OverviewTab
 import ServiesTab from "@/components/ProfilePage/ServiesTab";
 import ProfileListsTab from "@/components/ProfilePage/ListsTab/ListsTab";
 import ProfileWatchlistTab from "@/components/ProfilePage/WatchlistTab";
+import ReviewsTab from "@/components/ProfilePage/ReviewsTab/ReviewsTab";
 import ProfileNetworkTab from "@/components/ProfilePage/NetworkTab/NetworkTab";
 import ProfileStatsTab from "@/components/ProfilePage/StatsTab/StatsTab";
 import MovieCollectionsTab from "@/components/ProfilePage/MovieCollectionsTab/MovieCollectionsTab";
@@ -28,13 +29,14 @@ interface UserProfile {
 	totalServies: number;
 }
 
-type TabType = "overview" | "servies" | "lists" | "watchlist" | "movie-collections" | "network" | "stats";
+type TabType = "overview" | "servies" | "lists" | "watchlist" | "reviews" | "movie-collections" | "network" | "stats";
 
 const tabs: TabType[] = [
 	"overview",
 	"servies",
 	"lists",
 	"watchlist",
+	"reviews",
 	"movie-collections",
 	"network",
 	"stats",
@@ -358,23 +360,37 @@ const UserProfilePage: React.FC = () => {
 						)}
 
 						{!tabLoading && activeTab === "watchlist" && (
-							<ProfileWatchlistTab userId={profileUserId} />
-						)}
-
-						{!tabLoading && activeTab === "movie-collections" && (
-							<MovieCollectionsTab userId={profileUserId} />
-						)}
-
-						{!tabLoading && activeTab === "network" && (
-							<ProfileNetworkTab
-								activeNetworkTab={activeNetworkTab}
-								setActiveNetworkTab={setActiveNetworkTab}
+							<ProfileWatchlistTab
 								userId={profileUserId}
 							/>
 						)}
 
+						{!tabLoading && activeTab === "reviews" && (
+							<ReviewsTab
+								userId={profileUserId}
+								isOwnProfile={isOwnProfile}
+							/>
+						)}
+
+						{!tabLoading && activeTab === "movie-collections" && (
+							<MovieCollectionsTab
+								userId={profileUserId}
+							/>
+						)}
+
+						{!tabLoading && activeTab === "network" && (
+							<ProfileNetworkTab
+								userId={profileUserId}
+								activeNetworkTab={activeNetworkTab}
+								setActiveNetworkTab={setActiveNetworkTab}
+							/>
+						)}
+
 						{!tabLoading && activeTab === "stats" && (
-							<ProfileStatsTab userId={profileUserId} onFetchError={handleFetchError} />
+							<ProfileStatsTab
+								userId={profileUserId}
+								onFetchError={handleFetchError}
+							/>
 						)}
 
 					</div>

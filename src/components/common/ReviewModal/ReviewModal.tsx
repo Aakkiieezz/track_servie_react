@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import type { ReviewData } from "@/types/servie";
 import HalfStarRating from '@/components/common/HalfStarRating';
+import FormattingTextarea from '@/components/common/ReviewModal/FormattingTextarea';
 import styles from './ReviewModal.module.css';
 
 interface ReviewModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (data: ReviewData) => void;
+    onSave: (data: ReviewData) => void | Promise<void>;
     title: string;
     year?: string;
     posterPath: string;
@@ -22,17 +23,15 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
     posterPath,
     initialData
 }) => {
-    const [watchedDate, setWatchedDate] = useState<string>(
-        initialData?.watchedDate ?? new Date().toISOString().split('T')[0]
-    );
-    const [watchedBefore, setWatchedBefore] = useState<boolean>(
-        initialData?.watchedBefore ?? false
-    );
+    const [watchedDate, setWatchedDate] = useState<string>(initialData?.watchedDate ?? new Date().toISOString().split('T')[0]);
+    const [watchedBefore, setWatchedBefore] = useState<boolean>(initialData?.watchedBefore ?? false);
     const [liked, setLiked] = useState<boolean>(initialData?.liked ?? false);
     const [review, setReview] = useState<string | null>(initialData?.review ?? null);
     const [tags, setTags] = useState<string[]>(initialData?.tags || []);
     const [tagInput, setTagInput] = useState<string>('');
     const [rating, setRating] = useState<number | null>(initialData?.rating ?? null);
+    const [saving, setSaving] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
 
     const resetForm = (data?: Partial<ReviewData>) => {
         setWatchedDate(data?.watchedDate ?? new Date().toISOString().split('T')[0]);
@@ -41,18 +40,9 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         setReview(data?.review ?? null);
         setRating(data?.rating ?? null);
         setTags(data?.tags ?? []);
+        setTagInput('');
+        setSaveError(null);
     };
-
-    useEffect(() => {
-        if (isOpen && initialData) {
-            setWatchedDate(initialData.watchedDate || new Date().toISOString().split('T')[0]);
-            setWatchedBefore(initialData.watchedBefore || false);
-            setTags(initialData.tags || []);
-            setReview(initialData.review ?? null);
-            setRating(initialData.rating ?? null);
-            setLiked(initialData.liked ?? false);
-        }
-    }, [isOpen, initialData]);
 
     useEffect(() => {
         if (isOpen)
@@ -79,22 +69,44 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         setTags(tags.filter(tag => tag !== tagToRemove));
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        if (saving) return;
+
+        // A cleared (or whitespace-only) review is "no review": save null, not an empty string
+        const cleanReview = review?.trim() ? review.trim() : null;
+
         const reviewData: ReviewData = {
             watchedDate,
             watchedBefore,
-            review,
+            review: cleanReview,
             tags,
             rating,
             liked
         };
-        onSave(reviewData);
-        onClose();
+
+        setSaving(true);
+        setSaveError(null);
+        try {
+            // onSave may be async: the modal stays open until the save has succeeded
+            await onSave(reviewData);
+            onClose();
+        } catch {
+            // The handler has already reported the details. Stay open so nothing typed is lost;
+            // pressing Save again retries.
+            setSaveError("Couldn't save your changes. Please try again.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // Don't allow closing mid-save, or a failure would go unseen
+    const requestClose = () => {
+        if (!saving) onClose();
     };
 
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget)
-            onClose();
+            requestClose();
     };
 
     return (
@@ -103,7 +115,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                 {/* Header */}
                 <div className={styles.header}>
                     <h5 className={styles.title}>I watched...</h5>
-                    <button className={styles.closeBtn} onClick={onClose}>×</button>
+                    <button className={styles.closeBtn} onClick={requestClose}>×</button>
                 </div>
 
                 {/* Content */}
@@ -161,12 +173,10 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                             </div>
 
                             {/* Review Textarea */}
-                            <textarea
-                                placeholder="Add a review..."
-                                // value={review}
+                            <FormattingTextarea
                                 value={review ?? ''}
-                                onChange={(e) => setReview(e.target.value)}
-                                className={styles.reviewTextarea}
+                                onChange={setReview}
+                                placeholder="Add a review..."
                             />
 
                             {/* Bottom Section */}
@@ -229,8 +239,13 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
 
                 {/* Footer */}
                 <div className={styles.footer}>
-                    <button onClick={handleSave} className={styles.saveBtn}>
-                        SAVE
+                    {saveError && (
+                        <span className={styles.saveError} role="alert">
+                            {saveError}
+                        </span>
+                    )}
+                    <button onClick={handleSave} disabled={saving} className={styles.saveBtn}>
+                        {saving ? 'SAVING…' : 'SAVE'}
                     </button>
                 </div>
             </div>

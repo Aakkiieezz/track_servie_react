@@ -5,8 +5,8 @@ import PaginationBar from "@/components/common/PaginationBar/PaginationBar";
 import Filter from "@/components/ProfilePage/TabFilter/Filter";
 import { useFilterStore } from "@/store/useFilterStore";
 import type { Servie } from "@/types/servie";
-import styles from "./Filters.module.css";
-import ServieGridSkeleton from "../common/ServieGrid/ServieGridSkeleton";
+import styles from "@/components/ProfilePage/Filters.module.css";
+import ServieGridSkeleton from "@/components/common/ServieGrid/ServieGridSkeleton";
 
 interface Filters {
 	type: string;

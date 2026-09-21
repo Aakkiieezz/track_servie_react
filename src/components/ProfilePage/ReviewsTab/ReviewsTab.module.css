@@ -1,0 +1,610 @@
+.reviewsTab {
+	margin-top: 24px;
+}
+
+/* ---------------------------------------------------------
+   Header
+--------------------------------------------------------- */
+
+.reviewsHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.reviewsHeader h2 {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--text-primary);
+}
+
+.reviewsHeader p {
+	margin: 4px 0 0;
+	font-size: 13px;
+	color: var(--text-tertiary);
+}
+
+.reviewCount {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	padding: 7px 12px;
+	border-radius: 20px;
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border-color);
+	color: var(--text-tertiary);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.reviewCount i {
+	font-size: 14px;
+}
+
+/* ---------------------------------------------------------
+   Review List
+--------------------------------------------------------- */
+
+.reviewList {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+/* ---------------------------------------------------------
+   Review Card
+--------------------------------------------------------- */
+
+.reviewCard {
+	/* Layout tokens. Everything is derived from the poster size, so a collapsed
+	   card is exactly poster height + top/bottom padding. */
+	--poster-w: 105px;
+	--poster-h: calc(var(--poster-w) * 1.5);
+	/* 2:3 */
+	--card-pad: 17px;
+	--card-gap: 20px;
+	--text-lh: 1.6;
+	--clamp-lines: 4;
+
+	display: flex;
+	align-items: flex-start;
+	gap: var(--card-gap);
+
+	background: rgba(255, 255, 255, 0.035);
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+
+	padding: var(--card-pad);
+
+	overflow: hidden;
+
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease,
+		background 0.2s ease,
+		border-color 0.2s ease;
+}
+
+.reviewCard:hover {
+	transform: translateY(-2px);
+	background: var(--bg-elevated);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------------------------------------------------------
+   Poster
+--------------------------------------------------------- */
+
+/* Fixed size, top-left, never stretches when the card expands. It is a <Link>. */
+.posterWrapper {
+	position: relative;
+	display: block;
+	flex: 0 0 var(--poster-w);
+	width: var(--poster-w);
+	height: var(--poster-h);
+
+	overflow: hidden;
+	border-radius: 8px;
+
+	background: var(--overlay-light);
+	border: 0;
+}
+
+.poster {
+	width: 100%;
+	height: 100%;
+	display: block;
+	object-fit: cover;
+}
+
+.posterFallback {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+
+	color: var(--text-muted);
+	font-size: 24px;
+}
+
+/* ---------------------------------------------------------
+   Content
+--------------------------------------------------------- */
+
+.reviewContent {
+	flex: 1;
+	min-width: 0;
+
+	display: flex;
+	flex-direction: column;
+
+	/* A collapsed card is at least as tall as the poster. The footer is pinned
+	   to the bottom, so it lines up with the poster's bottom edge. */
+	min-height: var(--poster-h);
+}
+
+.reviewTop {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	min-height: 28px;
+}
+
+.reviewActions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-shrink: 0;
+}
+
+.titleSection {
+	min-width: 0;
+}
+
+.titleLine {
+	display: flex;
+	align-items: baseline;
+	gap: 7px;
+	min-width: 0;
+}
+
+.title {
+	margin: 0;
+	min-width: 0;
+	flex-shrink: 1;
+
+	color: var(--text-primary);
+	font-size: 19px;
+	font-weight: 700;
+	line-height: 1.3;
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.titleLink {
+	color: inherit;
+	text-decoration: none;
+}
+
+.titleLink:hover {
+	text-decoration: underline;
+}
+
+.titleLink:focus-visible,
+.metadataLink:focus-visible {
+	outline: 2px solid var(--text-tertiary);
+	outline-offset: 2px;
+	border-radius: 3px;
+}
+
+/* "· Series · Season 2 · Episode 5" */
+.metaGroup {
+	display: flex;
+	align-items: baseline;
+	gap: 7px;
+	flex-shrink: 0;
+}
+
+.metadata {
+	flex-shrink: 0;
+
+	font-size: 12px;
+	color: var(--text-tertiary);
+}
+
+.metadataLink {
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+
+.metadataLink:hover {
+	color: var(--text-primary);
+	text-decoration: underline;
+}
+
+.dot {
+	flex-shrink: 0;
+	opacity: 0.6;
+}
+
+/* ---------------------------------------------------------
+   Rating
+--------------------------------------------------------- */
+
+.rating {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+
+	flex-shrink: 0;
+
+	box-sizing: border-box;
+	height: 28px;
+	padding: 0 10px;
+
+	border-radius: 7px;
+
+	background: var(--overlay-light);
+	border: 1px solid var(--border-color);
+
+	color: var(--text-primary);
+
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.rating i {
+	font-size: 12px;
+	color: #f5b301;
+}
+
+/* ---------------------------------------------------------
+   Review text
+--------------------------------------------------------- */
+
+.reviewTextContainer {
+	margin-top: 6px;
+}
+
+.reviewText {
+	margin: 0;
+
+	color: var(--text-secondary);
+	font-size: 14px;
+	line-height: var(--text-lh);
+	overflow: hidden;
+
+	/* Collapsed: exactly N whole lines. ReviewText keeps paragraph gaps at one
+	   line-height, so the cut never lands mid-line. This is also what animates
+	   on expand/collapse (the expanded value is set inline). */
+	max-height: calc(var(--clamp-lines) * var(--text-lh) * 1em);
+	transition: max-height 0.25s ease;
+}
+
+.reviewTextExpanded {
+	/* max-height is set inline (to the measured content height) so this
+	   can animate to an exact value instead of jumping straight to "auto". */
+	overflow: visible;
+}
+
+.expandButton {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+
+	height: 24px;
+	padding: 0 10px;
+
+	border: 1px solid var(--border-color);
+	border-radius: 6px;
+	background: var(--overlay-light);
+
+	color: var(--text-secondary);
+
+	font-size: 12px;
+	font-weight: 600;
+
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease,
+		border-color 0.15s ease;
+}
+
+.expandButton:hover {
+	background: var(--bg-elevated);
+	color: var(--text-primary);
+	border-color: var(--text-tertiary);
+}
+
+.expandButtonIcon {
+	font-size: 10px;
+	transition: transform 0.2s ease;
+}
+
+.expandButtonIcon.rotated {
+	transform: rotate(180deg);
+}
+
+/* ---------------------------------------------------------
+   Footer
+--------------------------------------------------------- */
+
+/* "Show more" on the left, date on the right, pinned to the bottom of the card. */
+.reviewFooter {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	margin-top: auto;
+	padding-top: 6px;
+}
+
+/* Used by the heart in the top-right */
+.liked {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+
+	font-size: 12px;
+	font-weight: 600;
+
+	color: #e2556b;
+}
+
+.liked i {
+	font-size: 12px;
+}
+
+/* Right side of the footer: edit icon, then the date */
+.footerRight {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-left: auto;
+}
+
+.updated {
+	font-size: 11px;
+	color: var(--text-muted);
+}
+
+/* Subtle until the card is hovered or focused; always visible on touch screens */
+.iconButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	width: 24px;
+	height: 24px;
+	padding: 0;
+
+	border: none;
+	border-radius: 6px;
+	background: none;
+
+	color: var(--text-tertiary);
+	font-size: 13px;
+
+	cursor: pointer;
+	opacity: 0.6;
+	transition:
+		opacity 0.15s ease,
+		background 0.15s ease,
+		color 0.15s ease;
+}
+
+.reviewCard:hover .iconButton,
+.iconButton:focus-visible {
+	opacity: 1;
+}
+
+.iconButton:hover {
+	background: var(--overlay-light);
+	color: var(--text-primary);
+}
+
+.iconButton:focus-visible {
+	outline: 2px solid var(--text-tertiary);
+	outline-offset: 1px;
+}
+
+@media (hover: none) {
+	.iconButton {
+		opacity: 1;
+	}
+}
+
+/* ---------------------------------------------------------
+   Empty state
+--------------------------------------------------------- */
+
+.emptyState {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 300px;
+	padding: 40px;
+
+	background: rgba(255, 255, 255, 0.025);
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+
+	text-align: center;
+}
+
+.emptyIcon {
+	width: 52px;
+	height: 52px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	margin-bottom: 14px;
+
+	border-radius: 50%;
+
+	background: var(--overlay-light);
+	color: var(--text-tertiary);
+
+	font-size: 22px;
+}
+
+.emptyState h3 {
+	margin: 0 0 6px;
+
+	color: var(--text-primary);
+	font-size: 17px;
+}
+
+.emptyState p {
+	margin: 0;
+
+	color: var(--text-tertiary);
+	font-size: 13px;
+}
+
+/* ---------------------------------------------------------
+   Skeleton
+--------------------------------------------------------- */
+
+.reviewSkeleton {
+	display: flex;
+	gap: 20px;
+
+	padding: 17px;
+
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+}
+
+.skeletonPoster {
+	width: 105px;
+	height: 158px;
+	flex-shrink: 0;
+
+	border-radius: 8px;
+	background: var(--overlay-light);
+}
+
+.skeletonContent {
+	flex: 1;
+	padding-top: 3px;
+}
+
+.skeletonTitle,
+.skeletonMeta,
+.skeletonLine {
+	border-radius: 5px;
+	background: var(--overlay-light);
+}
+
+.skeletonTitle {
+	width: 35%;
+	height: 20px;
+}
+
+.skeletonMeta {
+	width: 20%;
+	height: 12px;
+	margin-top: 10px;
+}
+
+.skeletonLine {
+	width: 95%;
+	height: 12px;
+	margin-top: 22px;
+}
+
+.skeletonLine+.skeletonLine {
+	margin-top: 10px;
+}
+
+.shortLine {
+	width: 65%;
+}
+
+/* ---------------------------------------------------------
+   Responsive
+--------------------------------------------------------- */
+
+@media (max-width: 768px) {
+	.reviewCard {
+		--poster-w: 78px;
+		--card-pad: 14px;
+		--card-gap: 14px;
+		--clamp-lines: 3;
+		/* too little room for 4 lines next to a phone-sized poster */
+	}
+
+	.reviewTop {
+		align-items: flex-start;
+		gap: 10px;
+		min-height: 24px;
+	}
+
+	.title {
+		font-size: 16px;
+	}
+
+	.metadata {
+		font-size: 11px;
+	}
+
+	.reviewText {
+		font-size: 13px;
+	}
+
+	.rating {
+		height: 24px;
+		padding: 0 8px;
+		font-size: 12px;
+	}
+
+	.updated {
+		display: none;
+	}
+}
+
+@media (max-width: 480px) {
+	.reviewCard {
+		--poster-w: 64px;
+		--card-pad: 12px;
+		--card-gap: 12px;
+	}
+
+	.title {
+		font-size: 15px;
+	}
+
+	/* Series / Season / Episode drop under the title instead of squeezing it */
+	.titleLine {
+		flex-wrap: wrap;
+		row-gap: 2px;
+	}
+
+	.metaGroup {
+		flex-basis: 100%;
+	}
+
+	.metaGroup>.dot:first-child {
+		display: none;
+	}
+
+	.rating {
+		padding: 0 7px;
+	}
+}

@@ -1,0 +1,63 @@
+/* Uses currentColor / neutral greys only, so it works in light and dark themes and outside the modal. */
+
+.reviewText {
+	/* line-height is inherited, so the container decides it (and can clamp to whole lines) */
+	overflow-wrap: anywhere;
+}
+
+/* A paragraph break is exactly one blank line. Keeping gaps a whole number of
+   lines keeps the text on the line grid, so a line-count clamp never cuts mid-line. */
+.reviewText p {
+	margin: 0 0 1em;
+	/* fallback */
+	margin-bottom: 0.3lh;
+}
+
+.reviewText blockquote {
+	margin: 0 0 1em;
+	/* fallback */
+	margin-bottom: 0.35lh;
+	padding: 0 0 0 0.875em;
+	border-left: 3px solid rgba(128, 128, 128, 0.5);
+	opacity: 0.85;
+}
+
+.reviewText blockquote p:last-child {
+	margin-bottom: 0;
+}
+
+.reviewText> :last-child {
+	margin-bottom: 0;
+}
+
+/* --- Spoilers: blacked out until clicked --- */
+.spoiler {
+	cursor: pointer;
+	border-radius: 3px;
+	padding: 0 0.15em;
+	background: rgba(128, 128, 128, 0.6);
+	color: transparent;
+	user-select: none;
+	transition: background-color 0.15s;
+}
+
+.spoiler:hover {
+	background: rgba(128, 128, 128, 0.5);
+}
+
+.spoiler:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+.spoiler.revealed {
+	background: rgba(128, 128, 128, 0.2);
+	color: inherit;
+	user-select: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.spoiler {
+		transition: none;
+	}
+}

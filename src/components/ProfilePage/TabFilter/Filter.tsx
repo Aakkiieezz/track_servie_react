@@ -3,7 +3,7 @@ import { useFilterStore, type Keyword } from "@/store/useFilterStore";
 import DropdownMultiselect from "./DropdownMultiselect";
 import GenreMultiselect from "./GenreMultiselect";
 import KeywordMultiselect from "./KeywordMultiselect";
-import styles from "./Filter.module.css";
+import styles from "@/components/ProfilePage/TabFilter/Filter.module.css";
 import LanguageMultiselect from "./LanguageMultiselect";
 
 interface FilterProps {

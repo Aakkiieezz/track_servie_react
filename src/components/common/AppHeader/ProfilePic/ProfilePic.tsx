@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./ProfilePic.module.css";
-import PortalDropdown from "../PortalDropdown";
-import { handleLogout } from "../../../../utils/auth";
+import PortalDropdown from "@/components/common/AppHeader/PortalDropdown";
+import { handleLogout } from "@/utils/auth";
 
 const DROPDOWN_WIDTH = 180;
 
@@ -58,18 +58,17 @@ const ProfilePic: React.FC = () => {
         const handleClickOutside = (e: MouseEvent) => {
             const target = e.target as Node;
 
-            if (
-                buttonRef.current &&
+            if (buttonRef.current &&
                 !buttonRef.current.contains(target) &&
                 dropdownRef.current &&
                 !dropdownRef.current.contains(target)
-            ) {
+            )
                 setShowDropdown(false);
-            }
         };
 
         const handleResize = () => {
-            if (showDropdown) updatePosition();
+            if (showDropdown)
+                updatePosition();
         };
 
         document.addEventListener("keydown", handleKeyDown);
@@ -82,10 +81,6 @@ const ProfilePic: React.FC = () => {
             window.removeEventListener("resize", handleResize);
         };
     }, [showDropdown]);
-
-    const viewportHeight = window.innerHeight;
-    const spaceBelow = viewportHeight - position.top;
-    const maxHeight = Math.min(300, spaceBelow - 20);
 
     return (
         <div className={styles.profilePicContainer}>
@@ -100,9 +95,8 @@ const ProfilePic: React.FC = () => {
                 alt="Profile"
                 onClick={() => {
                     setShowDropdown(prev => !prev);
-                    if (!showDropdown) {
+                    if (!showDropdown)
                         setTimeout(updatePosition, 0);
-                    }
                 }}
                 onError={(e) => {
                     (e.target as HTMLImageElement).src = "/defaultProfileImg.jpg";
@@ -113,7 +107,6 @@ const ProfilePic: React.FC = () => {
             <PortalDropdown
                 show={showDropdown}
                 position={position}
-                maxHeight={maxHeight}
                 dropdownRef={dropdownRef}
             >
                 <button className={styles.dropdownItem} onClick={() => navigate("/profile/me/overview")}>
@@ -129,7 +122,11 @@ const ProfilePic: React.FC = () => {
                 </button>
 
                 <button className={styles.dropdownItem} onClick={() => navigate("/profile/me/watchlist")}>
-                    <i className="bi bi-clock-fill"></i> Watchlist
+                    <i className="bi bi-clock"></i> Watchlist
+                </button>
+
+                <button className={styles.dropdownItem} onClick={() => navigate("/profile/me/reviews")}>
+                    <i className="bi bi-chat-square-quote"></i> Reviews
                 </button>
 
                 <button className={styles.dropdownItem} onClick={() => navigate("/profile/me/network")}>
@@ -137,7 +134,7 @@ const ProfilePic: React.FC = () => {
                 </button>
 
                 <button className={styles.dropdownItem} onClick={toggleTheme}>
-                    <i className={`bi ${darkMode ? "bi-lightbulb-fill" : "bi-lightbulb-off-fill"}`}></i>
+                    <i className={`bi ${darkMode ? "bi-lightbulb" : "bi-lightbulb-off"}`}></i>
                     {darkMode ? " Light Mode" : " Dark Mode"}
                 </button>
 
